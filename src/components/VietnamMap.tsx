@@ -47,13 +47,13 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Vinh Long": { vi: "Vĩnh Long", region: "Tây Nam Bộ" },
 };
 
-// High-contrast vibrant dark palette
-const OCEAN_FILL = "#0d1b2a";
-const OCEAN_STIPPLE = "#172b40";
-const PROVINCE_DEFAULT_FILL = "#1a2c3d";
-const PROVINCE_HOVER_FILL = "#2d4863";
-const PROVINCE_STROKE = "#3b5875";
-const GRATICULE_STROKE = "#1d364f";
+// High-contrast vibrant dark palette (Slate theme)
+const OCEAN_FILL = "#080e18";
+const OCEAN_STIPPLE = "#111d2e";
+const PROVINCE_DEFAULT_FILL = "#1e293b";
+const PROVINCE_HOVER_FILL = "#334155";
+const PROVINCE_STROKE = "#475569";
+const GRATICULE_STROKE = "#172638";
 const TOOLTIP_BG = "#090d14";
 const TOOLTIP_BORDER = "#334155";
 
@@ -125,7 +125,7 @@ export default function VietnamMap() {
     const filter = defs.append("filter").attr("id", "visited-glow");
     filter
       .append("feGaussianBlur")
-      .attr("stdDeviation", "3")
+      .attr("stdDeviation", "1.5")
       .attr("result", "coloredBlur");
     const feMerge = filter.append("feMerge");
     feMerge.append("feMergeNode").attr("in", "coloredBlur");
