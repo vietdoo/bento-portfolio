@@ -60,13 +60,13 @@ const MAINLAND_BOUNDS = {
   },
 };
 
-// High-end Dark Slate palette matching Globe component
-const OCEAN_FILL = "#0b131e";
-const OCEAN_STIPPLE = "#142232";
-const PROVINCE_DEFAULT_FILL = "#1b2938";
-const PROVINCE_HOVER_FILL = "#284059";
-const PROVINCE_STROKE = "#2e4359";
-const GRATICULE_STROKE = "#162b40";
+// High-end Dark Slate palette matching Globe & Bento Portfolio theme
+const OCEAN_FILL = "#080e17";
+const OCEAN_STIPPLE = "#111c2b";
+const PROVINCE_DEFAULT_FILL = "#1e293b";
+const PROVINCE_HOVER_FILL = "#334155";
+const PROVINCE_STROKE = "#334155";
+const GRATICULE_STROKE = "#172536";
 const TOOLTIP_BG = "#090d14";
 const TOOLTIP_BORDER = "#334155";
 
@@ -176,9 +176,9 @@ export default function VietnamMap() {
 
     // Geographical annotations (East Sea / Islands)
     const oceanLabels = [
-      { text: "BIỂN ĐÔNG", lon: 111.8, lat: 14.5, size: "15px", weight: "700", spacing: "0.2em", fill: "#475569" },
-      { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#334155" },
-      { text: "Quần đảo Trường Sa", lon: 113.8, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#334155" },
+      { text: "BIỂN ĐÔNG", lon: 111.8, lat: 14.5, size: "15px", weight: "700", spacing: "0.2em", fill: "#64748b" },
+      { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
+      { text: "Quần đảo Trường Sa", lon: 113.8, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
     ];
 
     oceanLabels.forEach((label) => {
