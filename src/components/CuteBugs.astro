@@ -1,5 +1,5 @@
 ---
-// CuteBugs.astro - Cute interactive bugs crawling and hiding in the Welcome Card
+// CuteBugs.astro - Cute interactive bugs crawling, hiding, and chatting dev jokes in Welcome Card
 ---
 
 <div id="bugs-container" class="absolute inset-0 z-0 pointer-events-auto overflow-hidden select-none">
@@ -26,7 +26,59 @@
     peekAmount: number;
     emotion: string | null;
     emotionTimer: number;
+    chatText: string | null;
+    chatTimer: number;
+    nextChatTimer: number;
     sparkles: Array<{ x: number; y: number; vy: number; alpha: number; char: string }>;
+  }
+
+  const DEV_JOKES = [
+    "It works on my machine! 💻",
+    "Is this a bug or a feature? 🤔",
+    "Don't push on Friday! ⚠️",
+    "Git commit -m 'fixed bug' 📝",
+    "Where is console.log? 🧐",
+    "CSS centering is hard... 📐",
+    "NullPointerException?! 💥",
+    "404: Food not found! 🍕",
+    "I'm an Easter Egg! 🥚",
+    "Who left this undefined? ❓",
+    "LGTM! Ship it! 🚀",
+    "Need coffee... ☕",
+    "Vietdoo's code is clean! ⚡",
+    "StackOverflow saved me! 🙏",
+    "Are we in production?! 😱"
+  ];
+
+  const HIDING_JOKES = [
+    "Shhh! Hiding behind button 🤫",
+    "Did someone say QA test?! 🏃‍♂️",
+    "You can't see me! 🙈",
+    "Safe spot found! 🍀",
+    "Peeking out... 👁️"
+  ];
+
+  const CLICK_JOKES = [
+    "Hey! That tickles! 😂",
+    "Don't poke the bug! 🚫",
+    "I'm reporting this! 🚨",
+    "Running away! 🏃💨",
+    "Ouch! 💥",
+    "Cute bug power! ✨"
+  ];
+
+  function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
   }
 
   function initCuteBugs() {
@@ -58,7 +110,6 @@
       canvas.height = Math.floor(height * dpr);
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Re-bound any bug that went out of canvas due to resize
       bugs.forEach((b) => {
         b.x = Math.max(30, Math.min(width - 30, b.x));
         b.y = Math.max(height * 0.3, Math.min(height - 20, b.y));
@@ -79,13 +130,11 @@
       const introCard = container!.parentElement;
       if (!introCard) return spots;
 
-      // Card bottom edge hiding spots
       spots.push({ x: 40, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
       spots.push({ x: width / 2, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
       spots.push({ x: width - 50, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
       spots.push({ x: 12, y: height * 0.75, edgeAngle: 0, type: 'edge' });
 
-      // Button hiding spots
       const buttons = introCard.querySelectorAll("button, a");
       const containerRect = container!.getBoundingClientRect();
 
@@ -129,6 +178,12 @@
       bug.speed = bug.baseSpeed * 1.3;
     }
 
+    function speakJoke(bug: Bug, jokeList: string[]) {
+      const joke = jokeList[Math.floor(Math.random() * jokeList.length)];
+      bug.chatText = joke;
+      bug.chatTimer = 3.2;
+    }
+
     function initBugs() {
       bugs.length = 0;
       speciesList.forEach((species, i) => {
@@ -151,6 +206,9 @@
           peekAmount: 0,
           emotion: null,
           emotionTimer: 0,
+          chatText: null,
+          chatTimer: 0,
+          nextChatTimer: 2 + i * 2.5 + Math.random() * 3,
           sparkles: []
         };
         setRandomWalkTarget(bug);
@@ -203,6 +261,7 @@
         if (dist < bug.size * 1.8) {
           triggerEmotion(bug, '♥');
           addSparkles(bug, Math.random() > 0.5 ? '♥' : '✨');
+          speakJoke(bug, CLICK_JOKES);
           bug.state = 'SCARED';
           bug.stateTimer = 1.8;
           bug.speed = bug.baseSpeed * 2.5;
@@ -221,6 +280,21 @@
         if (bug.emotionTimer > 0) {
           bug.emotionTimer -= dt;
           if (bug.emotionTimer <= 0) bug.emotion = null;
+        }
+
+        if (bug.chatTimer > 0) {
+          bug.chatTimer -= dt;
+          if (bug.chatTimer <= 0) bug.chatText = null;
+        }
+
+        bug.nextChatTimer -= dt;
+        if (bug.nextChatTimer <= 0) {
+          if (bug.state === 'PEEK') {
+            speakJoke(bug, HIDING_JOKES);
+          } else {
+            speakJoke(bug, DEV_JOKES);
+          }
+          bug.nextChatTimer = 6 + Math.random() * 8;
         }
 
         bug.sparkles.forEach((s) => {
@@ -259,6 +333,7 @@
                 bug.stateTimer = 3 + Math.random() * 4;
                 bug.peekAmount = 0.75;
                 triggerEmotion(bug, '?');
+                speakJoke(bug, HIDING_JOKES);
               } else if (bug.state === 'SCARED') {
                 setHidingTarget(bug);
               } else {
@@ -322,7 +397,6 @@
       ctx!.translate(b.x, b.y);
 
       const renderAngle = b.state === 'PEEK' && b.hidingSpot ? b.hidingSpot.edgeAngle : b.angle;
-      ctx!.rotate(renderAngle + Math.PI / 2);
 
       const s = b.size;
 
@@ -336,8 +410,51 @@
         ctx!.restore();
       });
 
-      // Draw Speech Bubble
-      if (b.emotion) {
+      // Draw Dev Joke Chat Bubble (Keep unrotated horizontally)
+      if (b.chatText && b.chatTimer > 0) {
+        ctx!.save();
+        const font = 'bold 11px sans-serif';
+        ctx!.font = font;
+        const textWidth = ctx!.measureText(b.chatText).width;
+        const padX = 8;
+        const bubbleW = textWidth + padX * 2;
+        const bubbleH = 20;
+
+        const bX = -bubbleW / 2;
+        const bY = -s * 1.6 - bubbleH;
+
+        ctx!.globalAlpha = Math.min(1, b.chatTimer * 2);
+
+        // Background bubble box
+        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx!.strokeStyle = '#38bdf8';
+        ctx!.lineWidth = 1.2;
+        drawRoundedRect(ctx!, bX, bY, bubbleW, bubbleH, 5);
+        ctx!.fill();
+        ctx!.stroke();
+
+        // Pointer triangle
+        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx!.beginPath();
+        ctx!.moveTo(-4, bY + bubbleH);
+        ctx!.lineTo(0, bY + bubbleH + 4);
+        ctx!.lineTo(4, bY + bubbleH);
+        ctx!.closePath();
+        ctx!.fill();
+
+        // Text
+        ctx!.fillStyle = '#38bdf8';
+        ctx!.textAlign = 'center';
+        ctx!.textBaseline = 'middle';
+        ctx!.fillText(b.chatText, 0, bY + bubbleH / 2);
+        ctx!.restore();
+      }
+
+      // Rotate for drawing body/legs/antennae
+      ctx!.rotate(renderAngle + Math.PI / 2);
+
+      // Draw Emotion indicator if present
+      if (b.emotion && !b.chatText) {
         ctx!.save();
         ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx!.strokeStyle = '#38bdf8';
