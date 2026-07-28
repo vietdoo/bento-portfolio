@@ -48,12 +48,12 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
 };
 
 // Vibrant, High-Contrast Color Palette matching Bento & Globe themes
-const OCEAN_FILL = "#09131d";
-const OCEAN_STIPPLE = "#152638";
-const PROVINCE_DEFAULT_FILL = "#1e3852";
-const PROVINCE_HOVER_FILL = "#2c4f73";
-const PROVINCE_STROKE = "#3d648a";
-const GRATICULE_STROKE = "#162a3d";
+const OCEAN_FILL = "#0d1b2a";
+const OCEAN_STIPPLE = "#182c40";
+const PROVINCE_DEFAULT_FILL = "#1e3a54";
+const PROVINCE_HOVER_FILL = "#2c547a";
+const PROVINCE_STROKE = "#477099";
+const GRATICULE_STROKE = "#182e42";
 const TOOLTIP_BG = "#0b121c";
 const TOOLTIP_BORDER = "#334155";
 
@@ -77,14 +77,13 @@ export default function VietnamMap() {
   onMount(() => {
     if (!containerRef) return;
 
-    const updateProjectionAndRender = () => {
+    const renderMap = () => {
       if (!containerRef) return;
 
-      // Clear existing content
       d3.select(containerRef).selectAll("*").remove();
 
-      const width = Math.max(containerRef.clientWidth || window.innerWidth, 500);
-      const height = Math.max(containerRef.clientHeight || window.innerHeight, 500);
+      const width = Math.max(containerRef.clientWidth || window.innerWidth, 400);
+      const height = Math.max(containerRef.clientHeight || window.innerHeight, 400);
 
       const svg = d3
         .select(containerRef)
@@ -126,7 +125,7 @@ export default function VietnamMap() {
       const filter = defs.append("filter").attr("id", "visited-glow");
       filter
         .append("feGaussianBlur")
-        .attr("stdDeviation", "2")
+        .attr("stdDeviation", "2.5")
         .attr("result", "coloredBlur");
       const feMerge = filter.append("feMerge");
       feMerge.append("feMergeNode").attr("in", "coloredBlur");
@@ -139,13 +138,18 @@ export default function VietnamMap() {
         .attr("height", "100%")
         .attr("fill", "url(#vn-sea-stipple)");
 
-      // D3 Mercator Projection centered explicitly on Vietnam mainland
+      // D3 Mercator Projection fitExtent directly on fixed GeoJSON!
       const features = (vietnamData as any).features;
+      const padding = Math.min(width, height) > 600 ? 50 : 25;
       const projection = d3
         .geoMercator()
-        .center([106.3, 16.2])
-        .scale(Math.min(width, height) * 3.6)
-        .translate([width / 2, height / 2]);
+        .fitExtent(
+          [
+            [padding, padding],
+            [width - padding, height - padding],
+          ],
+          vietnamData as any
+        );
 
       const pathGenerator = d3.geoPath().projection(projection);
 
@@ -236,7 +240,7 @@ export default function VietnamMap() {
           d3.select(this)
             .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
             .style("stroke", isVisited ? "#ffffff" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.6 : 1.2)
+            .style("stroke-width", isVisited ? 1.8 : 1.2)
             .style("opacity", isVisited ? 0.98 : 0.9)
             .style("filter", isVisited ? "url(#visited-glow)" : "none");
         });
@@ -253,7 +257,7 @@ export default function VietnamMap() {
           d3.select(this)
             .style("fill", isVisited ? "var(--primary-400)" : PROVINCE_HOVER_FILL)
             .style("stroke", "var(--primary-400)")
-            .style("stroke-width", 2.0)
+            .style("stroke-width", 2.2)
             .style("opacity", 1);
 
           tooltip.html(`
@@ -279,7 +283,7 @@ export default function VietnamMap() {
           d3.select(this)
             .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
             .style("stroke", isVisited ? "#ffffff" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.6 : 1.2)
+            .style("stroke-width", isVisited ? 1.8 : 1.2)
             .style("opacity", isVisited ? 0.98 : 0.9)
             .style("filter", isVisited ? "url(#visited-glow)" : "none");
 
@@ -379,12 +383,10 @@ export default function VietnamMap() {
       };
     };
 
-    // Initial render
-    updateProjectionAndRender();
+    renderMap();
 
-    // ResizeObserver to re-render when container size stabilizes
     const resizeObserver = new ResizeObserver(() => {
-      updateProjectionAndRender();
+      renderMap();
     });
 
     resizeObserver.observe(containerRef);
