@@ -19,6 +19,9 @@ const siteNoTrailingSlash = site.endsWith("/") ? site.slice(0, -1) : site;
 
 // https://astro.build/config
 export default defineConfig({
+  redirects: {
+    "/design-works": "/engineering-showcase",
+  },
   fonts: [
     {
       provider: fontProviders.local(),

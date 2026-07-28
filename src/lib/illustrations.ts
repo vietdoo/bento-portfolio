@@ -34,7 +34,7 @@ export const illustrationsAll: Illustration[] = entries.map(([path, imageMeta]) 
   };
 });
 
-// Marquee rows used in the DesignWorksCard home widget
+// Marquee rows used in the EngineeringShowcaseCard home widget
 const half = Math.ceil(illustrationsAll.length / 2);
 export const illustrationsRow1: Illustration[] = illustrationsAll.slice(0, half);
 export const illustrationsRow2: Illustration[] = illustrationsAll.slice(half);
