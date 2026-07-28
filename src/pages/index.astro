@@ -52,7 +52,7 @@ import { SITE } from "../site-config";
         </div>
       </div>
       <span class="text-xs text-white/60"
-        >{SITE.visitedCountries.length} countries</span
+        >{SITE.visitedCountries.length} {SITE.visitedCountries.length === 1 ? "country" : "countries"}</span
       >
     </Card>
     <ThemeChangeCard />

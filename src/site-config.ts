@@ -29,7 +29,5 @@ export const SITE = {
   },
   visitedCountries: [
     "Vietnam",
-    "Australia",
-    "Singapore",
   ],
 };
