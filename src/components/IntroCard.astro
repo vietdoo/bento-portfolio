@@ -11,11 +11,15 @@ import MemojiAvatarBlue from "../assets/vietdoo_pixel.png";
 import MemojiAvatarGreen from "../assets/vietdoo_pixel.png";
 import MemojiAvatarPurple from "../assets/vietdoo_pixel.png";
 import MemojiAvatarYellow from "../assets/vietdoo_pixel.png";
+import CuteBugs from "./CuteBugs.astro";
 ---
 
 <Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
-  <div class="flex w-full h-full">
-    <div class="flex flex-col justify-between md:max-h-[300px] gap-4">
+  <div slot="background" class="absolute inset-0 pointer-events-auto">
+    <CuteBugs />
+  </div>
+  <div class="flex w-full h-full relative z-10 pointer-events-none">
+    <div class="flex flex-col justify-between md:max-h-[300px] gap-4 pointer-events-auto">
       <div class="flex flex-col h-full">
         <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
 
