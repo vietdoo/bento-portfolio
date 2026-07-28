@@ -163,11 +163,11 @@ export default function InputTesterPlayground() {
   };
 
   const handleReset = () => {
-    setActiveKeys(new Set());
-    setTestedKeys(new Set());
+    setActiveKeys(new Set<string>());
+    setTestedKeys(new Set<string>());
     setLastKey(null);
-    setActiveMouseButtons(new Set());
-    setTestedMouseButtons(new Set());
+    setActiveMouseButtons(new Set<number>());
+    setTestedMouseButtons(new Set<number>());
     setScrollDelta(0);
   };
 
