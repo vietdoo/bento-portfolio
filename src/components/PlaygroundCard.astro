@@ -1,0 +1,103 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card
+  href="/playground"
+  colSpan="md:col-span-1"
+  rowSpan="md:row-span-1"
+>
+  <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="playground-grid-container w-full h-full grid grid-cols-8 grid-rows-4 p-2 gap-1.5 opacity-90">
+      {Array.from({ length: 32 }).map((_, i) => (
+        <div
+          class="pg-tile rounded-[3px] border border-white/5 bg-neutral-900/60 transition-all duration-300 ease-out"
+          data-index={i}
+        />
+      ))}
+    </div>
+  </div>
+  <div class="flex-1 flex items-end pb-1">
+    <h2 class="text-xl font-bold m-0 text-white">Playground</h2>
+  </div>
+</Card>
+
+<style>
+  .pg-tile.active {
+    background-color: color-mix(in srgb, var(--primary-500) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--primary-500) 80%, transparent) !important;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--primary-500) 40%, transparent) !important;
+    opacity: 1 !important;
+  }
+</style>
+
+<script is:inline>
+  (function setupPlayground() {
+    function startAnimation() {
+      const container = document.querySelector('.playground-grid-container');
+      if (!container) return;
+      const tiles = container.querySelectorAll('.pg-tile');
+      if (!tiles.length) return;
+
+      const card = container.closest('.card') || container.parentElement;
+
+      if (container.dataset.animated === 'true') return;
+      container.dataset.animated = 'true';
+
+      // 1. Random ambient pulse: chỉ 1-2 ô ngẫu nhiên
+      function pulse() {
+        const count = Math.floor(Math.random() * 2) + 1; // 1 hoặc 2 ô
+        for (let i = 0; i < count; i++) {
+          const randomIndex = Math.floor(Math.random() * tiles.length);
+          const tile = tiles[randomIndex];
+          if (!tile) continue;
+
+          tile.classList.add('active');
+          const duration = 600 + Math.random() * 600;
+          setTimeout(() => {
+            tile.classList.remove('active');
+          }, duration);
+        }
+      }
+
+      setInterval(pulse, 700);
+      pulse();
+
+      // 2. Interactive Mouse Trail: di chuột tới đâu các ô sáng lan theo tới đó
+      if (card) {
+        card.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          tiles.forEach((tile) => {
+            const tileRect = tile.getBoundingClientRect();
+            const tileX = tileRect.left - rect.left + tileRect.width / 2;
+            const tileY = tileRect.top - rect.top + tileRect.height / 2;
+
+            const dist = Math.hypot(x - tileX, y - tileY);
+
+            // Ô nằm trong bán kính 45px của con trỏ chuột sẽ sáng lan lên
+            if (dist < 45) {
+              tile.classList.add('active');
+              setTimeout(() => {
+                tile.classList.remove('active');
+              }, 400);
+            }
+          });
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startAnimation);
+    } else {
+      startAnimation();
+    }
+    document.addEventListener('astro:page-load', () => {
+      const container = document.querySelector('.playground-grid-container');
+      if (container) container.dataset.animated = 'false';
+      startAnimation();
+    });
+  })();
+</script>

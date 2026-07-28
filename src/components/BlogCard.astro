@@ -1,0 +1,85 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card
+  href="/blog"
+  colSpan="md:col-span-1"
+  rowSpan="md:row-span-1"
+>
+  <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="blog-grid-container w-full h-full grid grid-cols-9 grid-rows-4 p-2.5 gap-2 items-center justify-items-center opacity-85">
+      {Array.from({ length: 36 }).map((_, i) => (
+        <div
+          class="blog-ring w-3.5 h-3.5 rounded-full border border-white/10 bg-transparent transition-all duration-400 ease-in-out"
+          data-index={i}
+        />
+      ))}
+    </div>
+  </div>
+  <div class="flex-1 flex items-end pb-1">
+    <h2 class="text-xl font-bold m-0 text-white">Blog</h2>
+  </div>
+</Card>
+
+<style>
+  .blog-ring.active {
+    border-color: color-mix(in srgb, var(--primary-500) 85%, transparent) !important;
+    background-color: color-mix(in srgb, var(--primary-500) 20%, transparent) !important;
+    box-shadow: 0 0 6px color-mix(in srgb, var(--primary-500) 30%, transparent) !important;
+    opacity: 1 !important;
+  }
+</style>
+
+<script is:inline>
+  (function setupBlog() {
+    function startAnimation() {
+      const container = document.querySelector('.blog-grid-container');
+      if (!container) return;
+      const rings = container.querySelectorAll('.blog-ring');
+      if (!rings.length) return;
+
+      if (container.dataset.animated === 'true') return;
+      container.dataset.animated = 'true';
+
+      const COLS = 9;
+      const ROWS = 4;
+      const CENTER_COL = 4;
+      const CENTER_ROW = 1.5;
+      const MAX_RADIUS = 5.5;
+      let radiusStep = 0;
+
+      // Sóng gợn đồng tâm (Concentric Ripple) từ tâm lan tỏa ra ngoài có quy luật
+      function animateRipple() {
+        rings.forEach((ring, idx) => {
+          const col = idx % COLS;
+          const row = Math.floor(idx / COLS);
+          const dist = Math.hypot(col - CENTER_COL, row - CENTER_ROW);
+
+          // Vòng tròn nằm gần bán kính hiện tại sẽ phát sáng
+          if (Math.abs(dist - radiusStep) < 0.85) {
+            ring.classList.add('active');
+          } else {
+            ring.classList.remove('active');
+          }
+        });
+
+        radiusStep = (radiusStep + 0.45) % MAX_RADIUS;
+      }
+
+      const interval = setInterval(animateRipple, 150);
+      animateRipple();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startAnimation);
+    } else {
+      startAnimation();
+    }
+    document.addEventListener('astro:page-load', () => {
+      const container = document.querySelector('.blog-grid-container');
+      if (container) container.dataset.animated = 'false';
+      startAnimation();
+    });
+  })();
+</script>

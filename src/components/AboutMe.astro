@@ -1,0 +1,51 @@
+---
+import Card from "./Card/index.astro";
+import { SITE } from "../site-config";
+
+const stack = [
+  { label: "Python", category: "lang" },
+  { label: "C++", category: "lang" },
+  { label: "Apache Spark", category: "bigdata" },
+  { label: "Apache Kafka", category: "bigdata" },
+  { label: "Hadoop HDFS", category: "bigdata" },
+  { label: "SQL / Redshift", category: "database" },
+  { label: "Microservices", category: "backend" },
+  { label: "Docker", category: "devops" },
+  { label: "Kubernetes", category: "devops" },
+  { label: "Linux", category: "devops" },
+  { label: "PostgreSQL", category: "database" },
+  { label: "Redis", category: "database" },
+  { label: "Flask / FastAPI", category: "backend" },
+  { label: "TypeScript", category: "lang" },
+  { label: "React / Astro", category: "frontend" },
+  { label: "Git", category: "other" },
+];
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-6" title="About me">
+  <div class="flex flex-col gap-4">
+    <p class="text-sm font-light">
+      Hi, I'm <b class="font-bold">{SITE.author.firstName}</b>, a Software Engineer @ VNPT Group from {SITE.location.countryName}.
+    </p>
+
+    <div class="flex flex-col gap-2">
+      <span
+        class="text-[10px] uppercase tracking-widest text-darkslate-300 font-medium"
+        >Stack & tools</span
+      >
+      <div class="flex flex-wrap gap-1.5">
+        {
+          stack.map(({ label }) => (
+            <span class="text-[11px] px-2 py-0.5 rounded-full border border-darkslate-400 text-darkslate-100 hover:border-primary-500 hover:text-white transition-colors duration-150 cursor-default">
+              {label}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="text-sm font-light">
+      I specialize in Big Data, Microservices, and high-throughput data pipelines. Beyond coding, I'm passionate about competitive programming, data science, and scalable cloud architectures.
+    </p>
+  </div>
+</Card>

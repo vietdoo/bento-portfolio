@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import InputTesterPlayground from "../../components/playground/inputTesterPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Input tester`}
+  description="Interactive keyboard key and mouse click tester."
+  scrollable={true}
+>
+  <InputTesterPlayground client:load />
+</PlaygroundShell>

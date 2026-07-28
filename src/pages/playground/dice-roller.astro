@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import DiceRollerPlayground from "../../components/playground/diceRollerPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Dice roller`}
+  description="Random 3D dice roller with CSS perspective physics."
+  scrollable={true}
+>
+  <DiceRollerPlayground client:load />
+</PlaygroundShell>

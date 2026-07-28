@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import WordCounterPlayground from "../../components/playground/wordCounterPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Word Counter`}
+  description="Simple real-time word and character counter."
+  scrollable={true}
+>
+  <WordCounterPlayground client:load />
+</PlaygroundShell>

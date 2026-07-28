@@ -1,0 +1,81 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LoaderAnimation from "../../components/LoaderAnimation.astro";
+import BackLink from "../../components/BackLink.astro";
+import Card from "../../components/Card/index.astro";
+import { SITE } from "../../site-config";
+
+const projects = [
+  {
+    title: "Word counter",
+    description: "Real-time word, character, and sentence counter",
+    slug: "/word-counter",
+    tags: ["SolidJS", "Utility"],
+  },
+  {
+    title: "JWT decoder",
+    description: "JSON Web Token decoder and inspector",
+    slug: "/jwt-decoder",
+    tags: ["SolidJS", "Utility"],
+  },
+  {
+    title: "Input tester",
+    description: "Interactive keyboard key and mouse click tester",
+    slug: "/input-tester",
+    tags: ["SolidJS", "Utility"],
+  },
+  {
+    title: "Dice roller",
+    description: "Random 3D dice roller simulation with WebGL and physics",
+    slug: "/dice-roller",
+    tags: ["Three.js", "SolidJS"],
+  },
+];
+---
+
+<LoaderAnimation />
+
+<Layout
+  title={`${SITE.author.fullName} - Playground`}
+  description="A collection of experiments and creative explorations with different technologies."
+>
+  <main
+    class="w-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8 text-white"
+  >
+    <BackLink href="/" class="mb-8" />
+    <h1 class="text-4xl font-bold mb-4 text-neutral-100">Playground</h1>
+    <div class="grid grid-cols-2 gap-4 w-full">
+      {
+        projects.map((project, i) => (
+          <Card
+            href={`/playground${project.slug}`}
+            height="h-auto"
+            colSpan="col-span-2 md:col-span-1"
+            arrowCorner={true}
+          >
+            <div class="flex flex-col gap-3">
+              <span class="text-[10px] font-medium tabular-nums text-darkslate-400 tracking-widest">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h2 class="font-semibold text-lg leading-snug text-darkslate-50">
+                  {project.title}
+                </h2>
+                <p class="text-darkslate-300 text-sm mt-1">
+                  {project.description}
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-1.5 mt-1">
+                {project.tags.map((tag) => (
+                  <span class="text-[10px] font-medium px-2 py-0.5 rounded-full border border-darkslate-400 text-darkslate-300">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </Card>
+        ))
+      }
+    </div>
+  </main>
+</Layout>

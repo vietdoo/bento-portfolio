@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card/index.astro";
+import IntroCard from "../components/IntroCard.astro";
+import ContactsCard from "../components/ContactsCard.astro";
+import ThemeChangeCard from "../components/ThemeChangeCard.astro";
+import TimeZone from "../components/TimeZoneCard.astro";
+import AboutMe from "../components/AboutMe.astro";
+import Now from "../components/Now.astro";
+import Globe from "../components/Globe";
+import DesignWorksCard from "../components/DesignWorksCard.astro";
+import PixelHeart from "../components/PixelHeart.astro";
+import PlaygroundCard from "../components/PlaygroundCard.astro";
+import GuestbookCard from "../components/GuestbookCard.astro";
+import BlogCard from "../components/BlogCard.astro";
+import { SITE } from "../site-config";
+---
+
+<script>
+  import { initHomeEntrance } from "../lib/home-entrance";
+  initHomeEntrance();
+</script>
+
+<Layout
+  description={`Software Engineer @ VNPT Group based in ${SITE.location.countryName}, specializing in Big Data, Data Engineering, microservices, and high-throughput pipelines.`}
+  title={`${SITE.author.fullName} - ${SITE.author.jobTitle}`}
+>
+  <main
+    class="text-white m-auto p-2 grid gap-2 max-w-6xl overflow-x-hidden relative w-full sm:p-4 sm:gap-2 md:grid-cols-2 md:gap-3 md:p-6 lg:h-[max(100dvh,830px)] lg:grid-rows-8 lg:grid-cols-4 lg:gap-4"
+  >
+    <IntroCard />
+    <AboutMe />
+    <ContactsCard />
+    <TimeZone />
+    <DesignWorksCard />
+    <Now />
+    <PlaygroundCard />
+    <GuestbookCard />
+    <BlogCard />
+    <Card
+      colSpan="md:col-span-1"
+      href="travel"
+      rowSpan="md:row-span-1"
+      title="Countries I visited"
+    >
+      <div slot="background" class="absolute inset-0 -z-10">
+        <div class="hidden md:block h-full w-full">
+          <Globe client:visible />
+        </div>
+        <div class="block md:hidden h-full w-full">
+          <Globe client:visible isStatic={true} />
+        </div>
+      </div>
+      <span class="text-xs text-white/60"
+        >{SITE.visitedCountries.length} countries</span
+      >
+    </Card>
+    <ThemeChangeCard />
+    <Card colSpan="md:col-span-1" rowSpan="md:row-span-1">
+      <div class="flex h-full items-center justify-center">
+        <p class="text-[10px] whitespace-nowrap text-center">
+          © {new Date().getFullYear()} · Crafted with <PixelHeart /> using <a
+            class="text-primary-500"
+            href="https://astro.build/"
+            target="_blank">Astro</a
+          > by Me.
+        </p>
+      </div>
+    </Card>
+  </main>
+</Layout>

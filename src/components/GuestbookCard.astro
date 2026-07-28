@@ -1,0 +1,84 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card
+  href="/guestbook"
+  colSpan="md:col-span-1"
+  rowSpan="md:row-span-1"
+  prefetch="viewport"
+>
+  <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="guestbook-grid-container w-full h-full grid grid-cols-9 grid-rows-4 p-2.5 gap-2 items-center justify-items-center opacity-85">
+      {Array.from({ length: 36 }).map((_, i) => (
+        <div
+          class="gb-dot w-3.5 h-3.5 rounded-full bg-neutral-900/60 border border-white/5 transition-all duration-400 ease-in-out"
+          data-index={i}
+        />
+      ))}
+    </div>
+  </div>
+  <div class="flex-1 flex items-end pb-1">
+    <h2 class="text-xl font-bold m-0 text-white">Guestbook</h2>
+  </div>
+</Card>
+
+<style>
+  .gb-dot.active {
+    background-color: color-mix(in srgb, var(--primary-500) 45%, transparent) !important;
+    border-color: color-mix(in srgb, var(--primary-500) 80%, transparent) !important;
+    box-shadow: 0 0 6px color-mix(in srgb, var(--primary-500) 30%, transparent) !important;
+    opacity: 1 !important;
+  }
+</style>
+
+<script is:inline>
+  (function setupGuestbook() {
+    function startAnimation() {
+      const container = document.querySelector('.guestbook-grid-container');
+      if (!container) return;
+      const dots = container.querySelectorAll('.gb-dot');
+      if (!dots.length) return;
+
+      if (container.dataset.animated === 'true') return;
+      container.dataset.animated = 'true';
+
+      const COLS = 9;
+      const ROWS = 4;
+      const MAX_DIAG = COLS + ROWS;
+      let waveStep = 0;
+
+      // Sóng quét chéo có quy luật từ góc trên-trái sang dưới-phải
+      function animateWave() {
+        dots.forEach((dot, idx) => {
+          const col = idx % COLS;
+          const row = Math.floor(idx / COLS);
+          const diag = col + row;
+
+          // Sóng quét rộng 2 dải chéo liên tiếp
+          if (diag === waveStep || diag === (waveStep - 1 + MAX_DIAG) % MAX_DIAG) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+
+        waveStep = (waveStep + 1) % MAX_DIAG;
+      }
+
+      const interval = setInterval(animateWave, 180);
+      animateWave();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startAnimation);
+    } else {
+      startAnimation();
+    }
+    document.addEventListener('astro:page-load', () => {
+      const container = document.querySelector('.guestbook-grid-container');
+      if (container) container.dataset.animated = 'false';
+      startAnimation();
+    });
+  })();
+</script>

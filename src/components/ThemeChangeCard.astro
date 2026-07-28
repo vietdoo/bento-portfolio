@@ -1,0 +1,104 @@
+---
+import Card from "./Card/index.astro";
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-1" padding="p-4">
+  <div class="flex flex-col items-center justify-center h-full gap-2">
+    <div class="theme-colors flex items-center gap-3">
+      <button
+        class="theme-btn w-6 h-6 rounded-full bg-[#e63946] transition-all duration-200"
+        data-theme="default"
+        aria-label="Default theme"></button>
+      <button
+        class="theme-btn w-6 h-6 rounded-full bg-yellow-500 transition-all duration-200"
+        data-theme="yellow-theme"
+        aria-label="Yellow theme"></button>
+      <button
+        class="theme-btn w-6 h-6 rounded-full bg-blue-500 transition-all duration-200"
+        data-theme="blue-theme"
+        aria-label="Blue theme"></button>
+      <button
+        class="theme-btn w-6 h-6 rounded-full bg-purple-500 transition-all duration-200"
+        data-theme="purple-theme"
+        aria-label="Purple theme"></button>
+      <button
+        class="theme-btn w-6 h-6 rounded-full bg-green-500 transition-all duration-200"
+        data-theme="green-theme"
+        aria-label="Green theme"></button>
+    </div>
+  </div>
+</Card>
+
+<style>
+  .theme-btn {
+    outline: none;
+    box-shadow: 0 0 0 2px transparent;
+    transform: scale(1);
+  }
+  .theme-btn:hover {
+    transform: scale(1.2);
+  }
+  .theme-btn.active {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.15),
+      0 0 0 3.5px white;
+    transform: scale(1.15);
+  }
+</style>
+
+<script>
+  function playThemeSound() {
+    if (localStorage.getItem("soundEnabled") === "false") return;
+    const ctx = new AudioContext();
+    [440, 554, 659].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      const t = ctx.currentTime + i * 0.055;
+      gain.gain.setValueAtTime(0.0, t);
+      gain.gain.linearRampToValueAtTime(0.09, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      osc.start(t);
+      osc.stop(t + 0.18);
+    });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    const themeButtons = document.querySelectorAll(".theme-btn");
+
+    const updateSelectedTheme = () => {
+      const currentTheme = localStorage.getItem("theme") || "default";
+      themeButtons.forEach((btn) => {
+        btn.classList.toggle(
+          "active",
+          btn.getAttribute("data-theme") === currentTheme,
+        );
+      });
+    };
+
+    updateSelectedTheme();
+
+    themeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const themeName = btn.getAttribute("data-theme");
+        document.body.classList.remove(
+          "yellow-theme",
+          "blue-theme",
+          "purple-theme",
+          "green-theme",
+        );
+        localStorage.setItem("theme", themeName as string);
+        if (themeName && themeName !== "default")
+          document.body.classList.add(themeName);
+        updateSelectedTheme();
+        playThemeSound();
+        document.dispatchEvent(
+          new CustomEvent("themechange", { detail: { theme: themeName } }),
+        );
+      });
+    });
+  });
+</script>
