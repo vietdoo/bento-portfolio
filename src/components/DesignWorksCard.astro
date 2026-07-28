@@ -28,15 +28,27 @@ import { illustrationsRow1, illustrationsRow2 } from "../lib/illustrations";
     <div class="flex gap-2 marquee-left">
       {
         [...illustrationsRow1, ...illustrationsRow1].map(({ src, alt }) => (
-          <Image
-            src={src}
-            class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-            alt={alt}
-            width={168}
-            height={168}
-            loading="lazy"
-            decoding="async"
-          />
+          typeof src === "string" ? (
+            <img
+              src={src}
+              class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+              alt={alt}
+              width={168}
+              height={168}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <Image
+              src={src}
+              class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+              alt={alt}
+              width={168}
+              height={168}
+              loading="lazy"
+              decoding="async"
+            />
+          )
         ))
       }
     </div>
@@ -45,15 +57,27 @@ import { illustrationsRow1, illustrationsRow2 } from "../lib/illustrations";
     <div class="flex gap-2 marquee-right">
       {
         [...illustrationsRow2, ...illustrationsRow2].map(({ src, alt }) => (
-          <Image
-            src={src}
-            class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-            alt={alt}
-            width={168}
-            height={168}
-            loading="lazy"
-            decoding="async"
-          />
+          typeof src === "string" ? (
+            <img
+              src={src}
+              class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+              alt={alt}
+              width={168}
+              height={168}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <Image
+              src={src}
+              class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+              alt={alt}
+              width={168}
+              height={168}
+              loading="lazy"
+              decoding="async"
+            />
+          )
         ))
       }
     </div>

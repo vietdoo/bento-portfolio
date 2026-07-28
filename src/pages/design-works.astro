@@ -55,7 +55,7 @@ import { SITE } from "../site-config";
 </script>
 
 <Layout
-  title={`${SITE.author.fullName} - Design works`}
+  title={`${SITE.author.fullName} - Engineering Showcase`}
   description="A collection of some of my design works"
   hideSoundToggle={true}
 >
@@ -81,7 +81,7 @@ import { SITE } from "../site-config";
   <main class="w-full max-w-5xl mx-auto px-6 py-10 text-white">
     <BackLink href="/" class="mb-8" />
 
-    <h1 class="text-4xl font-bold mb-2">Design works</h1>
+    <h1 class="text-4xl font-bold mb-2">Engineering Showcase</h1>
     <p class="text-darkslate-300 text-sm mb-10">
       Illustrations, logos, explorations and graphic work I've done over the
       years.
@@ -91,13 +91,23 @@ import { SITE } from "../site-config";
       {
         illustrationsAll.map(({ src, alt }) => (
           <div class="masonry-item">
-            <Image
-              src={src}
-              alt={alt}
-              class="w-full h-auto rounded-xl object-cover"
-              loading="eager"
-              decoding="auto"
-            />
+            {typeof src === "string" ? (
+              <img
+                src={src}
+                alt={alt}
+                class="w-full h-auto rounded-xl object-cover"
+                loading="eager"
+                decoding="auto"
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={alt}
+                class="w-full h-auto rounded-xl object-cover"
+                loading="eager"
+                decoding="auto"
+              />
+            )}
           </div>
         ))
       }
