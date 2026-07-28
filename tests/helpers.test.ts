@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatTimeTo12H, trimText } from "../helpers";
+import { formatDate, formatTimeTo12H, trimText } from "../src/lib/helpers";
 
 describe("Helper Functions", () => {
   describe("trimText", () => {
@@ -34,7 +34,6 @@ describe("Helper Functions", () => {
 
   describe("formatTimeTo12H", () => {
     it("should format time into 12-hour format with AM/PM for specified timezone", () => {
-      // Create UTC Date explicitly: 2026-01-01 14:30:00 UTC
       const date = new Date(Date.UTC(2026, 0, 1, 14, 30));
       const formatted = formatTimeTo12H(date, "UTC");
       expect(formatted).toMatch(/2:30\s?PM/i);
