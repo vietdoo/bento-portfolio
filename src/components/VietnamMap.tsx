@@ -384,23 +384,16 @@ export default function VietnamMap() {
       {/* Map Container */}
       <div ref={containerRef} class="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Clean Top Header Card */}
-      <div class="absolute top-4 left-20 z-30 flex items-center gap-3.5 bg-darkslate-800/90 backdrop-blur-md px-4 sm:px-5 py-2.5 rounded-2xl border border-darkslate-500/80 shadow-2xl">
-        <div class="w-8 h-8 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
+      {/* Refined Glassmorphism Top-Right Header Badge */}
+      <div class="absolute top-4 right-4 z-30 flex items-center gap-2.5 bg-darkslate-800/85 backdrop-blur-md px-3.5 py-2 rounded-full border border-darkslate-500/60 shadow-xl">
+        <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+        <div class="flex items-center gap-2 text-xs">
+          <span class="font-bold text-white tracking-wide">Bản đồ Việt Nam</span>
+          <span class="text-darkslate-400">•</span>
+          <span class="text-darkslate-300 font-medium">{visitedCount()} / {totalProvinces} Tỉnh thành</span>
+          <span class="text-primary-400 font-bold">({visitedPercent()}%)</span>
         </div>
-        <div>
-          <h1 class="text-sm font-bold text-white tracking-wide">
-            Bản đồ Việt Nam
-          </h1>
-          <p class="text-xs text-darkslate-300">
-            {visitedCount()} / {totalProvinces} Tỉnh thành ({visitedPercent()}%)
-          </p>
-        </div>
-        <div class="w-20 bg-darkslate-600/80 h-1.5 rounded-full overflow-hidden ml-2 hidden sm:block">
+        <div class="w-12 bg-darkslate-600/80 h-1.5 rounded-full overflow-hidden ml-1 hidden sm:block">
           <div
             class="bg-primary-500 h-full transition-all duration-500"
             style={{ width: `${visitedPercent()}%` }}
