@@ -13,7 +13,7 @@ import svelte from "@astrojs/svelte";
 import db from "@astrojs/db";
 import { unified } from "@astrojs/markdown-remark";
 
-const envSiteUrl = process.env.SITE_URL ?? "https://gianmarcocavallo.com/";
+const envSiteUrl = process.env.SITE_URL ?? "https://vndo.vn/";
 const site = envSiteUrl.endsWith("/") ? envSiteUrl : `${envSiteUrl}/`;
 const siteNoTrailingSlash = site.endsWith("/") ? site.slice(0, -1) : site;
 
