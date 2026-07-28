@@ -82,12 +82,20 @@ const COUNTRY_NAME_VN: Record<string, string> = {
   China: "Trung Quốc",
   Philippines: "Philippines",
   Malaysia: "Malaysia",
-  Indonesia: "Indonesia",
   Myanmar: "Myanmar",
   Taiwan: "Đài Loan",
-  Brunei: "Brunei",
-  Singapore: "Singapore",
 };
+
+const NEIGHBOR_NAMES = new Set([
+  "Laos",
+  "Cambodia",
+  "Thailand",
+  "China",
+  "Philippines",
+  "Malaysia",
+  "Myanmar",
+  "Taiwan",
+]);
 
 // Clean Dark Slate Palette matching Bento Portfolio theme
 const OCEAN_FILL = "#0d1b2a";
@@ -175,26 +183,18 @@ export default function VietnamMap() {
         .attr("height", "100%")
         .attr("fill", "url(#vn-sea-stipple)");
 
-      // Bounding box feature representing focused ~300-500km scope around Vietnam
-      // Lat: ~6.5°N to ~25.5°N, Lon: ~98.5°E to ~118.5°E
-      const scopeBounds = {
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: [
-            [
-              [98.5, 6.5],
-              [118.5, 6.5],
-              [118.5, 25.5],
-              [98.5, 25.5],
-              [98.5, 6.5],
-            ],
-          ],
-        },
+      // Tight bounding box feature focused on Vietnam + ~200km surrounding region
+      // Lon: 100.5°E to 115.0°E, Lat: 7.5°N to 24.5°N
+      const targetExtent = {
+        type: "FeatureCollection",
+        features: [
+          { type: "Feature", geometry: { type: "Point", coordinates: [100.5, 7.5] } },
+          { type: "Feature", geometry: { type: "Point", coordinates: [115.0, 24.5] } },
+        ],
       };
 
       const features = (vietnamData as any).features;
-      const padding = Math.min(width, height) > 600 ? 30 : 15;
+      const padding = Math.min(width, height) > 600 ? 25 : 12;
       const projection = d3
         .geoMercator()
         .fitExtent(
@@ -202,20 +202,16 @@ export default function VietnamMap() {
             [padding, padding],
             [width - padding, height - padding],
           ],
-          scopeBounds as any
-        )
-        .clipExtent([
-          [0, 0],
-          [width, height],
-        ]);
+          targetExtent as any
+        );
 
       const pathGenerator = d3.geoPath().projection(projection);
 
       // Main map group for pan/zoom
       const mapGroup = svg.append("g").attr("class", "map-group");
 
-      // Graticule (Lat/Lon grid across 500km region)
-      const graticule = d3.geoGraticule().step([3, 3])();
+      // Graticule (Lat/Lon grid across Vietnam region)
+      const graticule = d3.geoGraticule().step([2, 2])();
       mapGroup
         .append("path")
         .datum(graticule)
@@ -225,23 +221,9 @@ export default function VietnamMap() {
         .style("stroke-width", 0.8)
         .style("opacity", 0.8);
 
-      // Filter to ONLY immediate neighboring countries around Vietnam
-      const NEARBY_COUNTRIES = new Set([
-        "Laos",
-        "Cambodia",
-        "Thailand",
-        "China",
-        "Philippines",
-        "Malaysia",
-        "Indonesia",
-        "Myanmar",
-        "Taiwan",
-        "Brunei",
-        "Singapore",
-      ]);
-
+      // Neighboring world countries layer (only immediate neighbors, faded)
       const worldFeatures = (worldData as any).features.filter(
-        (f: any) => NEARBY_COUNTRIES.has(f.properties?.name)
+        (f: any) => NEIGHBOR_NAMES.has(f.properties?.name)
       );
 
       const worldGroup = mapGroup.append("g").attr("class", "world-countries");
