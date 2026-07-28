@@ -6,8 +6,8 @@ import { SITE } from "../site-config";
 type ProvinceInfo = {
   vi: string;
   region: string;
-  lat?: number;
-  lon?: number;
+  labelDx?: number;
+  labelDy?: number;
 };
 
 const PROVINCE_MAP: Record<string, ProvinceInfo> = {
@@ -16,16 +16,16 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Ca Mau": { vi: "Cà Mau", region: "Tây Nam Bộ" },
   "Can Tho": { vi: "Cần Thơ", region: "Tây Nam Bộ" },
   "Cao Bang": { vi: "Cao Bằng", region: "Đông Bắc Bộ" },
-  "Da Nang": { vi: "Đà Nẵng", region: "Nam Trung Bộ", lat: 16.0544, lon: 108.2022 },
+  "Da Nang": { vi: "Đà Nẵng", region: "Nam Trung Bộ", labelDx: 14, labelDy: 4 },
   "Dak Lak": { vi: "Đắk Lắk", region: "Tây Nguyên" },
   "Dien Bien": { vi: "Điện Biên", region: "Tây Bắc Bộ" },
   "Dong Nai": { vi: "Đồng Nai", region: "Đông Nam Bộ" },
   "Dong Thap": { vi: "Đồng Tháp", region: "Tây Nam Bộ" },
   "Gia Lai": { vi: "Gia Lai", region: "Tây Nguyên" },
-  "Ha Noi": { vi: "Hà Nội", region: "Đồng bằng sông Hồng", lat: 21.0285, lon: 105.8542 },
+  "Ha Noi": { vi: "Hà Nội", region: "Đồng bằng sông Hồng", labelDx: 14, labelDy: -4 },
   "Ha Tinh": { vi: "Hà Tĩnh", region: "Bắc Trung Bộ" },
   "Hai Phong": { vi: "Hải Phòng", region: "Đồng bằng sông Hồng" },
-  "Ho Chi Minh": { vi: "TP. Hồ Chí Minh", region: "Đông Nam Bộ", lat: 10.8231, lon: 106.6297 },
+  "Ho Chi Minh": { vi: "TP. Hồ Chí Minh", region: "Đông Nam Bộ", labelDx: 14, labelDy: 4 },
   "Hue": { vi: "Thừa Thiên Huế", region: "Bắc Trung Bộ" },
   "Hung Yen": { vi: "Hưng Yên", region: "Đồng bằng sông Hồng" },
   "Khanh Hoa": { vi: "Khánh Hòa", region: "Nam Trung Bộ" },
@@ -47,15 +47,33 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Vinh Long": { vi: "Vĩnh Long", region: "Tây Nam Bộ" },
 };
 
-// Colors matching Globe / Darkslate aesthetic
-const OCEAN_FILL = "#0d1b2a";
-const OCEAN_STIPPLE = "#152838";
-const PROVINCE_DEFAULT_FILL = "#1a2e42";
-const PROVINCE_HOVER_FILL = "#2a4a63";
-const PROVINCE_STROKE = "#2a4a63";
-const GRATICULE_STROKE = "#1a2e42";
-const TOOLTIP_BG = "#0e0e0e";
-const TOOLTIP_BORDER = "#383838";
+// Bounding box feature for Vietnam mainland (101.5°E to 110.0°E, 8.2°N to 23.6°N)
+// This ensures D3 projection fits mainland Vietnam perfectly without shrinking for distant island coordinates.
+const MAINLAND_BOUNDS = {
+  type: "Feature",
+  geometry: {
+    type: "Polygon",
+    coordinates: [
+      [
+        [101.5, 8.2],
+        [110.0, 8.2],
+        [110.0, 23.6],
+        [101.5, 23.6],
+        [101.5, 8.2],
+      ],
+    ],
+  },
+};
+
+// High-end Dark Slate palette matching Globe component
+const OCEAN_FILL = "#0b131e";
+const OCEAN_STIPPLE = "#142232";
+const PROVINCE_DEFAULT_FILL = "#1b2938";
+const PROVINCE_HOVER_FILL = "#284059";
+const PROVINCE_STROKE = "#2e4359";
+const GRATICULE_STROKE = "#162b40";
+const TOOLTIP_BG = "#090d14";
+const TOOLTIP_BORDER = "#334155";
 
 export default function VietnamMap() {
   let containerRef: HTMLDivElement | undefined;
@@ -77,8 +95,8 @@ export default function VietnamMap() {
   onMount(() => {
     if (!containerRef) return;
 
-    const width = containerRef.clientWidth || 800;
-    const height = containerRef.clientHeight || 700;
+    const width = containerRef.clientWidth || 900;
+    const height = containerRef.clientHeight || 750;
 
     const svg = d3
       .select(containerRef)
@@ -119,29 +137,30 @@ export default function VietnamMap() {
     const filter = defs.append("filter").attr("id", "visited-glow");
     filter
       .append("feGaussianBlur")
-      .attr("stdDeviation", "2")
+      .attr("stdDeviation", "2.5")
       .attr("result", "coloredBlur");
     const feMerge = filter.append("feMerge");
     feMerge.append("feMergeNode").attr("in", "coloredBlur");
     feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
-    // Base background rectangle
+    // Base ocean background
     svg
       .append("rect")
       .attr("width", width)
       .attr("height", height)
       .attr("fill", "url(#vn-sea-stipple)");
 
-    // D3 Projection for Vietnam
+    // D3 Mercator Projection focused on Vietnam mainland
     const features = (vietnamData as any).features;
+    const padding = Math.min(width, height) > 600 ? 50 : 25;
     const projection = d3
       .geoMercator()
       .fitExtent(
         [
-          [60, 60],
-          [width - 60, height - 60],
+          [padding, padding],
+          [width - padding, height - padding],
         ],
-        vietnamData as any
+        MAINLAND_BOUNDS as any
       );
 
     const pathGenerator = d3.geoPath().projection(projection);
@@ -158,13 +177,13 @@ export default function VietnamMap() {
       .style("fill", "none")
       .style("stroke", GRATICULE_STROKE)
       .style("stroke-width", 0.5)
-      .style("opacity", 0.5);
+      .style("opacity", 0.7);
 
     // Geographical annotations (East Sea / Islands)
     const oceanLabels = [
-      { text: "BIỂN ĐÔNG", lon: 111.5, lat: 14.5, size: "14px", weight: "700", spacing: "4px" },
-      { text: "Quần đảo Hoàng Sa", lon: 112.0, lat: 16.5, size: "10px", weight: "500", spacing: "1px" },
-      { text: "Quần đảo Trường Sa", lon: 113.5, lat: 10.0, size: "10px", weight: "500", spacing: "1px" },
+      { text: "BIỂN ĐÔNG", lon: 111.8, lat: 14.5, size: "15px", weight: "700", spacing: "0.2em", fill: "#475569" },
+      { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#334155" },
+      { text: "Quần đảo Trường Sa", lon: 113.8, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#334155" },
     ];
 
     oceanLabels.forEach((label) => {
@@ -175,7 +194,7 @@ export default function VietnamMap() {
           .attr("x", pos[0])
           .attr("y", pos[1])
           .text(label.text)
-          .style("fill", "#2a4a63")
+          .style("fill", label.fill)
           .style("font-size", label.size)
           .style("font-weight", label.weight)
           .style("letter-spacing", label.spacing)
@@ -186,7 +205,7 @@ export default function VietnamMap() {
       }
     });
 
-    // Tooltip setup
+    // Floating Tooltip Setup
     const tooltip = d3
       .select("body")
       .append("div")
@@ -194,23 +213,23 @@ export default function VietnamMap() {
       .style("position", "absolute")
       .style("background", TOOLTIP_BG)
       .style("color", "#ffffff")
-      .style("padding", "8px 12px")
+      .style("padding", "10px 14px")
       .style("border", `1px solid ${TOOLTIP_BORDER}`)
-      .style("border-radius", "8px")
+      .style("border-radius", "10px")
       .style("font-family", "var(--font-satoshi), sans-serif")
       .style("font-size", "13px")
       .style("pointer-events", "none")
       .style("opacity", 0)
       .style("z-index", 1000)
-      .style("box-shadow", "0 4px 16px rgba(0,0,0,0.5)");
+      .style("box-shadow", "0 10px 25px -5px rgba(0, 0, 0, 0.7)");
 
     const moveTooltip = (e: MouseEvent) => {
       tooltip
-        .style("left", `${e.pageX + 14}px`)
-        .style("top", `${e.pageY - 14}px`);
+        .style("left", `${e.pageX + 16}px`)
+        .style("top", `${e.pageY - 16}px`);
     };
 
-    // Render Provinces
+    // Render Provinces Paths
     const provincePaths = mapGroup
       .append("g")
       .attr("class", "provinces")
@@ -221,8 +240,8 @@ export default function VietnamMap() {
       .attr("d", pathGenerator as any)
       .style("cursor", "pointer")
       .style("stroke", PROVINCE_STROKE)
-      .style("stroke-width", 0.6)
-      .style("transition", "fill 0.2s ease, stroke 0.2s ease");
+      .style("stroke-width", 0.7)
+      .style("transition", "fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease");
 
     // Function to update province colors based on visited state
     const updateMapColors = () => {
@@ -232,7 +251,9 @@ export default function VietnamMap() {
         const isVisited = visitedArray.includes(name);
         d3.select(this)
           .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-          .style("opacity", isVisited ? 0.95 : 0.8)
+          .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+          .style("stroke-width", isVisited ? 0.9 : 0.7)
+          .style("opacity", isVisited ? 0.95 : 0.85)
           .style("filter", isVisited ? "url(#visited-glow)" : "none");
       });
       updateBeacons();
@@ -248,14 +269,14 @@ export default function VietnamMap() {
         d3.select(this)
           .style("fill", isVisited ? "var(--primary-400)" : PROVINCE_HOVER_FILL)
           .style("stroke", "var(--primary-400)")
-          .style("stroke-width", 1.2)
+          .style("stroke-width", 1.4)
           .style("opacity", 1);
 
         tooltip.html(`
-          <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px; color: #ffffff;">${info.vi}</div>
-          <div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">${info.region}</div>
-          <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: ${
-            isVisited ? "rgba(16, 185, 129, 0.15)" : "rgba(148, 163, 184, 0.1)"
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 2px; color: #ffffff;">${info.vi}</div>
+          <div style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">${info.region}</div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 3px 10px; border-radius: 9999px; background: ${
+            isVisited ? "rgba(16, 185, 129, 0.2)" : "rgba(148, 163, 184, 0.12)"
           }; color: ${isVisited ? "#34d399" : "#cbd5e1"}; font-weight: 600;">
             <span style="width: 6px; height: 6px; border-radius: 50%; background: ${
               isVisited ? "#10b981" : "#64748b"
@@ -273,9 +294,9 @@ export default function VietnamMap() {
 
         d3.select(this)
           .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-          .style("stroke", PROVINCE_STROKE)
-          .style("stroke-width", 0.6)
-          .style("opacity", isVisited ? 0.95 : 0.8)
+          .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+          .style("stroke-width", isVisited ? 0.9 : 0.7)
+          .style("opacity", isVisited ? 0.95 : 0.85)
           .style("filter", isVisited ? "url(#visited-glow)" : "none");
 
         tooltip.style("opacity", 0);
@@ -286,16 +307,19 @@ export default function VietnamMap() {
         updateMapColors();
       });
 
-    // Beacon markers group for major visited cities
+    // Beacon markers group for visited cities
     const beaconGroup = mapGroup.append("g").attr("class", "beacons");
 
     const updateBeacons = () => {
       beaconGroup.selectAll("*").remove();
       const visitedArray = visited();
 
-      Object.entries(PROVINCE_MAP).forEach(([key, info]) => {
-        if (visitedArray.includes(key) && info.lat && info.lon) {
-          const coords = projection([info.lon, info.lat]);
+      features.forEach((feature: any) => {
+        const name = feature.properties.Name;
+        if (visitedArray.includes(name)) {
+          const info = PROVINCE_MAP[name] || { vi: name, region: "Việt Nam" };
+          const centroid = d3.geoCentroid(feature);
+          const coords = projection(centroid);
           if (!coords) return;
 
           const g = beaconGroup
@@ -308,10 +332,10 @@ export default function VietnamMap() {
             .attr("fill", "none")
             .attr("stroke", "var(--primary-400)")
             .attr("stroke-width", 1.5)
-            .style("opacity", 0.7)
+            .style("opacity", 0.8)
             .append("animate")
             .attr("attributeName", "r")
-            .attr("values", "4;16;4")
+            .attr("values", "4;18;4")
             .attr("dur", "2.5s")
             .attr("repeatCount", "indefinite");
 
@@ -320,30 +344,32 @@ export default function VietnamMap() {
             .attr("fill", "none")
             .attr("stroke", "var(--primary-400)")
             .attr("stroke-width", 1.5)
-            .style("opacity", 0.7)
+            .style("opacity", 0.8)
             .append("animate")
             .attr("attributeName", "opacity")
-            .attr("values", "0.8;0;0.8")
+            .attr("values", "0.9;0;0.9")
             .attr("dur", "2.5s")
             .attr("repeatCount", "indefinite");
 
-          // Inner solid pin point
+          // Solid pin center point
           g.append("circle")
             .attr("r", 4)
             .attr("fill", "#ffffff")
             .attr("stroke", "var(--primary-500)")
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2.5);
 
           // City text label
+          const dx = info.labelDx ?? 12;
+          const dy = info.labelDy ?? 4;
           g.append("text")
-            .attr("x", 10)
-            .attr("y", 4)
+            .attr("x", dx)
+            .attr("y", dy)
             .text(info.vi)
             .style("fill", "#ffffff")
             .style("font-size", "11px")
             .style("font-weight", "700")
             .style("font-family", "var(--font-satoshi), sans-serif")
-            .style("text-shadow", "0 1px 4px rgba(0,0,0,0.8)")
+            .style("text-shadow", "0 2px 6px rgba(0,0,0,0.9)")
             .style("pointer-events", "none");
         }
       });
@@ -354,7 +380,7 @@ export default function VietnamMap() {
     // D3 Zoom & Pan configuration
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, 10])
+      .scaleExtent([1, 12])
       .on("zoom", (event) => {
         mapGroup.attr("transform", event.transform);
       });
@@ -398,17 +424,23 @@ export default function VietnamMap() {
       {/* Map Container */}
       <div ref={containerRef} class="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Top Header Card */}
-      <div class="absolute top-4 left-20 z-30 flex items-center gap-3 bg-darkslate-800/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-darkslate-500 shadow-xl">
+      {/* Top Header Bento Card */}
+      <div class="absolute top-4 left-20 z-30 flex items-center gap-3.5 bg-darkslate-800/90 backdrop-blur-md px-4 sm:px-5 py-3 rounded-2xl border border-darkslate-500/80 shadow-2xl">
+        <div class="w-9 h-9 rounded-xl bg-primary-500/20 border border-primary-500/40 flex items-center justify-center text-primary-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+        </div>
         <div>
-          <h1 class="text-sm md:text-base font-bold text-white tracking-wide">
+          <h1 class="text-sm sm:text-base font-bold text-white tracking-wide">
             Bản đồ Việt Nam
           </h1>
           <p class="text-xs text-darkslate-300">
             {visitedCount()} / {totalProvinces} Tỉnh thành ({visitedPercent()}%)
           </p>
         </div>
-        <div class="w-20 bg-darkslate-600 h-2 rounded-full overflow-hidden ml-2">
+        <div class="w-24 bg-darkslate-600/80 h-2 rounded-full overflow-hidden ml-2 hidden sm:block">
           <div
             class="bg-primary-500 h-full transition-all duration-500"
             style={{ width: `${visitedPercent()}%` }}
@@ -421,7 +453,7 @@ export default function VietnamMap() {
         <button
           onClick={() => resetZoomFn?.()}
           title="Reset Zoom"
-          class="px-3 py-2 text-xs font-semibold rounded-lg bg-darkslate-800/90 hover:bg-darkslate-600/50 border border-darkslate-500 text-white backdrop-blur-md transition-all shadow-lg flex items-center gap-1.5"
+          class="px-3.5 py-2.5 text-xs font-semibold rounded-xl bg-darkslate-800/90 hover:bg-darkslate-600/60 border border-darkslate-500/80 text-white backdrop-blur-md transition-all shadow-xl flex items-center gap-1.5 active:scale-95"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -432,7 +464,7 @@ export default function VietnamMap() {
 
         <button
           onClick={() => setShowDrawer(true)}
-          class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-primary-500 hover:bg-primary-400 text-white transition-all shadow-lg flex items-center gap-1.5"
+          class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-primary-500 hover:bg-primary-400 text-white transition-all shadow-xl flex items-center gap-2 active:scale-95"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6" />
@@ -446,10 +478,11 @@ export default function VietnamMap() {
         </button>
       </div>
 
-      {/* Bottom Hint */}
-      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-        <p class="text-xs text-darkslate-300 bg-darkslate-800/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-darkslate-500/50 shadow-md">
-          Kéo rê để di chuyển • Cuộn chuột để phóng to / thu nhỏ • Nhấp vào tỉnh để đánh dấu
+      {/* Bottom Hint Badge (Positioned at bottom-16 to avoid overlapping sound & style controls) */}
+      <div class="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <p class="text-xs text-darkslate-300 bg-darkslate-800/85 backdrop-blur-md px-4 py-2 rounded-full border border-darkslate-500/60 shadow-xl flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
+          <span>Kéo rê để di chuyển • Cuộn chuột để phóng to / thu nhỏ • Nhấp vào tỉnh để đánh dấu</span>
         </p>
       </div>
 
