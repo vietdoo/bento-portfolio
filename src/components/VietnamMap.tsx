@@ -167,7 +167,13 @@ export default function VietnamMap() {
         .attr("fill", OCEAN_STIPPLE);
 
       // Glow filter for visited provinces & beacons
-      const filter = defs.append("filter").attr("id", "visited-glow");
+      const filter = defs
+        .append("filter")
+        .attr("id", "visited-glow")
+        .attr("x", "-20%")
+        .attr("y", "-20%")
+        .attr("width", "140%")
+        .attr("height", "140%");
       filter
         .append("feGaussianBlur")
         .attr("stdDeviation", "2")
@@ -357,8 +363,8 @@ export default function VietnamMap() {
           const isVisited = visitedArray.includes(name);
           d3.select(this)
             .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-            .style("stroke", isVisited ? "#ffffff" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.8 : 1.2)
+            .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+            .style("stroke-width", isVisited ? 1.4 : 1.2)
             .style("opacity", isVisited ? 0.98 : 0.9)
             .style("filter", isVisited ? "url(#visited-glow)" : "none");
         });
@@ -434,8 +440,8 @@ export default function VietnamMap() {
 
           d3.select(this)
             .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-            .style("stroke", isVisited ? "#ffffff" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.8 : 1.2)
+            .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+            .style("stroke-width", isVisited ? 1.4 : 1.2)
             .style("opacity", isVisited ? 0.98 : 0.9)
             .style("filter", isVisited ? "url(#visited-glow)" : "none");
 
