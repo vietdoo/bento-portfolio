@@ -69,5 +69,12 @@
       "eslint --fix"
     ]
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "esbuild",
+      "@parcel/watcher"
+    ]
+  }
 }
