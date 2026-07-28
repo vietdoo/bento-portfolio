@@ -1,0 +1,82 @@
+---
+import Card from "./Card/index.astro";
+import { SITE } from "../site-config";
+
+const visitedNames = ["HÀ NỘI", "ĐÀ NẴNG", "TP. HỒ CHÍ MINH"];
+const textRow1 = [...visitedNames, ...visitedNames, ...visitedNames, ...visitedNames].join(" • ") + " • ";
+const textRow2 = [...visitedNames].reverse().concat([...visitedNames].reverse()).concat([...visitedNames].reverse()).join(" • ") + " • ";
+---
+
+<Card
+  colSpan="md:col-span-1"
+  href="visit"
+  rowSpan="md:row-span-1"
+  title="Vietnam map"
+>
+  <div
+    slot="background"
+    class="absolute inset-0 -z-10 overflow-hidden bg-darkslate-800 flex flex-col justify-center"
+  >
+    <!-- Vignette / Radial Gradient Overlay for depth -->
+    <div
+      class="absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,_transparent_20%,_#17202d_85%)] pointer-events-none"
+    >
+    </div>
+
+    <!-- Edge Fades -->
+    <div class="absolute inset-x-0 top-0 h-6 z-10 bg-gradient-to-b from-darkslate-800 to-transparent pointer-events-none" />
+    <div class="absolute inset-x-0 bottom-0 h-6 z-10 bg-gradient-to-t from-darkslate-800 to-transparent pointer-events-none" />
+
+    <!-- Rotated Marquee Text Container (-rotate-12 for diagonal slant) -->
+    <div
+      class="transform -rotate-12 scale-125 flex flex-col gap-3 opacity-20 group-hover:opacity-40 transition-opacity duration-500 select-none"
+    >
+      <!-- Row 1: Left Scrolling -->
+      <div class="flex whitespace-nowrap gap-4 marquee-left text-xs font-extrabold uppercase tracking-widest text-primary-400">
+        <span>{textRow1}</span>
+        <span>{textRow1}</span>
+      </div>
+
+      <!-- Row 2: Right Scrolling -->
+      <div class="flex whitespace-nowrap gap-4 marquee-right text-xs font-bold uppercase tracking-widest text-white/80">
+        <span>{textRow2}</span>
+        <span>{textRow2}</span>
+      </div>
+
+      <!-- Row 3: Left Scrolling -->
+      <div class="flex whitespace-nowrap gap-4 marquee-left text-xs font-extrabold uppercase tracking-widest text-primary-400">
+        <span>{textRow1}</span>
+        <span>{textRow1}</span>
+      </div>
+    </div>
+  </div>
+
+  <span class="text-xs text-white/60">
+    {SITE.visitedProvinces.length} / 34 tỉnh thành
+  </span>
+</Card>
+
+<style>
+  @keyframes marquee-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes marquee-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  .marquee-left {
+    animation: marquee-left 22s linear infinite;
+  }
+  .marquee-right {
+    animation: marquee-right 18s linear infinite;
+  }
+</style>
