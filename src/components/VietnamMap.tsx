@@ -47,20 +47,15 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Vinh Long": { vi: "Vĩnh Long", region: "Tây Nam Bộ" },
 };
 
-// Bounding box feature for Vietnam mainland (101.5°E to 110.0°E, 8.2°N to 23.6°N)
-// This ensures D3 projection fits mainland Vietnam perfectly without shrinking for distant island coordinates.
+// Bounding box feature for Vietnam mainland (102.0°E to 109.6°E, 8.4°N to 23.4°N)
+// MultiPoint avoids D3 spherical polygon winding order ambiguity
 const MAINLAND_BOUNDS = {
   type: "Feature",
   geometry: {
-    type: "Polygon",
+    type: "MultiPoint",
     coordinates: [
-      [
-        [101.5, 8.2],
-        [110.0, 8.2],
-        [110.0, 23.6],
-        [101.5, 23.6],
-        [101.5, 8.2],
-      ],
+      [102.0, 8.4],  // SW corner
+      [109.6, 23.4], // NE corner
     ],
   },
 };
