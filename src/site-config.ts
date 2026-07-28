@@ -30,4 +30,9 @@ export const SITE = {
   visitedCountries: [
     "Vietnam",
   ],
+  visitedProvinces: [
+    "Ha Noi",
+    "Ho Chi Minh",
+    "Da Nang",
+  ],
 };

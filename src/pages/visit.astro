@@ -1,0 +1,30 @@
+---
+import VietnamMap from "../components/VietnamMap";
+import BackLink from "../components/BackLink.astro";
+import BasicLayout from "../layouts/BasicLayout.astro";
+import { SITE } from "../site-config";
+---
+
+<script>
+  import { animate, type AnimationSequence } from "motion";
+
+  const sequence = [
+    [
+      ".loaderRef",
+      { opacity: [1, 0], pointerEvents: "none" },
+      { type: "spring", ease: "easeOut" },
+    ],
+  ];
+
+  animate(sequence as AnimationSequence);
+</script>
+
+<BasicLayout
+  description="Bản đồ Việt Nam hiển thị các tỉnh thành đã ghé thăm"
+  page="travel"
+  title={`${SITE.author.fullName} - Các Tỉnh Thành Đã Ghé Thăm`}
+>
+  <BackLink href="/" class="absolute top-4 left-4 z-40" />
+
+  <VietnamMap client:load />
+</BasicLayout>
