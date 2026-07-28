@@ -47,7 +47,28 @@
     "Need coffee... ☕",
     "Vietdoo's code is clean! ⚡",
     "StackOverflow saved me! 🙏",
-    "Are we in production?! 😱"
+    "Are we in production?! 😱",
+    "sudo make me a sandwich 🥪",
+    "PR approved! Party time 🎉",
+    "Recompiling... ⌛",
+    "Dividing by zero... 💣",
+    "npm i cute-bugs 📦",
+    "Who broke the main branch?! 🚨",
+    "Vite is super fast! ⚡",
+    "Astro is awesome 🔥",
+    "Tabs vs Spaces? ⌨️",
+    "Docker container running 🐳",
+    "Dark mode supremacy! 🌙",
+    "AI wrote this code! 🤖",
+    "Searching for 0.0.0.0... 🔍",
+    "Infinite loop detected! 🔁",
+    "Keep calm & git push! 🐙",
+    "No bugs here, only features! ✨",
+    "Code review approved! 👍",
+    "SyntaxError: Expected coffee ☕",
+    "Bọ cute chào anh Việt! 👋",
+    "Trang portfolio xịn đét! 🔥",
+    "Chạy nhanh kẻo bị fix! 🏃"
   ];
 
   const HIDING_JOKES = [
@@ -55,7 +76,14 @@
     "Did someone say QA test?! 🏃‍♂️",
     "You can't see me! 🙈",
     "Safe spot found! 🍀",
-    "Peeking out... 👁️"
+    "Peeking out... 👁️",
+    "Stealth mode activated 🥷",
+    "Don't tell the developer! 🤐",
+    "Undercover agent 🕵️",
+    "Waiting for QA to leave... 🚪",
+    "Invisible bug mode 👻",
+    "Trốn ở đây an toàn rồi! 🍃",
+    "Hé mắt dòm chừng... 👁️"
   ];
 
   const CLICK_JOKES = [
@@ -64,7 +92,12 @@
     "I'm reporting this! 🚨",
     "Running away! 🏃💨",
     "Ouch! 💥",
-    "Cute bug power! ✨"
+    "Cute bug power! ✨",
+    "Tag, you're it! 🏷️",
+    "Poke limit exceeded! 🛑",
+    "Deploying escape plan! 🚀",
+    "Á chà! Chọc bọ hả?! 😜",
+    "Chạy nhanh thôi! 💨"
   ];
 
   function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -181,7 +214,7 @@
     function speakJoke(bug: Bug, jokeList: string[]) {
       const joke = jokeList[Math.floor(Math.random() * jokeList.length)];
       bug.chatText = joke;
-      bug.chatTimer = 3.2;
+      bug.chatTimer = 3.5;
     }
 
     function initBugs() {
@@ -208,7 +241,7 @@
           emotionTimer: 0,
           chatText: null,
           chatTimer: 0,
-          nextChatTimer: 2 + i * 2.5 + Math.random() * 3,
+          nextChatTimer: 1.5 + i * 2.2 + Math.random() * 2.5,
           sparkles: []
         };
         setRandomWalkTarget(bug);
@@ -294,7 +327,7 @@
           } else {
             speakJoke(bug, DEV_JOKES);
           }
-          bug.nextChatTimer = 6 + Math.random() * 8;
+          bug.nextChatTimer = 5 + Math.random() * 7;
         }
 
         bug.sparkles.forEach((s) => {
@@ -397,7 +430,6 @@
       ctx!.translate(b.x, b.y);
 
       const renderAngle = b.state === 'PEEK' && b.hidingSpot ? b.hidingSpot.edgeAngle : b.angle;
-
       const s = b.size;
 
       // Draw Sparks/Hearts
@@ -410,43 +442,51 @@
         ctx!.restore();
       });
 
-      // Draw Dev Joke Chat Bubble (Keep unrotated horizontally)
+      // Draw Dev Joke Chat Bubble in White-Gray Slate Theme
       if (b.chatText && b.chatTimer > 0) {
         ctx!.save();
-        const font = 'bold 11px sans-serif';
+        const font = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx!.font = font;
         const textWidth = ctx!.measureText(b.chatText).width;
-        const padX = 8;
+        const padX = 9;
         const bubbleW = textWidth + padX * 2;
-        const bubbleH = 20;
+        const bubbleH = 22;
 
         const bX = -bubbleW / 2;
-        const bY = -s * 1.6 - bubbleH;
+        const bY = -s * 1.65 - bubbleH;
 
-        ctx!.globalAlpha = Math.min(1, b.chatTimer * 2);
+        ctx!.globalAlpha = Math.min(1, b.chatTimer * 2.5);
 
-        // Background bubble box
-        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
-        ctx!.strokeStyle = '#38bdf8';
+        // Soft Drop Shadow
+        ctx!.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx!.shadowBlur = 6;
+        ctx!.shadowOffsetY = 2;
+
+        // White-Gray Bubble Box
+        ctx!.fillStyle = '#f8fafc';
+        ctx!.strokeStyle = '#cbd5e1';
         ctx!.lineWidth = 1.2;
-        drawRoundedRect(ctx!, bX, bY, bubbleW, bubbleH, 5);
+        drawRoundedRect(ctx!, bX, bY, bubbleW, bubbleH, 6);
         ctx!.fill();
         ctx!.stroke();
 
         // Pointer triangle
-        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx!.beginPath();
-        ctx!.moveTo(-4, bY + bubbleH);
-        ctx!.lineTo(0, bY + bubbleH + 4);
-        ctx!.lineTo(4, bY + bubbleH);
+        ctx!.moveTo(-4, bY + bubbleH - 0.5);
+        ctx!.lineTo(0, bY + bubbleH + 4.5);
+        ctx!.lineTo(4, bY + bubbleH - 0.5);
         ctx!.closePath();
         ctx!.fill();
+        ctx!.stroke();
 
-        // Text
-        ctx!.fillStyle = '#38bdf8';
+        // Reset shadow for text
+        ctx!.shadowColor = 'transparent';
+
+        // Crisp Dark Slate Text
+        ctx!.fillStyle = '#0f172a';
         ctx!.textAlign = 'center';
         ctx!.textBaseline = 'middle';
-        ctx!.fillText(b.chatText, 0, bY + bubbleH / 2);
+        ctx!.fillText(b.chatText, 0, bY + bubbleH / 2 + 0.5);
         ctx!.restore();
       }
 
@@ -456,9 +496,13 @@
       // Draw Emotion indicator if present
       if (b.emotion && !b.chatText) {
         ctx!.save();
-        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
-        ctx!.strokeStyle = '#38bdf8';
-        ctx!.lineWidth = 1.5;
+        ctx!.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx!.shadowBlur = 5;
+        ctx!.shadowOffsetY = 2;
+
+        ctx!.fillStyle = '#f8fafc';
+        ctx!.strokeStyle = '#cbd5e1';
+        ctx!.lineWidth = 1.2;
         const eX = 0;
         const eY = -s * 1.35;
 
@@ -467,7 +511,8 @@
         ctx!.fill();
         ctx!.stroke();
 
-        ctx!.fillStyle = '#ffffff';
+        ctx!.shadowColor = 'transparent';
+        ctx!.fillStyle = '#0f172a';
         ctx!.font = 'bold 11px sans-serif';
         ctx!.textAlign = 'center';
         ctx!.textBaseline = 'middle';
