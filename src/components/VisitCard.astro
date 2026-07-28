@@ -11,7 +11,7 @@ const textRow2 = [...visitedNames].reverse().concat([...visitedNames].reverse())
   colSpan="md:col-span-1"
   href="visit"
   rowSpan="md:row-span-1"
-  title="Vietnam map"
+  title="Vietnam Journey"
 >
   <div
     slot="background"
@@ -52,7 +52,7 @@ const textRow2 = [...visitedNames].reverse().concat([...visitedNames].reverse())
   </div>
 
   <span class="text-xs text-white/60">
-    {SITE.visitedProvinces.length} / 34 tỉnh thành
+    {SITE.visitedProvinces.length} {SITE.visitedProvinces.length === 1 ? "province" : "provinces"}
   </span>
 </Card>
 
