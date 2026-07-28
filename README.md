@@ -19,9 +19,11 @@ pnpm install
 pnpm dev
 ```
 
-## 👤 Author
+## 👤 Author & Credits
 
-**Đỗ Quốc Việt (vietdoo)** — Software Engineer
-- **Website:** [vndo.vn](https://vndo.vn)
-- **GitHub:** [@vietdoo](https://github.com/vietdoo)
-- **LinkedIn:** [vietdoo](https://www.linkedin.com/in/vietdoo/)
+- **Owner & Developer:** **Đỗ Quốc Việt (vietdoo)** — Software Engineer
+  - **Website:** [vndo.vn](https://vndo.vn)
+  - **GitHub:** [@vietdoo](https://github.com/vietdoo)
+  - **LinkedIn:** [vietdoo](https://www.linkedin.com/in/vietdoo/)
+- **AI Pair Programmer:** Antigravity AI (Google DeepMind Team)
+
