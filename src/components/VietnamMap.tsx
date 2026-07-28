@@ -8,6 +8,9 @@ type ProvinceInfo = {
   region: string;
   labelDx?: number;
   labelDy?: number;
+  coverImage?: string;
+  highlights?: string[];
+  travelDate?: string;
 };
 
 const PROVINCE_MAP: Record<string, ProvinceInfo> = {
@@ -16,16 +19,40 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Ca Mau": { vi: "Cà Mau", region: "Tây Nam Bộ" },
   "Can Tho": { vi: "Cần Thơ", region: "Tây Nam Bộ" },
   "Cao Bang": { vi: "Cao Bằng", region: "Đông Bắc Bộ" },
-  "Da Nang": { vi: "Đà Nẵng", region: "Nam Trung Bộ", labelDx: 18, labelDy: 4 },
+  "Da Nang": {
+    vi: "Đà Nẵng",
+    region: "Nam Trung Bộ",
+    labelDx: 16,
+    labelDy: 4,
+    coverImage: "/travel/danang_1.jpg",
+    highlights: ["Cầu Vàng", "Bà Nà Hills", "Cầu Rồng", "Biển Mỹ Khê"],
+    travelDate: "Đã ghé thăm • Mùa hè 2024"
+  },
   "Dak Lak": { vi: "Đắk Lắk", region: "Tây Nguyên" },
   "Dien Bien": { vi: "Điện Biên", region: "Tây Bắc Bộ" },
   "Dong Nai": { vi: "Đồng Nai", region: "Đông Nam Bộ" },
   "Dong Thap": { vi: "Đồng Tháp", region: "Tây Nam Bộ" },
   "Gia Lai": { vi: "Gia Lai", region: "Tây Nguyên" },
-  "Ha Noi": { vi: "Hà Nội", region: "Đồng bằng sông Hồng", labelDx: 18, labelDy: -4 },
+  "Ha Noi": {
+    vi: "Hà Nội",
+    region: "Đồng bằng sông Hồng",
+    labelDx: 16,
+    labelDy: -4,
+    coverImage: "/travel/hanoi_1.jpg",
+    highlights: ["Hồ Hoàn Kiếm", "Phố Cổ", "Văn Miếu", "Ẩm thực Hà Nội"],
+    travelDate: "Đã ghé thăm • Mùa thu 2024"
+  },
   "Ha Tinh": { vi: "Hà Tĩnh", region: "Bắc Trung Bộ" },
   "Hai Phong": { vi: "Hải Phòng", region: "Đồng bằng sông Hồng" },
-  "Ho Chi Minh": { vi: "TP. Hồ Chí Minh", region: "Đông Nam Bộ", labelDx: 18, labelDy: 4 },
+  "Ho Chi Minh": {
+    vi: "TP. Hồ Chí Minh",
+    region: "Đông Nam Bộ",
+    labelDx: 16,
+    labelDy: 4,
+    coverImage: "/travel/saigon_1.jpg",
+    highlights: ["Nhà thờ Đức Bà", "Landmark 81", "Bưu điện TP", "Phố Nguyễn Huệ"],
+    travelDate: "Đã ghé thăm • 2025"
+  },
   "Hue": { vi: "Thừa Thiên Huế", region: "Bắc Trung Bộ" },
   "Hung Yen": { vi: "Hưng Yên", region: "Đồng bằng sông Hồng" },
   "Khanh Hoa": { vi: "Khánh Hòa", region: "Nam Trung Bộ" },
@@ -66,7 +93,7 @@ export default function VietnamMap() {
   onMount(() => {
     if (!containerRef) return;
 
-    // Remove any leftover floating tooltips from previous renders
+    // Clean up any leftover tooltips from previous DOM states
     d3.select("body").selectAll(".vn-map-tooltip").remove();
 
     const renderMap = () => {
@@ -181,7 +208,7 @@ export default function VietnamMap() {
             .style("text-anchor", "middle")
             .style("pointer-events", "none")
             .style("user-select", "none")
-            .style("font-family", "var(--font-satoshi), sans-serif");
+            .style("font-family", "var(--font-satoshi), system-ui, sans-serif");
         }
       });
 
@@ -193,20 +220,32 @@ export default function VietnamMap() {
         .style("position", "absolute")
         .style("background", TOOLTIP_BG)
         .style("color", "#ffffff")
-        .style("padding", "8px 12px")
+        .style("padding", "0px")
         .style("border", `1px solid ${TOOLTIP_BORDER}`)
-        .style("border-radius", "8px")
-        .style("font-family", "var(--font-satoshi), sans-serif")
-        .style("font-size", "13px")
+        .style("border-radius", "12px")
+        .style("font-family", "var(--font-satoshi), system-ui, sans-serif")
         .style("pointer-events", "none")
         .style("opacity", 0)
         .style("z-index", 1000)
-        .style("box-shadow", "0 10px 25px -5px rgba(0, 0, 0, 0.8)");
+        .style("box-shadow", "0 16px 36px -8px rgba(0, 0, 0, 0.85)")
+        .style("transition", "opacity 0.15s ease");
 
       const moveTooltip = (e: MouseEvent) => {
-        tooltip
-          .style("left", `${e.pageX + 14}px`)
-          .style("top", `${e.pageY - 14}px`);
+        const tooltipNode = tooltip.node();
+        const tooltipWidth = tooltipNode ? tooltipNode.clientWidth : 240;
+        const tooltipHeight = tooltipNode ? tooltipNode.clientHeight : 160;
+
+        let left = e.pageX + 16;
+        let top = e.pageY - 16;
+
+        if (left + tooltipWidth > window.innerWidth - 16) {
+          left = e.pageX - tooltipWidth - 16;
+        }
+        if (top + tooltipHeight > window.innerHeight - 16) {
+          top = e.pageY - tooltipHeight - 16;
+        }
+
+        tooltip.style("left", `${left}px`).style("top", `${top}px`);
       };
 
       // Render Province Paths
@@ -251,18 +290,54 @@ export default function VietnamMap() {
             .style("stroke-width", 2.2)
             .style("opacity", 1);
 
-          tooltip.html(`
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px; color: #ffffff;">${info.vi}</div>
-            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">${info.region}</div>
-            <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: ${
-              isVisited ? "rgba(16, 185, 129, 0.2)" : "rgba(148, 163, 184, 0.12)"
-            }; color: ${isVisited ? "#34d399" : "#cbd5e1"}; font-weight: 600;">
-              <span style="width: 6px; height: 6px; border-radius: 50%; background: ${
-                isVisited ? "#10b981" : "#64748b"
-              };"></span>
-              ${isVisited ? "Đã ghé thăm" : "Chưa ghé thăm"}
-            </div>
-          `).style("opacity", 1);
+          if (isVisited && info.coverImage) {
+            // Travel Collection Card for visited places
+            tooltip.html(`
+              <div style="width: 270px; overflow: hidden; border-radius: 12px; background: #0c131d;">
+                <div style="position: relative; width: 100%; height: 140px; overflow: hidden;">
+                  <img src="${info.coverImage}" alt="${info.vi}" style="width: 100%; height: 100%; object-fit: cover;" />
+                  <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(12, 19, 29, 0.95) 0%, rgba(12, 19, 29, 0.3) 60%, transparent 100%);"></div>
+                  <span style="position: absolute; top: 10px; right: 10px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; background: rgba(16, 185, 129, 0.9); color: #ffffff; backdrop-filter: blur(4px);">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #ffffff;"></span>
+                    Đã ghé thăm
+                  </span>
+                  <div style="position: absolute; bottom: 8px; left: 12px; right: 12px;">
+                    <div style="font-weight: 800; font-size: 16px; color: #ffffff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">${info.vi}</div>
+                    <div style="font-size: 11px; color: #cbd5e1; font-weight: 500;">${info.region}</div>
+                  </div>
+                </div>
+                <div style="padding: 10px 12px 12px 12px;">
+                  <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-400); margin-bottom: 6px;">Bộ sưu tập hành trình</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    ${(info.highlights || [])
+                      .map(
+                        (h) =>
+                          `<span style="font-size: 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(51, 65, 85, 0.8); color: #e2e8f0; padding: 2px 7px; border-radius: 6px; font-weight: 500;">${h}</span>`
+                      )
+                      .join("")}
+                  </div>
+                  ${
+                    info.travelDate
+                      ? `<div style="font-size: 10px; color: #94a3b8; margin-top: 8px; font-style: italic;">${info.travelDate}</div>`
+                      : ""
+                  }
+                </div>
+              </div>
+            `).style("opacity", 1);
+          } else {
+            // Minimal Tooltip for unvisited provinces
+            tooltip.html(`
+              <div style="padding: 10px 14px;">
+                <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px; color: #ffffff;">${info.vi}</div>
+                <div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">${info.region}</div>
+                <div style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(148, 163, 184, 0.12); color: #cbd5e1; font-weight: 600;">
+                  <span style="width: 5px; height: 5px; border-radius: 50%; background: #64748b;"></span>
+                  Chưa ghé thăm
+                </div>
+              </div>
+            `).style("opacity", 1);
+          }
+
           moveTooltip(event);
         })
         .on("mousemove", (event) => moveTooltip(event))
@@ -331,7 +406,7 @@ export default function VietnamMap() {
               .attr("stroke", "var(--primary-500)")
               .attr("stroke-width", 3);
 
-            // City text label
+            // City text label with crisp SVG stroke halo (fixes ugly font drop-shadow error)
             const dx = info.labelDx ?? 18;
             const dy = info.labelDy ?? 4;
             g.append("text")
@@ -339,10 +414,13 @@ export default function VietnamMap() {
               .attr("y", dy)
               .text(info.vi)
               .style("fill", "#ffffff")
-              .style("font-size", "12px")
-              .style("font-weight", "800")
-              .style("font-family", "var(--font-satoshi), sans-serif")
-              .style("text-shadow", "0 2px 8px rgba(0,0,0,0.95)")
+              .style("stroke", "#0d1b2a")
+              .style("stroke-width", "3.5px")
+              .style("paint-order", "stroke fill")
+              .style("font-size", "11.5px")
+              .style("font-weight", "700")
+              .style("font-family", "var(--font-satoshi), system-ui, -apple-system, sans-serif")
+              .style("letter-spacing", "0.01em")
               .style("pointer-events", "none");
           }
         });
