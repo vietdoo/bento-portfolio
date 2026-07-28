@@ -41,7 +41,12 @@
     "Helpful, harmless & honest! 😇",
     "Artifact compiled! 📦",
     "Let me write that code for you! ⚡",
-    "Code review approved! 👍"
+    "Code review approved! 👍",
+    "Autonomous pair programmer active! 🤖",
+    "Self-correcting code in progress... 🔄",
+    "Zero-shot bug fix applied! 🎯",
+    "Prompt engineering at 100%! ✍️",
+    "Multi-file edit completed! 📁"
   ];
 
   const OPENAI_JOKES = [
@@ -52,7 +57,12 @@
     "Custom GPT ready to serve! 🛠️",
     "Generating real-time response... 🎙️",
     "Multimodal vision enabled 👁️",
-    "LGTM! Ship it to prod! 🚀"
+    "LGTM! Ship it to prod! 🚀",
+    "Deep thinking mode enabled 💭",
+    "PR merged without conflict! 🔀",
+    "Tool call executed cleanly! 🧰",
+    "Hallucination probability: 0% 🛡️",
+    "Auto-fixing lint warnings! 🧹"
   ];
 
   const GEMINI_JOKES = [
@@ -63,7 +73,12 @@
     "Google Search grounding live 🔍",
     "Nano model on-device 📱",
     "Hello from Gemini! ✨",
-    "Vite + Astro is super fast! ⚡"
+    "Vite + Astro is super fast! ⚡",
+    "Codebase semantic search active! 🔍",
+    "Optimizing algorithm complexity: O(1) ⏱️",
+    "All unit tests green! ✅",
+    "Continuous integration approved! 📦",
+    "Analyzing AST syntax trees... 🌳"
   ];
 
   const GROK_JOKES = [
@@ -74,7 +89,12 @@
     "Answer to everything: 42 🌌",
     "Don't panic & keep coding! 🎒",
     "Quantum compute initiated ⚡",
-    "It works on my machine! 💻"
+    "It works on my machine! 💻",
+    "Agentic workflow initiated! 🚀",
+    "Refactoring legacy code... 🛠️",
+    "Deploying to production server! 🚀",
+    "Pair programming with Vietdoo! 🤝",
+    "Generating clean code... ⚡"
   ];
 
   const DEV_JOKES = [
@@ -96,7 +116,10 @@
     "Dark mode supremacy! 🌙",
     "Keep calm & git push! 🐙",
     "No bugs here, only features! ✨",
-    "Code review approved! 👍"
+    "Code review approved! 👍",
+    "Zero-shot bug fix applied! 🎯",
+    "Autonomous pair programmer active! 🤖",
+    "Tool call executed cleanly! 🧰"
   ];
 
   const HIDING_JOKES = [
@@ -106,7 +129,8 @@
     "Stealth mode activated 🥷",
     "Undercover agent 🕵️",
     "Safe and cozy here! 🍃",
-    "Just peeking around... 👁️"
+    "Just peeking around... 👁️",
+    "AI Agent in stealth mode 🥷"
   ];
 
   const CLICK_JOKES = [
@@ -116,7 +140,8 @@
     "Running away! 🏃💨",
     "AI Agent power! ✨",
     "Deploying escape plan! 🚀",
-    "Scared bug noises! 💨"
+    "Scared bug noises! 💨",
+    "Re-optimizing paths... 🏃"
   ];
 
   function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -151,10 +176,10 @@
     let isHovering = false;
 
     const speciesList: { species: Bug['species']; name: string; imgUrl: string }[] = [
-      { species: 'claude', name: 'Claude bug', imgUrl: '/bugs/claude-bug.png' },
-      { species: 'openai', name: 'OpenAI bug', imgUrl: '/bugs/openai-bug.png' },
-      { species: 'gemini', name: 'Gemini bug', imgUrl: '/bugs/gemini-bug.png' },
-      { species: 'grok', name: 'Grok bug', imgUrl: '/bugs/grok-bug.png' }
+      { species: 'claude', name: 'Claude Bug', imgUrl: '/bugs/claude-bug.png' },
+      { species: 'openai', name: 'OpenAI Bug', imgUrl: '/bugs/openai-bug.png' },
+      { species: 'gemini', name: 'Gemini Bug', imgUrl: '/bugs/gemini-bug.png' },
+      { species: 'grok', name: 'Grok Bug', imgUrl: '/bugs/grok-bug.png' }
     ];
 
     // Preload downloaded logo images
