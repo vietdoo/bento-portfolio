@@ -20,7 +20,7 @@ export const SITE = {
     linkedin: "https://www.linkedin.com/in/vietdoo/",
     medium: "https://vndo.vn",
     dribbble: "https://vndo.vn",
-    email: "contact@vndo.vn",
+    email: "vietdoo@outlook.com",
   },
   cal: {
     username: "vietdoo",

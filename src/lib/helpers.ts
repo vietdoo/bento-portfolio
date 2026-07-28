@@ -13,12 +13,12 @@ export function getCurrentTimeInTimezone(timezone: string): Date {
   return new Date(new Date().toLocaleString("en-US", { timeZone: timezone }));
 }
 
-export function formatTimeTo12H(date: Date): string {
+export function formatTimeTo12H(date: Date, timezone?: string): string {
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
     hour12: true, // Use 12-hour format with AM/PM
-    timeZone: "Europe/Rome",
+    ...(timezone ? { timeZone: timezone } : {}),
   };
 
   return new Intl.DateTimeFormat("en-US", options).format(date);

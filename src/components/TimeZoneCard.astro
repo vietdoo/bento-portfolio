@@ -81,7 +81,7 @@ import { SITE } from "../site-config";
   let formatToggle: HTMLElement | null = null;
 
   function cacheDomRefs() {
-    italyTimeDisplay = document.getElementById("italyTimeDisplay");
+    italyTimeDisplay = document.getElementById("homeTimeDisplay") || document.getElementById("italyTimeDisplay");
     visitorTimeDisplay = document.getElementById("visitorTimeDisplay");
     visitorTzDisplay = document.getElementById("visitorTzDisplay");
     homeTzDisplay = document.getElementById("homeTzDisplay");
@@ -171,10 +171,10 @@ import { SITE } from "../site-config";
       </div>
       <time
         datetime=""
-        id="italyTimeDisplay"
+        id="homeTimeDisplay"
         class="whitespace-nowrap text-2xl font-bold tabular-nums leading-tight md:text-[clamp(2.5rem,5vw,4rem)] lg:text-[clamp(1.5rem,2vw,2.5rem)]"
       >
-        {formatTimeTo12H(getCurrentTimeInTimezone(SITE.location.timezone))}
+        {formatTimeTo12H(getCurrentTimeInTimezone(SITE.location.timezone), SITE.location.timezone)}
       </time>
       <div class="flex items-center gap-1 text-[10px] text-darkslate-300">
         <span id="homeTzDisplay" data-timezone={SITE.location.timezone}
@@ -208,7 +208,7 @@ import { SITE } from "../site-config";
         id="visitorTimeDisplay"
         class="whitespace-nowrap text-2xl font-bold tabular-nums leading-tight md:text-[clamp(2.5rem,5vw,4rem)] lg:text-[clamp(1.5rem,2vw,2.5rem)]"
       >
-        {formatTimeTo12H(getCurrentTimeInTimezone(SITE.location.timezone))}
+        {formatTimeTo12H(getCurrentTimeInTimezone(SITE.location.timezone), SITE.location.timezone)}
       </time>
       <span id="visitorTzDisplay" class="text-[10px] text-darkslate-300"
         >---</span
