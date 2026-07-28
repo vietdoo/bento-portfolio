@@ -1,6 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import * as d3 from "d3";
 import vietnamData from "../lib/maps/vietnam-provinces.json";
+import worldData from "../lib/world.json";
 import { SITE } from "../site-config";
 
 type ProvinceInfo = {
@@ -74,12 +75,29 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Vinh Long": { vi: "Vĩnh Long", region: "Tây Nam Bộ" },
 };
 
+const COUNTRY_NAME_VN: Record<string, string> = {
+  Laos: "Lào",
+  Cambodia: "Campuchia",
+  Thailand: "Thái Lan",
+  China: "Trung Quốc",
+  Philippines: "Philippines",
+  Malaysia: "Malaysia",
+  Indonesia: "Indonesia",
+  Myanmar: "Myanmar",
+  Taiwan: "Đài Loan",
+  Brunei: "Brunei",
+  Singapore: "Singapore",
+};
+
 // Clean Dark Slate Palette matching Bento Portfolio theme
 const OCEAN_FILL = "#0d1b2a";
 const OCEAN_STIPPLE = "#16283d";
 const PROVINCE_DEFAULT_FILL = "#1e3854";
 const PROVINCE_HOVER_FILL = "#2c547a";
 const PROVINCE_STROKE = "#3c648d";
+const WORLD_COUNTRY_FILL = "#142436";
+const WORLD_COUNTRY_HOVER_FILL = "#1e3752";
+const WORLD_COUNTRY_STROKE = "#1f344d";
 const GRATICULE_STROKE = "#16283b";
 const TOOLTIP_BG = "#0c131d";
 const TOOLTIP_BORDER = "#334155";
@@ -157,9 +175,26 @@ export default function VietnamMap() {
         .attr("height", "100%")
         .attr("fill", "url(#vn-sea-stipple)");
 
-      // D3 Mercator Projection fitExtent on rewound GeoJSON
+      // Bounding box feature representing ~500km scope around Vietnam
+      // Lat: ~3.5°N to ~28.5°N, Lon: ~96.0°E to ~121.0°E
+      const scopeBounds = {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [96.0, 3.5],
+              [121.0, 3.5],
+              [121.0, 28.5],
+              [96.0, 28.5],
+              [96.0, 3.5],
+            ],
+          ],
+        },
+      };
+
       const features = (vietnamData as any).features;
-      const padding = Math.min(width, height) > 600 ? 50 : 25;
+      const padding = Math.min(width, height) > 600 ? 30 : 15;
       const projection = d3
         .geoMercator()
         .fitExtent(
@@ -167,7 +202,7 @@ export default function VietnamMap() {
             [padding, padding],
             [width - padding, height - padding],
           ],
-          vietnamData as any
+          scopeBounds as any
         );
 
       const pathGenerator = d3.geoPath().projection(projection);
@@ -175,8 +210,8 @@ export default function VietnamMap() {
       // Main map group for pan/zoom
       const mapGroup = svg.append("g").attr("class", "map-group");
 
-      // Graticule (Lat/Lon grid)
-      const graticule = d3.geoGraticule().step([2, 2])();
+      // Graticule (Lat/Lon grid across 500km region)
+      const graticule = d3.geoGraticule().step([4, 4])();
       mapGroup
         .append("path")
         .datum(graticule)
@@ -186,11 +221,63 @@ export default function VietnamMap() {
         .style("stroke-width", 0.8)
         .style("opacity", 0.8);
 
-      // Geographical annotations (East Sea / Islands)
+      // Neighboring world countries layer (faded / dạng mờ)
+      const worldFeatures = (worldData as any).features.filter(
+        (f: any) => f.properties?.name !== "Vietnam"
+      );
+
+      const worldGroup = mapGroup.append("g").attr("class", "world-countries");
+
+      worldGroup
+        .selectAll("path")
+        .data(worldFeatures)
+        .enter()
+        .append("path")
+        .attr("d", pathGenerator as any)
+        .style("fill", WORLD_COUNTRY_FILL)
+        .style("stroke", WORLD_COUNTRY_STROKE)
+        .style("stroke-width", 0.8)
+        .style("opacity", 0.85)
+        .style("cursor", "pointer")
+        .style("transition", "fill 0.2s ease, stroke 0.2s ease")
+        .on("mouseover", function (event, d: any) {
+          const rawName = d.properties?.name || "Láng giềng";
+          const vnName = COUNTRY_NAME_VN[rawName] || rawName;
+
+          d3.select(this)
+            .style("fill", WORLD_COUNTRY_HOVER_FILL)
+            .style("stroke", "#33557a")
+            .style("stroke-width", 1.2);
+
+          tooltip.html(`
+            <div style="padding: 8px 12px;">
+              <div style="font-weight: 700; font-size: 13px; color: #e2e8f0; margin-bottom: 2px;">${vnName}</div>
+              ${rawName !== vnName ? `<div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">${rawName}</div>` : ''}
+              <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(51, 65, 85, 0.5); color: #94a3b8; font-weight: 500;">
+                Quốc gia láng giềng
+              </div>
+            </div>
+          `).style("opacity", 1);
+
+          moveTooltip(event);
+        })
+        .on("mousemove", (event) => moveTooltip(event))
+        .on("mouseout", function () {
+          d3.select(this)
+            .style("fill", WORLD_COUNTRY_FILL)
+            .style("stroke", WORLD_COUNTRY_STROKE)
+            .style("stroke-width", 0.8);
+
+          tooltip.style("opacity", 0);
+        });
+
+      // Geographical annotations (East Sea / Islands / Gulfs)
       const oceanLabels = [
-        { text: "BIỂN ĐÔNG", lon: 111.8, lat: 14.5, size: "15px", weight: "700", spacing: "0.25em", fill: "#64748b" },
+        { text: "BIỂN ĐÔNG", lon: 113.0, lat: 14.5, size: "15px", weight: "700", spacing: "0.25em", fill: "#64748b" },
         { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
-        { text: "Quần đảo Trường Sa", lon: 113.8, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
+        { text: "Quần đảo Trường Sa", lon: 114.2, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
+        { text: "Vịnh Bắc Bộ", lon: 107.5, lat: 19.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
+        { text: "Vịnh Thái Lan", lon: 101.5, lat: 9.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
       ];
 
       oceanLabels.forEach((label) => {
