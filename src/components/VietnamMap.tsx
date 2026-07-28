@@ -461,37 +461,12 @@ export default function VietnamMap() {
               .append("g")
               .attr("transform", `translate(${coords[0]}, ${coords[1]})`);
 
-            // Pulsing outer ring
-            g.append("circle")
-              .attr("r", 12)
-              .attr("fill", "none")
-              .attr("stroke", "var(--primary-400)")
-              .attr("stroke-width", 2)
-              .style("opacity", 0.9)
-              .append("animate")
-              .attr("attributeName", "r")
-              .attr("values", "4;22;4")
-              .attr("dur", "2.2s")
-              .attr("repeatCount", "indefinite");
-
-            g.append("circle")
-              .attr("r", 12)
-              .attr("fill", "none")
-              .attr("stroke", "var(--primary-400)")
-              .attr("stroke-width", 2)
-              .style("opacity", 0.9)
-              .append("animate")
-              .attr("attributeName", "opacity")
-              .attr("values", "1;0;1")
-              .attr("dur", "2.2s")
-              .attr("repeatCount", "indefinite");
-
             // Solid pin center point
             g.append("circle")
-              .attr("r", 5)
+              .attr("r", 4)
               .attr("fill", "#ffffff")
               .attr("stroke", "var(--primary-500)")
-              .attr("stroke-width", 3);
+              .attr("stroke-width", 2.5);
 
             // City text label with crisp SVG stroke halo (fixes ugly font drop-shadow error)
             const dx = info.labelDx ?? 18;
