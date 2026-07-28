@@ -1,4 +1,4 @@
-﻿# Generates favicons, PWA icons, and og-image.png from public/apple-touch-icon.png source.
+# Generates favicons, PWA icons, and og-image.png from public/apple-touch-icon.png source.
 # Run: pwsh -File scripts/generate-seo-assets.ps1
 Add-Type -AssemblyName System.Drawing
 
@@ -178,7 +178,7 @@ public static class SeoAssetGenerator
 [SeoAssetGenerator]::ComposeOgImage(
     $sourcePath,
     (Join-Path $publicDir "og-image.png"),
-    "Đỗ Quốc Việt",
+    "Do Quoc Viet",
     "Software Engineer @ VNPT Group | vietdoo",
     "#171717",
     "#7dd3fc"

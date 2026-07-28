@@ -50,4 +50,4 @@ src/
 
 ## License
 
-[MIT](LICENSE) © [Đỗ Quốc Việt](https://vndo.vn)
+[MIT](LICENSE) © [Do Quoc Viet](https://vndo.vn)

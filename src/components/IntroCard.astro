@@ -20,11 +20,11 @@ import MemojiAvatarYellow from "../assets/vietdoo_pixel.png";
         <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
 
         <p class="sr-only">
-          Hi, I'm {SITE.author.fullName}, a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
+          Hi, I'm {SITE.author.fullName} ({SITE.author.shortName}), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
         </p>
         <p aria-hidden="true" class="m-0 font-light text-md">
           <span>
-            Hi, I'm <b class="font-bold">{SITE.author.fullName}</b>, a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices.
+            Hi, I'm <b class="font-bold">{SITE.author.fullName}</b> (<span class="text-primary-400 font-semibold">{SITE.author.shortName}</span>), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices.
           </span>
           <br />
           <span class="block mt-2">
@@ -51,6 +51,18 @@ import MemojiAvatarYellow from "../assets/vietdoo_pixel.png";
               <Icon name="ri:linkedin-box-fill" />
               <span class="sr-only" data-umami-event="linkedin button"
                 >Linkedin Profile</span
+              >
+            </Button>
+          </a>
+          <a
+            href={SITE.site.url}
+            aria-label="website"
+            target="_blank"
+          >
+            <Button aria-label="website">
+              <Icon name="ri:global-line" />
+              <span class="sr-only" data-umami-event="website button"
+                >Website</span
               >
             </Button>
           </a>

@@ -3,9 +3,9 @@ export const SITE = {
     url: "https://vndo.vn",
   },
   author: {
-    firstName: "Đỗ Quốc",
-    lastName: "Việt",
-    fullName: "Đỗ Quốc Việt",
+    firstName: "Do Quoc",
+    lastName: "Viet",
+    fullName: "Do Quoc Viet",
     shortName: "vietdoo",
     jobTitle: "Software Engineer @ VNPT Group",
     twitterHandle: "vietdoo", // without "@"
