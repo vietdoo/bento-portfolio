@@ -1,5 +1,5 @@
 ---
-// CuteBugs.astro - AI Agent bugs (Claude, OpenAI, Gemini, Grok) crawling, hiding, and chatting dev jokes
+// CuteBugs.astro - AI Agent bugs (Claude, OpenAI, Gemini, Grok) crawling with image logos and name tags
 ---
 
 <div id="bugs-container" class="absolute inset-0 z-0 pointer-events-auto overflow-hidden select-none">
@@ -150,12 +150,21 @@
     let mouseY = -1000;
     let isHovering = false;
 
-    const speciesList: { species: Bug['species']; name: string }[] = [
-      { species: 'claude', name: 'Claude' },
-      { species: 'openai', name: 'OpenAI' },
-      { species: 'gemini', name: 'Gemini' },
-      { species: 'grok', name: 'Grok' }
+    const speciesList: { species: Bug['species']; name: string; imgUrl: string }[] = [
+      { species: 'claude', name: 'Claude', imgUrl: '/bugs/claude-bug.png' },
+      { species: 'openai', name: 'OpenAI', imgUrl: '/bugs/openai-bug.png' },
+      { species: 'gemini', name: 'Gemini', imgUrl: '/bugs/gemini-bug.png' },
+      { species: 'grok', name: 'Grok', imgUrl: '/bugs/grok-bug.png' }
     ];
+
+    // Preload downloaded logo images
+    const bugImages: Record<string, HTMLImageElement> = {};
+    speciesList.forEach((spec) => {
+      const img = new Image();
+      img.src = spec.imgUrl;
+      bugImages[spec.species] = img;
+    });
+
     const bugs: Bug[] = [];
 
     function resize() {
@@ -273,7 +282,7 @@
           state: 'WALK',
           stateTimer: 2 + Math.random() * 3,
           legPhase: Math.random() * Math.PI * 2,
-          size: 26 + Math.random() * 3,
+          size: 27 + Math.random() * 3,
           hidingSpot: null,
           peekAmount: 0,
           emotion: null,
@@ -556,6 +565,40 @@
         ctx!.restore();
       }
 
+      // Draw Upright Agent Name Tag (Non-rotated, always horizontal and clean)
+      if (b.peekAmount < 0.4) {
+        ctx!.save();
+        const nameFont = 'bold 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx!.font = nameFont;
+        const nameW = ctx!.measureText(b.name).width + 12;
+        const nameH = 16;
+        const nameY = s * 0.95;
+
+        let accentBorder = '#d97706';
+        if (b.species === 'openai') accentBorder = '#10a37f';
+        else if (b.species === 'gemini') accentBorder = '#8b5cf6';
+        else if (b.species === 'grok') accentBorder = '#38bdf8';
+
+        ctx!.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx!.shadowBlur = 4;
+        ctx!.shadowOffsetY = 1;
+
+        ctx!.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx!.strokeStyle = accentBorder;
+        ctx!.lineWidth = 1.2;
+
+        drawRoundedRect(ctx!, -nameW / 2, nameY, nameW, nameH, 4);
+        ctx!.fill();
+        ctx!.stroke();
+
+        ctx!.shadowColor = 'transparent';
+        ctx!.fillStyle = '#f8fafc';
+        ctx!.textAlign = 'center';
+        ctx!.textBaseline = 'middle';
+        ctx!.fillText(b.name, 0, nameY + nameH / 2 + 0.5);
+        ctx!.restore();
+      }
+
       // Rotate for drawing body/legs/antennae
       ctx!.rotate(renderAngle + Math.PI / 2);
 
@@ -675,23 +718,6 @@
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
 
-        // Claude Logo (Anthropic Asterisk/Spark) on Back
-        ctx!.save();
-        ctx!.translate(0, s * 0.08);
-        ctx!.fillStyle = '#ffffff';
-        for (let a = 0; a < 8; a++) {
-          const angle = (a * Math.PI) / 4;
-          ctx!.save();
-          ctx!.rotate(angle);
-          drawRoundedRect(ctx!, -s * 0.025, s * 0.04, s * 0.05, s * 0.11, s * 0.02);
-          ctx!.fill();
-          ctx!.restore();
-        }
-        ctx!.beginPath();
-        ctx!.arc(0, 0, s * 0.05, 0, Math.PI * 2);
-        ctx!.fill();
-        ctx!.restore();
-
       } else if (b.species === 'openai') {
         // OpenAI: Mint Teal / Emerald theme
         const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
@@ -717,25 +743,6 @@
         ctx!.moveTo(0, -s * 0.3);
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
-
-        // OpenAI Logo (Interlocking Loop Rosette) on Back
-        ctx!.save();
-        ctx!.translate(0, s * 0.06);
-        ctx!.strokeStyle = '#ffffff';
-        ctx!.lineWidth = s * 0.045;
-        ctx!.lineCap = 'round';
-        ctx!.lineJoin = 'round';
-        for (let i = 0; i < 6; i++) {
-          ctx!.save();
-          ctx!.rotate((i * Math.PI) / 3);
-          ctx!.beginPath();
-          ctx!.moveTo(0, -s * 0.14);
-          ctx!.lineTo(s * 0.09, -s * 0.1);
-          ctx!.lineTo(s * 0.09, s * 0.02);
-          ctx!.stroke();
-          ctx!.restore();
-        }
-        ctx!.restore();
 
       } else if (b.species === 'gemini') {
         // Gemini: Google Royal Blue-Violet Gradient
@@ -763,21 +770,6 @@
         ctx!.moveTo(0, -s * 0.3);
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
-
-        // Gemini Logo (4-pointed curved spark star) on Back
-        ctx!.save();
-        ctx!.translate(0, s * 0.08);
-        ctx!.fillStyle = '#ffffff';
-        const size = s * 0.21;
-        ctx!.beginPath();
-        ctx!.moveTo(0, -size);
-        ctx!.quadraticCurveTo(0, 0, size, 0);
-        ctx!.quadraticCurveTo(0, 0, 0, size);
-        ctx!.quadraticCurveTo(0, 0, -size, 0);
-        ctx!.quadraticCurveTo(0, 0, 0, -size);
-        ctx!.closePath();
-        ctx!.fill();
-        ctx!.restore();
 
       } else if (b.species === 'grok') {
         // Grok: Obsidian Slate Carbon with Cyan accent
@@ -809,32 +801,27 @@
         ctx!.moveTo(0, -s * 0.3);
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
+      }
 
-        // Grok Logo (xAI stylized slash-X) on Back
+      // Render Downloaded PNG Logo Image on Shell Back
+      const logoImg = bugImages[b.species];
+      if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
         ctx!.save();
-        ctx!.translate(0, s * 0.08);
-        ctx!.strokeStyle = '#ffffff';
-        ctx!.lineWidth = s * 0.05;
-        ctx!.lineCap = 'round';
+        ctx!.translate(0, s * 0.06);
+        const logoR = s * 0.25;
 
+        // White circular backing for crisp icon rendering
+        ctx!.fillStyle = '#ffffff';
         ctx!.beginPath();
-        ctx!.moveTo(-s * 0.13, -s * 0.13);
-        ctx!.lineTo(s * 0.13, s * 0.13);
-        ctx!.stroke();
+        ctx!.arc(0, 0, logoR, 0, Math.PI * 2);
+        ctx!.fill();
 
+        // Clip image inside circular badge
         ctx!.beginPath();
-        ctx!.moveTo(s * 0.13, -s * 0.13);
-        ctx!.lineTo(-s * 0.13, s * 0.13);
-        ctx!.stroke();
+        ctx!.arc(0, 0, logoR - 0.5, 0, Math.PI * 2);
+        ctx!.clip();
 
-        // Bright Cyan forward slash overlay
-        ctx!.strokeStyle = '#38bdf8';
-        ctx!.lineWidth = s * 0.035;
-        ctx!.beginPath();
-        ctx!.moveTo(-s * 0.04, -s * 0.16);
-        ctx!.lineTo(s * 0.04, s * 0.16);
-        ctx!.stroke();
-
+        ctx!.drawImage(logoImg, -logoR, -logoR, logoR * 2, logoR * 2);
         ctx!.restore();
       }
 
