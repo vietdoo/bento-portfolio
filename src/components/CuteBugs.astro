@@ -1,5 +1,5 @@
 ---
-// CuteBugs.astro - AI Agent bugs (Claude, OpenAI, Gemini, Grok) crawling with image logos and name tags
+// CuteBugs.astro - AI Agent bugs (Claude bug, OpenAI bug, Gemini bug, Grok bug) crawling with large crisp image logos & name tags
 ---
 
 <div id="bugs-container" class="absolute inset-0 z-0 pointer-events-auto overflow-hidden select-none">
@@ -151,10 +151,10 @@
     let isHovering = false;
 
     const speciesList: { species: Bug['species']; name: string; imgUrl: string }[] = [
-      { species: 'claude', name: 'Claude', imgUrl: '/bugs/claude-bug.png' },
-      { species: 'openai', name: 'OpenAI', imgUrl: '/bugs/openai-bug.png' },
-      { species: 'gemini', name: 'Gemini', imgUrl: '/bugs/gemini-bug.png' },
-      { species: 'grok', name: 'Grok', imgUrl: '/bugs/grok-bug.png' }
+      { species: 'claude', name: 'Claude bug', imgUrl: '/bugs/claude-bug.png' },
+      { species: 'openai', name: 'OpenAI bug', imgUrl: '/bugs/openai-bug.png' },
+      { species: 'gemini', name: 'Gemini bug', imgUrl: '/bugs/gemini-bug.png' },
+      { species: 'grok', name: 'Grok bug', imgUrl: '/bugs/grok-bug.png' }
     ];
 
     // Preload downloaded logo images
@@ -177,8 +177,8 @@
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       bugs.forEach((b) => {
-        b.x = Math.max(30, Math.min(width - 30, b.x));
-        b.y = Math.max(height * 0.3, Math.min(height - 20, b.y));
+        b.x = Math.max(35, Math.min(width - 35, b.x));
+        b.y = Math.max(height * 0.3, Math.min(height - 25, b.y));
       });
     }
 
@@ -218,9 +218,9 @@
 
     function setRandomWalkTarget(bug: Bug) {
       const minY = Math.max(40, height * 0.35);
-      const maxY = Math.max(minY + 20, height - 20);
-      const minX = 25;
-      const maxX = Math.max(minX + 20, width - 25);
+      const maxY = Math.max(minY + 20, height - 25);
+      const minX = 30;
+      const maxX = Math.max(minX + 20, width - 30);
 
       bug.targetX = minX + Math.random() * (maxX - minX);
       bug.targetY = minY + Math.random() * (maxY - minY);
@@ -271,18 +271,18 @@
           id: i,
           species: specInfo.species,
           name: specInfo.name,
-          x: 30 + (i + 1) * ((width - 60) / (speciesList.length + 1)),
+          x: 35 + (i + 1) * ((width - 70) / (speciesList.length + 1)),
           y: height * 0.65 + (Math.random() - 0.5) * 30,
           targetX: 0,
           targetY: 0,
           angle: Math.random() * Math.PI * 2,
           targetAngle: 0,
-          speed: 0.9 + Math.random() * 0.4,
-          baseSpeed: 0.9 + Math.random() * 0.4,
+          speed: 0.85 + Math.random() * 0.35,
+          baseSpeed: 0.85 + Math.random() * 0.35,
           state: 'WALK',
           stateTimer: 2 + Math.random() * 3,
           legPhase: Math.random() * Math.PI * 2,
-          size: 27 + Math.random() * 3,
+          size: 36 + Math.random() * 4,
           hidingSpot: null,
           peekAmount: 0,
           emotion: null,
@@ -348,8 +348,8 @@
           bug.speed = bug.baseSpeed * 2.5;
           bug.targetX = bug.x + Math.sign(dx || 1) * (80 + Math.random() * 60);
           bug.targetY = bug.y + Math.sign(dy || 1) * (50 + Math.random() * 40);
-          bug.targetX = Math.max(25, Math.min(width - 25, bug.targetX));
-          bug.targetY = Math.max(height * 0.35, Math.min(height - 20, bug.targetY));
+          bug.targetX = Math.max(30, Math.min(width - 30, bug.targetX));
+          bug.targetY = Math.max(height * 0.35, Math.min(height - 25, bug.targetY));
         }
       });
     });
@@ -395,8 +395,8 @@
             bug.speed = bug.baseSpeed * 2.2;
             bug.targetX = bug.x + (dx / (dist || 1)) * 90;
             bug.targetY = bug.y + (dy / (dist || 1)) * 70;
-            bug.targetX = Math.max(25, Math.min(width - 25, bug.targetX));
-            bug.targetY = Math.max(height * 0.35, Math.min(height - 20, bug.targetY));
+            bug.targetX = Math.max(30, Math.min(width - 30, bug.targetX));
+            bug.targetY = Math.max(height * 0.35, Math.min(height - 25, bug.targetY));
           }
         }
 
@@ -568,26 +568,26 @@
       // Draw Upright Agent Name Tag (Non-rotated, always horizontal and clean)
       if (b.peekAmount < 0.4) {
         ctx!.save();
-        const nameFont = 'bold 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        const nameFont = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx!.font = nameFont;
-        const nameW = ctx!.measureText(b.name).width + 12;
-        const nameH = 16;
-        const nameY = s * 0.95;
+        const nameW = ctx!.measureText(b.name).width + 14;
+        const nameH = 18;
+        const nameY = s * 1.05;
 
         let accentBorder = '#d97706';
         if (b.species === 'openai') accentBorder = '#10a37f';
         else if (b.species === 'gemini') accentBorder = '#8b5cf6';
         else if (b.species === 'grok') accentBorder = '#38bdf8';
 
-        ctx!.shadowColor = 'rgba(0, 0, 0, 0.4)';
-        ctx!.shadowBlur = 4;
-        ctx!.shadowOffsetY = 1;
+        ctx!.shadowColor = 'rgba(0, 0, 0, 0.45)';
+        ctx!.shadowBlur = 5;
+        ctx!.shadowOffsetY = 1.5;
 
-        ctx!.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx!.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx!.strokeStyle = accentBorder;
         ctx!.lineWidth = 1.2;
 
-        drawRoundedRect(ctx!, -nameW / 2, nameY, nameW, nameH, 4);
+        drawRoundedRect(ctx!, -nameW / 2, nameY, nameW, nameH, 5);
         ctx!.fill();
         ctx!.stroke();
 
@@ -638,7 +638,7 @@
 
       // 6 Wiggly Legs
       ctx!.strokeStyle = '#0f172a';
-      ctx!.lineWidth = 2.2;
+      ctx!.lineWidth = 2.4;
       ctx!.lineCap = 'round';
 
       for (let side = -1; side <= 1; side += 2) {
@@ -670,7 +670,7 @@
       // Antennae
       const antennaPhase = Math.sin(performance.now() * 0.008 + b.id) * 0.25;
       ctx!.strokeStyle = '#0f172a';
-      ctx!.lineWidth = 1.8;
+      ctx!.lineWidth = 2.0;
 
       for (let side = -1; side <= 1; side += 2) {
         const aX = side * (s * 0.2);
@@ -685,7 +685,7 @@
 
         ctx!.fillStyle = tipColor;
         ctx!.beginPath();
-        ctx!.arc(tipX, tipY, 2.5, 0, Math.PI * 2);
+        ctx!.arc(tipX, tipY, 3.0, 0, Math.PI * 2);
         ctx!.fill();
       }
 
@@ -803,18 +803,25 @@
         ctx!.stroke();
       }
 
-      // Render Downloaded PNG Logo Image on Shell Back
+      // Render Downloaded PNG Logo Image on Shell Back (Large & Clear!)
       const logoImg = bugImages[b.species];
       if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
         ctx!.save();
-        ctx!.translate(0, s * 0.06);
-        const logoR = s * 0.25;
+        ctx!.translate(0, s * 0.04);
+        const logoR = s * 0.38; // Much larger & clearly visible logo badge!
 
-        // White circular backing for crisp icon rendering
+        // Drop shadow for logo circle badge
+        ctx!.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx!.shadowBlur = 4;
+        ctx!.shadowOffsetY = 1;
+
+        // White circular backing for crisp icon contrast
         ctx!.fillStyle = '#ffffff';
         ctx!.beginPath();
         ctx!.arc(0, 0, logoR, 0, Math.PI * 2);
         ctx!.fill();
+
+        ctx!.shadowColor = 'transparent';
 
         // Clip image inside circular badge
         ctx!.beginPath();
