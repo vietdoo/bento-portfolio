@@ -14,8 +14,6 @@
     y: number;
     targetX: number;
     targetY: number;
-    vx: number;
-    vy: number;
     angle: number;
     targetAngle: number;
     speed: number;
@@ -25,7 +23,7 @@
     legPhase: number;
     size: number;
     hidingSpot: { x: number; y: number; edgeAngle: number; type: 'edge' | 'button' } | null;
-    peekAmount: number; // 0 (fully visible) to 1 (mostly hidden except antennae/eyes)
+    peekAmount: number;
     emotion: string | null;
     emotionTimer: number;
     sparkles: Array<{ x: number; y: number; vy: number; alpha: number; char: string }>;
@@ -44,64 +42,50 @@
     let animId: number;
     let dpr = window.devicePixelRatio || 1;
 
-    // Track cursor for interaction
     let mouseX = -1000;
     let mouseY = -1000;
     let isHovering = false;
 
+    const speciesList: Bug['species'][] = ['ladybug', 'emerald', 'firefly', 'pinkberry'];
+    const bugs: Bug[] = [];
+
     function resize() {
       const rect = container!.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
+      width = Math.max(100, rect.width);
+      height = Math.max(100, rect.height);
       dpr = window.devicePixelRatio || 1;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx!.scale(dpr, dpr);
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Re-bound any bug that went out of canvas due to resize
+      bugs.forEach((b) => {
+        b.x = Math.max(30, Math.min(width - 30, b.x));
+        b.y = Math.max(height * 0.3, Math.min(height - 20, b.y));
+      });
     }
 
     resize();
-    const resizeObserver = new ResizeObserver(resize);
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+      if (bugs.length === 0 && width > 100 && height > 100) {
+        initBugs();
+      }
+    });
     resizeObserver.observe(container);
-
-    // Generate cute bugs
-    const speciesList: Bug['species'][] = ['ladybug', 'emerald', 'firefly', 'pinkberry'];
-    const bugs: Bug[] = speciesList.map((species, i) => ({
-      id: i,
-      species,
-      x: 40 + Math.random() * (Math.max(100, width - 120)),
-      y: Math.max(60, height * 0.4 + Math.random() * (height * 0.45)),
-      targetX: 100,
-      targetY: 100,
-      vx: 0,
-      vy: 0,
-      angle: Math.random() * Math.PI * 2,
-      targetAngle: 0,
-      speed: 0.8 + Math.random() * 0.4,
-      baseSpeed: 0.8 + Math.random() * 0.4,
-      state: 'WALK',
-      stateTimer: 2 + Math.random() * 3,
-      legPhase: Math.random() * Math.PI * 2,
-      size: 22 + Math.random() * 4,
-      hidingSpot: null,
-      peekAmount: 0,
-      emotion: null,
-      emotionTimer: 0,
-      sparkles: []
-    }));
 
     function getHidingSpots() {
       const spots: Array<{ x: number; y: number; edgeAngle: number; type: 'edge' | 'button' }> = [];
       const introCard = container!.parentElement;
       if (!introCard) return spots;
 
-      // Card bottom edge spots
-      const padding = 12;
-      spots.push({ x: padding + 20, y: height - 6, edgeAngle: -Math.PI / 2, type: 'edge' });
-      spots.push({ x: width / 2, y: height - 6, edgeAngle: -Math.PI / 2, type: 'edge' });
-      spots.push({ x: width - padding - 40, y: height - 6, edgeAngle: -Math.PI / 2, type: 'edge' });
-      spots.push({ x: 12, y: height / 2 + 30, edgeAngle: 0, type: 'edge' }); // Left edge
+      // Card bottom edge hiding spots
+      spots.push({ x: 40, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
+      spots.push({ x: width / 2, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
+      spots.push({ x: width - 50, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
+      spots.push({ x: 12, y: height * 0.75, edgeAngle: 0, type: 'edge' });
 
-      // Button top/bottom hiding spots
+      // Button hiding spots
       const buttons = introCard.querySelectorAll("button, a");
       const containerRect = container!.getBoundingClientRect();
 
@@ -118,16 +102,15 @@
     }
 
     function setRandomWalkTarget(bug: Bug) {
-      // Keep bugs in lower 65% area of the card where empty space is
-      const minY = height * 0.35;
-      const maxY = height - 16;
-      const minX = 20;
-      const maxX = width - 20;
+      const minY = Math.max(40, height * 0.35);
+      const maxY = Math.max(minY + 20, height - 20);
+      const minX = 25;
+      const maxX = Math.max(minX + 20, width - 25);
 
       bug.targetX = minX + Math.random() * (maxX - minX);
       bug.targetY = minY + Math.random() * (maxY - minY);
       bug.state = 'WALK';
-      bug.stateTimer = 2.5 + Math.random() * 4;
+      bug.stateTimer = 3 + Math.random() * 4;
       bug.speed = bug.baseSpeed;
       bug.hidingSpot = null;
     }
@@ -146,24 +129,54 @@
       bug.speed = bug.baseSpeed * 1.3;
     }
 
+    function initBugs() {
+      bugs.length = 0;
+      speciesList.forEach((species, i) => {
+        const bug: Bug = {
+          id: i,
+          species,
+          x: 30 + (i + 1) * ((width - 60) / (speciesList.length + 1)),
+          y: height * 0.65 + (Math.random() - 0.5) * 30,
+          targetX: 0,
+          targetY: 0,
+          angle: Math.random() * Math.PI * 2,
+          targetAngle: 0,
+          speed: 0.9 + Math.random() * 0.4,
+          baseSpeed: 0.9 + Math.random() * 0.4,
+          state: 'WALK',
+          stateTimer: 2 + Math.random() * 3,
+          legPhase: Math.random() * Math.PI * 2,
+          size: 24 + Math.random() * 4,
+          hidingSpot: null,
+          peekAmount: 0,
+          emotion: null,
+          emotionTimer: 0,
+          sparkles: []
+        };
+        setRandomWalkTarget(bug);
+        bugs.push(bug);
+      });
+    }
+
+    initBugs();
+
     function triggerEmotion(bug: Bug, char: string) {
       bug.emotion = char;
-      bug.emotionTimer = 1.2;
+      bug.emotionTimer = 1.4;
     }
 
     function addSparkles(bug: Bug, char = '♥') {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 4; i++) {
         bug.sparkles.push({
           x: bug.x + (Math.random() - 0.5) * 16,
           y: bug.y - 10,
-          vy: -0.8 - Math.random() * 0.8,
+          vy: -0.9 - Math.random() * 0.9,
           alpha: 1,
           char
         });
       }
     }
 
-    // Interaction handlers
     container.addEventListener("mousemove", (e) => {
       const rect = container.getBoundingClientRect();
       mouseX = e.clientX - rect.left;
@@ -187,18 +200,15 @@
         const dy = bug.y - clickY;
         const dist = Math.hypot(dx, dy);
 
-        if (dist < bug.size * 1.5) {
-          // User clicked on this bug!
+        if (dist < bug.size * 1.8) {
           triggerEmotion(bug, '♥');
           addSparkles(bug, Math.random() > 0.5 ? '♥' : '✨');
           bug.state = 'SCARED';
           bug.stateTimer = 1.8;
-          bug.speed = bug.baseSpeed * 2.6;
-          // Run away from click position
+          bug.speed = bug.baseSpeed * 2.5;
           bug.targetX = bug.x + Math.sign(dx || 1) * (80 + Math.random() * 60);
-          bug.targetY = bug.y + Math.sign(dy || 1) * (60 + Math.random() * 40);
-          // Clamp inside canvas
-          bug.targetX = Math.max(20, Math.min(width - 20, bug.targetX));
+          bug.targetY = bug.y + Math.sign(dy || 1) * (50 + Math.random() * 40);
+          bug.targetX = Math.max(25, Math.min(width - 25, bug.targetX));
           bug.targetY = Math.max(height * 0.35, Math.min(height - 20, bug.targetY));
         }
       });
@@ -208,37 +218,33 @@
 
     function update(dt: number) {
       bugs.forEach((bug) => {
-        // Handle emotion timer
         if (bug.emotionTimer > 0) {
           bug.emotionTimer -= dt;
           if (bug.emotionTimer <= 0) bug.emotion = null;
         }
 
-        // Handle sparkles
         bug.sparkles.forEach((s) => {
           s.y += s.vy;
           s.alpha -= dt * 1.2;
         });
         bug.sparkles = bug.sparkles.filter((s) => s.alpha > 0);
 
-        // Proximity to cursor scare
         if (isHovering && bug.state !== 'SCARED' && bug.state !== 'PEEK') {
           const dx = bug.x - mouseX;
           const dy = bug.y - mouseY;
           const dist = Math.hypot(dx, dy);
-          if (dist < 40) {
+          if (dist < 45) {
             triggerEmotion(bug, '!');
             bug.state = 'SCARED';
             bug.stateTimer = 1.5;
             bug.speed = bug.baseSpeed * 2.2;
-            bug.targetX = bug.x + (dx / (dist || 1)) * 100;
-            bug.targetY = bug.y + (dy / (dist || 1)) * 80;
-            bug.targetX = Math.max(20, Math.min(width - 20, bug.targetX));
+            bug.targetX = bug.x + (dx / (dist || 1)) * 90;
+            bug.targetY = bug.y + (dy / (dist || 1)) * 70;
+            bug.targetX = Math.max(25, Math.min(width - 25, bug.targetX));
             bug.targetY = Math.max(height * 0.35, Math.min(height - 20, bug.targetY));
           }
         }
 
-        // State Machine
         switch (bug.state) {
           case 'WALK':
           case 'HIDE':
@@ -247,42 +253,33 @@
             const dy = bug.targetY - bug.y;
             const dist = Math.hypot(dx, dy);
 
-            if (dist < 8) {
+            if (dist < 10) {
               if (bug.state === 'HIDE') {
                 bug.state = 'PEEK';
                 bug.stateTimer = 3 + Math.random() * 4;
-                bug.peekAmount = 0.8;
+                bug.peekAmount = 0.75;
                 triggerEmotion(bug, '?');
               } else if (bug.state === 'SCARED') {
                 setHidingTarget(bug);
               } else {
-                // Decide next state: 40% hide, 30% pause, 30% new walk
                 const rand = Math.random();
-                if (rand < 0.45) {
-                  setHidingTarget(bug);
-                } else if (rand < 0.75) {
+                if (rand < 0.4) setHidingTarget(bug);
+                else if (rand < 0.7) {
                   bug.state = 'PAUSE';
                   bug.stateTimer = 1.5 + Math.random() * 2.5;
-                } else {
-                  setRandomWalkTarget(bug);
-                }
+                } else setRandomWalkTarget(bug);
               }
             } else {
               bug.targetAngle = Math.atan2(dy, dx);
-              // Smooth rotation angle interpolation
               let diff = bug.targetAngle - bug.angle;
               while (diff < -Math.PI) diff += Math.PI * 2;
               while (diff > Math.PI) diff -= Math.PI * 2;
               bug.angle += diff * Math.min(1, dt * 8);
 
-              // Move
               bug.x += Math.cos(bug.angle) * bug.speed * (dt * 60);
               bug.y += Math.sin(bug.angle) * bug.speed * (dt * 60);
 
-              // Leg animation
               bug.legPhase += bug.speed * dt * 14;
-
-              // Reduce peek when walking
               bug.peekAmount = Math.max(0, bug.peekAmount - dt * 2);
             }
 
@@ -295,7 +292,7 @@
           }
 
           case 'PAUSE': {
-            bug.legPhase += dt * 2; // slow twitching
+            bug.legPhase += dt * 2;
             bug.stateTimer -= dt;
             if (bug.stateTimer <= 0) {
               if (Math.random() < 0.6) setHidingTarget(bug);
@@ -307,7 +304,7 @@
           case 'PEEK': {
             bug.legPhase += dt * 1.5;
             bug.stateTimer -= dt;
-            bug.peekAmount = 0.7 + Math.sin(performance.now() * 0.003) * 0.1;
+            bug.peekAmount = 0.7 + Math.sin(performance.now() * 0.004) * 0.1;
 
             if (bug.stateTimer <= 0) {
               bug.state = 'WALK';
@@ -324,67 +321,66 @@
       ctx!.save();
       ctx!.translate(b.x, b.y);
 
-      // If peeking, rotate towards edge or hiding spot angle
       const renderAngle = b.state === 'PEEK' && b.hidingSpot ? b.hidingSpot.edgeAngle : b.angle;
-      ctx!.rotate(renderAngle + Math.PI / 2); // default face up
+      ctx!.rotate(renderAngle + Math.PI / 2);
 
       const s = b.size;
 
-      // Draw Sparks/Heart floating
+      // Draw Sparks/Hearts
       b.sparkles.forEach((sp) => {
         ctx!.save();
         ctx!.globalAlpha = sp.alpha;
         ctx!.fillStyle = '#f43f5e';
-        ctx!.font = 'bold 12px sans-serif';
+        ctx!.font = 'bold 13px sans-serif';
         ctx!.fillText(sp.char, sp.x - b.x, sp.y - b.y);
         ctx!.restore();
       });
 
-      // Draw Emotion indicator (speech bubble)
+      // Draw Speech Bubble
       if (b.emotion) {
         ctx!.save();
-        ctx!.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx!.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx!.strokeStyle = '#38bdf8';
         ctx!.lineWidth = 1.5;
         const eX = 0;
-        const eY = -s * 1.3;
+        const eY = -s * 1.35;
 
         ctx!.beginPath();
-        ctx!.arc(eX, eY, 9, 0, Math.PI * 2);
+        ctx!.arc(eX, eY, 10, 0, Math.PI * 2);
         ctx!.fill();
         ctx!.stroke();
 
         ctx!.fillStyle = '#ffffff';
-        ctx!.font = 'bold 10px sans-serif';
+        ctx!.font = 'bold 11px sans-serif';
         ctx!.textAlign = 'center';
         ctx!.textBaseline = 'middle';
         ctx!.fillText(b.emotion, eX, eY);
         ctx!.restore();
       }
 
-      // Clip/Hide effect if peekAmount > 0
+      // Clip if peeking
       if (b.peekAmount > 0) {
         ctx!.beginPath();
         ctx!.rect(-s * 1.5, -s * 1.5 + b.peekAmount * s * 1.2, s * 3, s * 3);
         ctx!.clip();
       }
 
-      // Draw 6 Wiggly Legs
-      ctx!.strokeStyle = '#1e293b';
-      ctx!.lineWidth = 2;
+      // 6 Wiggly Legs
+      ctx!.strokeStyle = '#0f172a';
+      ctx!.lineWidth = 2.2;
       ctx!.lineCap = 'round';
 
       for (let side = -1; side <= 1; side += 2) {
         for (let legIdx = 0; legIdx < 3; legIdx++) {
           const legY = (legIdx - 1) * (s * 0.3);
           const phaseOffset = legIdx * 0.8 + (side > 0 ? Math.PI : 0);
-          const legSwing = Math.sin(b.legPhase + phaseOffset) * 0.4;
+          const legSwing = Math.sin(b.legPhase + phaseOffset) * 0.45;
 
           const startX = side * (s * 0.35);
           const startY = legY;
-          const midX = side * (s * 0.65 + Math.cos(legSwing) * 3);
+          const midX = side * (s * 0.68 + Math.cos(legSwing) * 3);
           const midY = legY + Math.sin(legSwing) * 5;
-          const endX = side * (s * 0.85);
+          const endX = side * (s * 0.9);
           const endY = legY + side * legSwing * 6;
 
           ctx!.beginPath();
@@ -394,54 +390,49 @@
         }
       }
 
-      // Draw Antennae
-      const antennaPhase = Math.sin(performance.now() * 0.008 + b.id) * 0.2;
+      // Antennae
+      const antennaPhase = Math.sin(performance.now() * 0.008 + b.id) * 0.25;
       ctx!.strokeStyle = '#0f172a';
-      ctx!.lineWidth = 1.5;
+      ctx!.lineWidth = 1.8;
 
       for (let side = -1; side <= 1; side += 2) {
         const aX = side * (s * 0.2);
         const aY = -s * 0.45;
-        const tipX = side * (s * 0.5) + antennaPhase * 4;
-        const tipY = -s * 0.85;
+        const tipX = side * (s * 0.55) + antennaPhase * 4;
+        const tipY = -s * 0.9;
 
         ctx!.beginPath();
         ctx!.moveTo(aX, aY);
-        ctx!.quadraticCurveTo(side * (s * 0.3), -s * 0.75, tipX, tipY);
+        ctx!.quadraticCurveTo(side * (s * 0.35), -s * 0.75, tipX, tipY);
         ctx!.stroke();
 
-        // Cute antenna ball tip
         ctx!.fillStyle = b.species === 'pinkberry' ? '#f43f5e' : (b.species === 'emerald' ? '#10b981' : '#ef4444');
         ctx!.beginPath();
-        ctx!.arc(tipX, tipY, 2, 0, Math.PI * 2);
+        ctx!.arc(tipX, tipY, 2.5, 0, Math.PI * 2);
         ctx!.fill();
       }
 
-      // Draw Body & Shell based on species
+      // Body & Shell
       ctx!.save();
 
       if (b.species === 'ladybug') {
-        // Red Glossy Shell
         ctx!.fillStyle = '#ef4444';
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.42, s * 0.5, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.44, s * 0.52, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Dark Head
         ctx!.fillStyle = '#1e293b';
         ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.4, s * 0.3, s * 0.2, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, -s * 0.42, s * 0.3, s * 0.22, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Center split line
         ctx!.strokeStyle = '#0f172a';
-        ctx!.lineWidth = 1.2;
+        ctx!.lineWidth = 1.5;
         ctx!.beginPath();
         ctx!.moveTo(0, -s * 0.3);
-        ctx!.lineTo(0, s * 0.48);
+        ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
 
-        // Black Spots
         ctx!.fillStyle = '#0f172a';
         const spots = [
           { x: -s * 0.2, y: -s * 0.1, r: s * 0.08 },
@@ -456,49 +447,43 @@
         });
 
       } else if (b.species === 'emerald') {
-        // Shiny Emerald Green Shell
         const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
         grad.addColorStop(0, '#34d399');
-        grad.addColorStop(0.6, '#059669');
-        grad.addColorStop(1, '#064e3b');
+        grad.addColorStop(0.5, '#10b981');
+        grad.addColorStop(1, '#047857');
 
         ctx!.fillStyle = grad;
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.4, s * 0.52, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.42, s * 0.54, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Head
         ctx!.fillStyle = '#064e3b';
         ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.4, s * 0.28, s * 0.2, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, -s * 0.42, s * 0.28, s * 0.2, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Gold center stripe
         ctx!.strokeStyle = '#fbbf24';
-        ctx!.lineWidth = 1;
+        ctx!.lineWidth = 1.2;
         ctx!.beginPath();
         ctx!.moveTo(0, -s * 0.3);
-        ctx!.lineTo(0, s * 0.48);
+        ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
 
       } else if (b.species === 'firefly') {
-        // Glowing Amber Bug
         ctx!.fillStyle = '#f59e0b';
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.4, s * 0.48, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.42, s * 0.5, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Head
         ctx!.fillStyle = '#78350f';
         ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.38, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, -s * 0.4, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Glowing Tail Abdomen
-        const glowRadius = s * 0.35 + Math.sin(performance.now() * 0.006) * 3;
+        const glowRadius = s * 0.4 + Math.sin(performance.now() * 0.006) * 3;
         const glowGrad = ctx!.createRadialGradient(0, s * 0.3, 2, 0, s * 0.3, glowRadius);
-        glowGrad.addColorStop(0, 'rgba(254, 240, 138, 0.9)');
-        glowGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.5)');
+        glowGrad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+        glowGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.6)');
         glowGrad.addColorStop(1, 'rgba(234, 179, 8, 0)');
 
         ctx!.fillStyle = glowGrad;
@@ -506,20 +491,17 @@
         ctx!.arc(0, s * 0.3, glowRadius, 0, Math.PI * 2);
         ctx!.fill();
 
-      } else { // pinkberry
-        // Cute Pink Polka Shell
+      } else {
         ctx!.fillStyle = '#f43f5e';
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.42, s * 0.48, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.44, s * 0.5, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // Head
         ctx!.fillStyle = '#881337';
         ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.38, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, -s * 0.4, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        // White Polka Dots
         ctx!.fillStyle = '#ffffff';
         const dots = [
           { x: -s * 0.18, y: -s * 0.1, r: s * 0.06 },
@@ -535,32 +517,31 @@
         });
       }
 
-      // Glossy Highlight Reflection on shell
-      ctx!.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      // Glossy Highlight
+      ctx!.fillStyle = 'rgba(255, 255, 255, 0.45)';
       ctx!.beginPath();
-      ctx!.ellipse(-s * 0.15, -s * 0.15, s * 0.12, s * 0.2, -Math.PI / 4, 0, Math.PI * 2);
+      ctx!.ellipse(-s * 0.16, -s * 0.16, s * 0.12, s * 0.22, -Math.PI / 4, 0, Math.PI * 2);
       ctx!.fill();
 
-      // Cute Eyes on Head
+      // Cute Big White Eyes
       ctx!.fillStyle = '#ffffff';
       ctx!.beginPath();
-      ctx!.arc(-s * 0.12, -s * 0.45, s * 0.09, 0, Math.PI * 2);
-      ctx!.arc(s * 0.12, -s * 0.45, s * 0.09, 0, Math.PI * 2);
+      ctx!.arc(-s * 0.13, -s * 0.46, s * 0.095, 0, Math.PI * 2);
+      ctx!.arc(s * 0.13, -s * 0.46, s * 0.095, 0, Math.PI * 2);
       ctx!.fill();
 
-      // Eye Pupils
+      // Black Pupils
       ctx!.fillStyle = '#0f172a';
       if (b.state === 'PEEK' || b.state === 'PAUSE') {
-        // Pupils looking around
         const pX = Math.sin(performance.now() * 0.004) * (s * 0.03);
         ctx!.beginPath();
-        ctx!.arc(-s * 0.12 + pX, -s * 0.45, s * 0.045, 0, Math.PI * 2);
-        ctx!.arc(s * 0.12 + pX, -s * 0.45, s * 0.045, 0, Math.PI * 2);
+        ctx!.arc(-s * 0.13 + pX, -s * 0.46, s * 0.05, 0, Math.PI * 2);
+        ctx!.arc(s * 0.13 + pX, -s * 0.46, s * 0.05, 0, Math.PI * 2);
         ctx!.fill();
       } else {
         ctx!.beginPath();
-        ctx!.arc(-s * 0.12, -s * 0.46, s * 0.045, 0, Math.PI * 2);
-        ctx!.arc(s * 0.12, -s * 0.46, s * 0.045, 0, Math.PI * 2);
+        ctx!.arc(-s * 0.13, -s * 0.47, s * 0.05, 0, Math.PI * 2);
+        ctx!.arc(s * 0.13, -s * 0.47, s * 0.05, 0, Math.PI * 2);
         ctx!.fill();
       }
 
@@ -590,11 +571,18 @@
 
   let cleanup: (() => void) | undefined;
 
-  document.addEventListener("astro:page-load", () => {
+  function setup() {
     if (cleanup) cleanup();
     cleanup = initCuteBugs();
-  });
+  }
 
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setup();
+  } else {
+    document.addEventListener("DOMContentLoaded", setup);
+  }
+
+  document.addEventListener("astro:page-load", setup);
   document.addEventListener("astro:before-swap", () => {
     if (cleanup) cleanup();
   });
