@@ -441,7 +441,7 @@
         ctx!.restore();
       });
 
-      // Draw Dev Joke Chat Bubble in White-Gray Slate Theme
+      // Draw Dev Joke Chat Bubble in White-Gray Slate Theme (Boundary-clamped)
       if (b.chatText && b.chatTimer > 0) {
         ctx!.save();
         const font = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -450,9 +450,30 @@
         const padX = 9;
         const bubbleW = textWidth + padX * 2;
         const bubbleH = 22;
+        const margin = 8;
 
-        const bX = -bubbleW / 2;
-        const bY = -s * 1.65 - bubbleH;
+        // Clamp horizontal bubble box position so it never overflows canvas
+        let bX = -bubbleW / 2;
+        const minRelativeX = margin - b.x;
+        const maxRelativeX = (width - margin) - b.x;
+
+        if (bX < minRelativeX) {
+          bX = minRelativeX;
+        }
+        if (bX + bubbleW > maxRelativeX) {
+          bX = maxRelativeX - bubbleW;
+        }
+
+        // Clamp vertical position if bug is near top
+        let bY = -s * 1.65 - bubbleH;
+        let isAbove = true;
+        if (b.y + bY < margin) {
+          bY = s * 1.65;
+          isAbove = false;
+        }
+
+        // Compute pointer triangle position to always point to bug head (0,0)
+        const pointerX = Math.max(bX + 8, Math.min(bX + bubbleW - 8, 0));
 
         ctx!.globalAlpha = Math.min(1, b.chatTimer * 2.5);
 
@@ -471,9 +492,15 @@
 
         // Pointer triangle
         ctx!.beginPath();
-        ctx!.moveTo(-4, bY + bubbleH - 0.5);
-        ctx!.lineTo(0, bY + bubbleH + 4.5);
-        ctx!.lineTo(4, bY + bubbleH - 0.5);
+        if (isAbove) {
+          ctx!.moveTo(pointerX - 4, bY + bubbleH - 0.5);
+          ctx!.lineTo(pointerX, bY + bubbleH + 4.5);
+          ctx!.lineTo(pointerX + 4, bY + bubbleH - 0.5);
+        } else {
+          ctx!.moveTo(pointerX - 4, bY + 0.5);
+          ctx!.lineTo(pointerX, bY - 4.5);
+          ctx!.lineTo(pointerX + 4, bY + 0.5);
+        }
         ctx!.closePath();
         ctx!.fill();
         ctx!.stroke();
@@ -485,7 +512,7 @@
         ctx!.fillStyle = '#0f172a';
         ctx!.textAlign = 'center';
         ctx!.textBaseline = 'middle';
-        ctx!.fillText(b.chatText, 0, bY + bubbleH / 2 + 0.5);
+        ctx!.fillText(b.chatText, bX + bubbleW / 2, bY + bubbleH / 2 + 0.5);
         ctx!.restore();
       }
 
