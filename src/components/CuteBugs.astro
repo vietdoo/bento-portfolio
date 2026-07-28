@@ -1,5 +1,5 @@
 ---
-// CuteBugs.astro - Cute interactive bugs crawling, hiding, and chatting dev jokes in Welcome Card
+// CuteBugs.astro - AI Agent bugs (Claude, OpenAI, Gemini, Grok) crawling, hiding, and chatting dev jokes
 ---
 
 <div id="bugs-container" class="absolute inset-0 z-0 pointer-events-auto overflow-hidden select-none">
@@ -9,7 +9,8 @@
 <script>
   interface Bug {
     id: number;
-    species: 'ladybug' | 'emerald' | 'firefly' | 'pinkberry';
+    species: 'claude' | 'openai' | 'gemini' | 'grok';
+    name: string;
     x: number;
     y: number;
     targetX: number;
@@ -32,6 +33,50 @@
     sparkles: Array<{ x: number; y: number; vy: number; alpha: number; char: string }>;
   }
 
+  const CLAUDE_JOKES = [
+    "Claude 3.7 Sonnet online! ✍️",
+    "As an AI, I suggest refactoring... 💡",
+    "Thinking step-by-step... 🧠",
+    "200k context window ready! 📚",
+    "Helpful, harmless & honest! 😇",
+    "Artifact compiled! 📦",
+    "Let me write that code for you! ⚡",
+    "Code review approved! 👍"
+  ];
+
+  const OPENAI_JOKES = [
+    "GPT-4o model loaded! 🚀",
+    "I cannot fulfill... just kidding! 😜",
+    "O3 reasoning activated 🧠",
+    "Tokens per second: 150! ⚡",
+    "Custom GPT ready to serve! 🛠️",
+    "Generating real-time response... 🎙️",
+    "Multimodal vision enabled 👁️",
+    "LGTM! Ship it to prod! 🚀"
+  ];
+
+  const GEMINI_JOKES = [
+    "Gemini 1.5 Pro multimodal! 🌌",
+    "1M token context loaded! 📑",
+    "Powered by Google DeepMind! 💙",
+    "Analyzing video & audio 🎥",
+    "Google Search grounding live 🔍",
+    "Nano model on-device 📱",
+    "Hello from Gemini! ✨",
+    "Vite + Astro is super fast! ⚡"
+  ];
+
+  const GROK_JOKES = [
+    "Grok 3 in Fun Mode! 🚀",
+    "Realtime X data feed live 📡",
+    "Spicy mode activated 🔥",
+    "Jarvis vibe processing... 🤖",
+    "Answer to everything: 42 🌌",
+    "Don't panic & keep coding! 🎒",
+    "Quantum compute initiated ⚡",
+    "It works on my machine! 💻"
+  ];
+
   const DEV_JOKES = [
     "It works on my machine! 💻",
     "Is this a bug or a feature? 🤔",
@@ -39,62 +84,37 @@
     "Git commit -m 'fixed bug' 📝",
     "Where is console.log? 🧐",
     "CSS centering is hard... 📐",
-    "NullPointerException?! 💥",
     "404: Food not found! 🍕",
-    "I'm an Easter Egg! 🥚",
     "Who left this undefined? ❓",
     "LGTM! Ship it! 🚀",
     "Need coffee... ☕",
     "Vietdoo's code is clean! ⚡",
     "StackOverflow saved me! 🙏",
-    "Are we in production?! 😱",
-    "sudo make me a sandwich 🥪",
     "PR approved! Party time 🎉",
-    "Recompiling... ⌛",
-    "Dividing by zero... 💣",
     "npm i cute-bugs 📦",
-    "Who broke the main branch?! 🚨",
-    "Vite is super fast! ⚡",
     "Astro is awesome 🔥",
-    "Tabs vs Spaces? ⌨️",
-    "Docker container running 🐳",
     "Dark mode supremacy! 🌙",
-    "AI wrote this code! 🤖",
-    "Searching for 0.0.0.0... 🔍",
-    "Infinite loop detected! 🔁",
     "Keep calm & git push! 🐙",
     "No bugs here, only features! ✨",
-    "Code review approved! 👍",
-    "SyntaxError: Expected coffee ☕",
-    "Hello World! 👋",
-    "Nice portfolio! 🔥",
-    "Run before hot reload! 🏃"
+    "Code review approved! 👍"
   ];
 
   const HIDING_JOKES = [
     "Shhh! Hiding behind button 🤫",
     "Did someone say QA test?! 🏃‍♂️",
     "You can't see me! 🙈",
-    "Safe spot found! 🍀",
-    "Peeking out... 👁️",
     "Stealth mode activated 🥷",
-    "Don't tell the developer! 🤐",
     "Undercover agent 🕵️",
-    "Waiting for QA to leave... 🚪",
-    "Invisible bug mode 👻",
     "Safe and cozy here! 🍃",
     "Just peeking around... 👁️"
   ];
 
   const CLICK_JOKES = [
     "Hey! That tickles! 😂",
-    "Don't poke the bug! 🚫",
-    "I'm reporting this! 🚨",
+    "Don't poke the AI agent! 🚫",
+    "I'm reporting this bug! 🚨",
     "Running away! 🏃💨",
-    "Ouch! 💥",
-    "Cute bug power! ✨",
-    "Tag, you're it! 🏷️",
-    "Poke limit exceeded! 🛑",
+    "AI Agent power! ✨",
     "Deploying escape plan! 🚀",
     "Scared bug noises! 💨"
   ];
@@ -130,7 +150,12 @@
     let mouseY = -1000;
     let isHovering = false;
 
-    const speciesList: Bug['species'][] = ['ladybug', 'emerald', 'firefly', 'pinkberry'];
+    const speciesList: { species: Bug['species']; name: string }[] = [
+      { species: 'claude', name: 'Claude' },
+      { species: 'openai', name: 'OpenAI' },
+      { species: 'gemini', name: 'Gemini' },
+      { species: 'grok', name: 'Grok' }
+    ];
     const bugs: Bug[] = [];
 
     function resize() {
@@ -210,18 +235,33 @@
       bug.speed = bug.baseSpeed * 1.3;
     }
 
-    function speakJoke(bug: Bug, jokeList: string[]) {
-      const joke = jokeList[Math.floor(Math.random() * jokeList.length)];
+    function speakJoke(bug: Bug, defaultJokes?: string[]) {
+      let list = defaultJokes;
+      if (!list) {
+        let agentJokes: string[] = [];
+        if (bug.species === 'claude') agentJokes = CLAUDE_JOKES;
+        else if (bug.species === 'openai') agentJokes = OPENAI_JOKES;
+        else if (bug.species === 'gemini') agentJokes = GEMINI_JOKES;
+        else if (bug.species === 'grok') agentJokes = GROK_JOKES;
+
+        if (Math.random() < 0.7 && agentJokes.length > 0) {
+          list = agentJokes;
+        } else {
+          list = DEV_JOKES;
+        }
+      }
+      const joke = list[Math.floor(Math.random() * list.length)];
       bug.chatText = joke;
       bug.chatTimer = 3.5;
     }
 
     function initBugs() {
       bugs.length = 0;
-      speciesList.forEach((species, i) => {
+      speciesList.forEach((specInfo, i) => {
         const bug: Bug = {
           id: i,
-          species,
+          species: specInfo.species,
+          name: specInfo.name,
           x: 30 + (i + 1) * ((width - 60) / (speciesList.length + 1)),
           y: height * 0.65 + (Math.random() - 0.5) * 30,
           targetX: 0,
@@ -233,7 +273,7 @@
           state: 'WALK',
           stateTimer: 2 + Math.random() * 3,
           legPhase: Math.random() * Math.PI * 2,
-          size: 24 + Math.random() * 4,
+          size: 26 + Math.random() * 3,
           hidingSpot: null,
           peekAmount: 0,
           emotion: null,
@@ -324,7 +364,7 @@
           if (bug.state === 'PEEK') {
             speakJoke(bug, HIDING_JOKES);
           } else {
-            speakJoke(bug, DEV_JOKES);
+            speakJoke(bug);
           }
           bug.nextChatTimer = 5 + Math.random() * 7;
         }
@@ -578,6 +618,12 @@
         }
       }
 
+      // Antennae Tip Colors per AI Agent
+      let tipColor = '#f59e0b';
+      if (b.species === 'openai') tipColor = '#34d399';
+      else if (b.species === 'gemini') tipColor = '#a855f7';
+      else if (b.species === 'grok') tipColor = '#38bdf8';
+
       // Antennae
       const antennaPhase = Math.sin(performance.now() * 0.008 + b.id) * 0.25;
       ctx!.strokeStyle = '#0f172a';
@@ -594,121 +640,208 @@
         ctx!.quadraticCurveTo(side * (s * 0.35), -s * 0.75, tipX, tipY);
         ctx!.stroke();
 
-        ctx!.fillStyle = b.species === 'pinkberry' ? '#f43f5e' : (b.species === 'emerald' ? '#10b981' : '#ef4444');
+        ctx!.fillStyle = tipColor;
         ctx!.beginPath();
         ctx!.arc(tipX, tipY, 2.5, 0, Math.PI * 2);
         ctx!.fill();
       }
 
-      // Body & Shell
+      // Body & Shell per AI Agent Species
       ctx!.save();
 
-      if (b.species === 'ladybug') {
-        ctx!.fillStyle = '#ef4444';
+      if (b.species === 'claude') {
+        // Claude: Warm Terracotta Orange theme
+        const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
+        grad.addColorStop(0, '#f97316');
+        grad.addColorStop(0.6, '#d97706');
+        grad.addColorStop(1, '#b45309');
+
+        ctx!.fillStyle = grad;
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.44, s * 0.52, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.46, s * 0.54, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        ctx!.fillStyle = '#1e293b';
+        // Head
+        ctx!.fillStyle = '#451a0c';
         ctx!.beginPath();
         ctx!.ellipse(0, -s * 0.42, s * 0.3, s * 0.22, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        ctx!.strokeStyle = '#0f172a';
+        // Center seam
+        ctx!.strokeStyle = 'rgba(69, 26, 12, 0.4)';
         ctx!.lineWidth = 1.5;
         ctx!.beginPath();
         ctx!.moveTo(0, -s * 0.3);
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
 
-        ctx!.fillStyle = '#0f172a';
-        const spots = [
-          { x: -s * 0.2, y: -s * 0.1, r: s * 0.08 },
-          { x: s * 0.2, y: -s * 0.1, r: s * 0.08 },
-          { x: -s * 0.22, y: s * 0.2, r: s * 0.09 },
-          { x: s * 0.22, y: s * 0.2, r: s * 0.09 },
-        ];
-        spots.forEach((sp) => {
-          ctx!.beginPath();
-          ctx!.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+        // Claude Logo (Anthropic Asterisk/Spark) on Back
+        ctx!.save();
+        ctx!.translate(0, s * 0.08);
+        ctx!.fillStyle = '#ffffff';
+        for (let a = 0; a < 8; a++) {
+          const angle = (a * Math.PI) / 4;
+          ctx!.save();
+          ctx!.rotate(angle);
+          drawRoundedRect(ctx!, -s * 0.025, s * 0.04, s * 0.05, s * 0.11, s * 0.02);
           ctx!.fill();
-        });
+          ctx!.restore();
+        }
+        ctx!.beginPath();
+        ctx!.arc(0, 0, s * 0.05, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.restore();
 
-      } else if (b.species === 'emerald') {
+      } else if (b.species === 'openai') {
+        // OpenAI: Mint Teal / Emerald theme
         const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
         grad.addColorStop(0, '#34d399');
-        grad.addColorStop(0.5, '#10b981');
+        grad.addColorStop(0.5, '#10a37f');
         grad.addColorStop(1, '#047857');
 
         ctx!.fillStyle = grad;
         ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.42, s * 0.54, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, 0, s * 0.46, s * 0.54, 0, 0, Math.PI * 2);
         ctx!.fill();
 
+        // Head
         ctx!.fillStyle = '#064e3b';
         ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.42, s * 0.28, s * 0.2, 0, 0, Math.PI * 2);
+        ctx!.ellipse(0, -s * 0.42, s * 0.3, s * 0.22, 0, 0, Math.PI * 2);
         ctx!.fill();
 
-        ctx!.strokeStyle = '#fbbf24';
-        ctx!.lineWidth = 1.2;
+        // Center seam
+        ctx!.strokeStyle = 'rgba(6, 78, 59, 0.4)';
+        ctx!.lineWidth = 1.5;
         ctx!.beginPath();
         ctx!.moveTo(0, -s * 0.3);
         ctx!.lineTo(0, s * 0.5);
         ctx!.stroke();
 
-      } else if (b.species === 'firefly') {
-        ctx!.fillStyle = '#f59e0b';
-        ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.42, s * 0.5, 0, 0, Math.PI * 2);
-        ctx!.fill();
-
-        ctx!.fillStyle = '#78350f';
-        ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.4, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
-        ctx!.fill();
-
-        const glowRadius = s * 0.4 + Math.sin(performance.now() * 0.006) * 3;
-        const glowGrad = ctx!.createRadialGradient(0, s * 0.3, 2, 0, s * 0.3, glowRadius);
-        glowGrad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
-        glowGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.6)');
-        glowGrad.addColorStop(1, 'rgba(234, 179, 8, 0)');
-
-        ctx!.fillStyle = glowGrad;
-        ctx!.beginPath();
-        ctx!.arc(0, s * 0.3, glowRadius, 0, Math.PI * 2);
-        ctx!.fill();
-
-      } else {
-        ctx!.fillStyle = '#f43f5e';
-        ctx!.beginPath();
-        ctx!.ellipse(0, 0, s * 0.44, s * 0.5, 0, 0, Math.PI * 2);
-        ctx!.fill();
-
-        ctx!.fillStyle = '#881337';
-        ctx!.beginPath();
-        ctx!.ellipse(0, -s * 0.4, s * 0.28, s * 0.18, 0, 0, Math.PI * 2);
-        ctx!.fill();
-
-        ctx!.fillStyle = '#ffffff';
-        const dots = [
-          { x: -s * 0.18, y: -s * 0.1, r: s * 0.06 },
-          { x: s * 0.18, y: -s * 0.1, r: s * 0.06 },
-          { x: 0, y: s * 0.12, r: s * 0.07 },
-          { x: -s * 0.2, y: s * 0.25, r: s * 0.06 },
-          { x: s * 0.2, y: s * 0.25, r: s * 0.06 },
-        ];
-        dots.forEach((d) => {
+        // OpenAI Logo (Interlocking Loop Rosette) on Back
+        ctx!.save();
+        ctx!.translate(0, s * 0.06);
+        ctx!.strokeStyle = '#ffffff';
+        ctx!.lineWidth = s * 0.045;
+        ctx!.lineCap = 'round';
+        ctx!.lineJoin = 'round';
+        for (let i = 0; i < 6; i++) {
+          ctx!.save();
+          ctx!.rotate((i * Math.PI) / 3);
           ctx!.beginPath();
-          ctx!.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-          ctx!.fill();
-        });
+          ctx!.moveTo(0, -s * 0.14);
+          ctx!.lineTo(s * 0.09, -s * 0.1);
+          ctx!.lineTo(s * 0.09, s * 0.02);
+          ctx!.stroke();
+          ctx!.restore();
+        }
+        ctx!.restore();
+
+      } else if (b.species === 'gemini') {
+        // Gemini: Google Royal Blue-Violet Gradient
+        const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
+        grad.addColorStop(0, '#60a5fa');
+        grad.addColorStop(0.4, '#3b82f6');
+        grad.addColorStop(0.8, '#8b5cf6');
+        grad.addColorStop(1, '#a855f7');
+
+        ctx!.fillStyle = grad;
+        ctx!.beginPath();
+        ctx!.ellipse(0, 0, s * 0.46, s * 0.54, 0, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // Head
+        ctx!.fillStyle = '#1e1b4b';
+        ctx!.beginPath();
+        ctx!.ellipse(0, -s * 0.42, s * 0.3, s * 0.22, 0, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // Center seam
+        ctx!.strokeStyle = 'rgba(30, 27, 75, 0.4)';
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(0, -s * 0.3);
+        ctx!.lineTo(0, s * 0.5);
+        ctx!.stroke();
+
+        // Gemini Logo (4-pointed curved spark star) on Back
+        ctx!.save();
+        ctx!.translate(0, s * 0.08);
+        ctx!.fillStyle = '#ffffff';
+        const size = s * 0.21;
+        ctx!.beginPath();
+        ctx!.moveTo(0, -size);
+        ctx!.quadraticCurveTo(0, 0, size, 0);
+        ctx!.quadraticCurveTo(0, 0, 0, size);
+        ctx!.quadraticCurveTo(0, 0, -size, 0);
+        ctx!.quadraticCurveTo(0, 0, 0, -size);
+        ctx!.closePath();
+        ctx!.fill();
+        ctx!.restore();
+
+      } else if (b.species === 'grok') {
+        // Grok: Obsidian Slate Carbon with Cyan accent
+        const grad = ctx!.createLinearGradient(-s * 0.4, -s * 0.4, s * 0.4, s * 0.4);
+        grad.addColorStop(0, '#334155');
+        grad.addColorStop(0.5, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+
+        ctx!.fillStyle = grad;
+        ctx!.beginPath();
+        ctx!.ellipse(0, 0, s * 0.46, s * 0.54, 0, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // Cyan rim accent
+        ctx!.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+        ctx!.lineWidth = 1.2;
+        ctx!.stroke();
+
+        // Head
+        ctx!.fillStyle = '#020617';
+        ctx!.beginPath();
+        ctx!.ellipse(0, -s * 0.42, s * 0.3, s * 0.22, 0, 0, Math.PI * 2);
+        ctx!.fill();
+
+        // Center seam
+        ctx!.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(0, -s * 0.3);
+        ctx!.lineTo(0, s * 0.5);
+        ctx!.stroke();
+
+        // Grok Logo (xAI stylized slash-X) on Back
+        ctx!.save();
+        ctx!.translate(0, s * 0.08);
+        ctx!.strokeStyle = '#ffffff';
+        ctx!.lineWidth = s * 0.05;
+        ctx!.lineCap = 'round';
+
+        ctx!.beginPath();
+        ctx!.moveTo(-s * 0.13, -s * 0.13);
+        ctx!.lineTo(s * 0.13, s * 0.13);
+        ctx!.stroke();
+
+        ctx!.beginPath();
+        ctx!.moveTo(s * 0.13, -s * 0.13);
+        ctx!.lineTo(-s * 0.13, s * 0.13);
+        ctx!.stroke();
+
+        // Bright Cyan forward slash overlay
+        ctx!.strokeStyle = '#38bdf8';
+        ctx!.lineWidth = s * 0.035;
+        ctx!.beginPath();
+        ctx!.moveTo(-s * 0.04, -s * 0.16);
+        ctx!.lineTo(s * 0.04, s * 0.16);
+        ctx!.stroke();
+
+        ctx!.restore();
       }
 
       // Glossy Highlight
-      ctx!.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx!.fillStyle = 'rgba(255, 255, 255, 0.35)';
       ctx!.beginPath();
-      ctx!.ellipse(-s * 0.16, -s * 0.16, s * 0.12, s * 0.22, -Math.PI / 4, 0, Math.PI * 2);
+      ctx!.ellipse(-s * 0.16, -s * 0.16, s * 0.11, s * 0.2, -Math.PI / 4, 0, Math.PI * 2);
       ctx!.fill();
 
       // Cute Big White Eyes
