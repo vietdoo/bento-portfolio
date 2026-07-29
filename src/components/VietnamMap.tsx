@@ -77,34 +77,14 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
 
 const COUNTRY_NAME_VN: Record<string, string> = {
   Laos: "Lào",
-  Cambodia: "Campuchia",
-  Thailand: "Thái Lan",
-  China: "Trung Quốc",
-  Philippines: "Philippines",
-  Malaysia: "Malaysia",
-  Myanmar: "Myanmar",
-  Taiwan: "Đài Loan",
-};
-
-const NEIGHBOR_NAMES = new Set([
-  "Laos",
-  "Cambodia",
-  "Thailand",
-  "China",
-  "Philippines",
-  "Malaysia",
-  "Myanmar",
-  "Taiwan",
-]);
-
-// Clean Dark Slate Palette matching Bento Portfolio theme
-const OCEAN_FILL = "#0d1b2a";
+  Cambodia:// Clean Dark Slate Palette matching Bento Portfolio theme
+const OCEAN_FILL = "#0a131d";
 const OCEAN_STIPPLE = "#16283d";
-const PROVINCE_DEFAULT_FILL = "#1e3854";
-const PROVINCE_HOVER_FILL = "#2c547a";
+const PROVINCE_DEFAULT_FILL = "rgba(30, 56, 84, 0.75)";
+const PROVINCE_HOVER_FILL = "rgba(44, 84, 122, 0.9)";
 const PROVINCE_STROKE = "#3c648d";
-const WORLD_COUNTRY_FILL = "#142436";
-const WORLD_COUNTRY_HOVER_FILL = "#1e3752";
+const WORLD_COUNTRY_FILL = "rgba(20, 36, 54, 0.6)";
+const WORLD_COUNTRY_HOVER_FILL = "rgba(30, 55, 82, 0.85)";
 const WORLD_COUNTRY_STROKE = "#1f344d";
 const GRATICULE_STROKE = "#16283b";
 const TOOLTIP_BG = "#0c131d";
@@ -148,6 +128,7 @@ export default function VietnamMap() {
         .attr("width", 6)
         .attr("height", 6)
         .attr("patternUnits", "userSpaceOnUse");
+
       stipple
         .append("rect")
         .attr("width", 6)
@@ -189,6 +170,9 @@ export default function VietnamMap() {
         .attr("height", "100%")
         .attr("fill", "url(#vn-sea-stipple)");
 
+      // CARTO Map Tiles layer group (rendered below vector map features)
+      const tilesGroup = svg.append("g").attr("class", "carto-tiles-group");
+
       // Tight bounding box feature focused on Vietnam + ~200km surrounding region
       // Lon: 100.5°E to 115.0°E, Lat: 7.5°N to 24.5°N
       const targetExtent = {
@@ -212,6 +196,73 @@ export default function VietnamMap() {
         );
 
       const pathGenerator = d3.geoPath().projection(projection);
+
+      // Dynamic CARTO Dark Matter (nolabels) tile renderer
+      const updateTiles = (transform = d3.zoomIdentity) => {
+        const scale = projection.scale() * transform.k;
+        const translate = projection.translate();
+        const tx = translate[0] * transform.k + transform.x;
+        const ty = translate[1] * transform.k + transform.y;
+
+        const worldWidth = 2 * Math.PI * scale;
+        const z = Math.max(2, Math.min(12, Math.floor(Math.log2(worldWidth / 256))));
+        const numTiles = 1 << z;
+        const tileSizeProj = worldWidth / numTiles;
+
+        const x0 = tx - Math.PI * scale;
+        const y0 = ty - Math.PI * scale;
+
+        const buffer = 256;
+        const minX = -buffer;
+        const minY = -buffer;
+        const maxX = width + buffer;
+        const maxY = height + buffer;
+
+        const minTileX = Math.max(0, Math.floor((minX - x0) / tileSizeProj));
+        const maxTileX = Math.min(numTiles - 1, Math.floor((maxX - x0) / tileSizeProj));
+        const minTileY = Math.max(0, Math.floor((minY - y0) / tileSizeProj));
+        const maxTileY = Math.min(numTiles - 1, Math.floor((maxY - y0) / tileSizeProj));
+
+        const tiles: { id: string; url: string; x: number; y: number; size: number }[] = [];
+        const subdomains = ["a", "b", "c"];
+
+        for (let tyIdx = minTileY; tyIdx <= maxTileY; tyIdx++) {
+          for (let txIdx = minTileX; txIdx <= maxTileX; txIdx++) {
+            const tileX = x0 + txIdx * tileSizeProj;
+            const tileY = y0 + tyIdx * tileSizeProj;
+            const subdomain = subdomains[(txIdx + tyIdx) % subdomains.length];
+            const url = `https://${subdomain}.basemaps.cartocdn.com/dark_nolabels/${z}/${txIdx}/${tyIdx}.png`;
+            tiles.push({
+              id: `${z}-${txIdx}-${tyIdx}`,
+              url,
+              x: tileX,
+              y: tileY,
+              size: tileSizeProj,
+            });
+          }
+        }
+
+        const images = tilesGroup
+          .selectAll<SVGImageElement, (typeof tiles)[0]>("image")
+          .data(tiles, (d) => d.id);
+
+        images.exit().remove();
+
+        images
+          .enter()
+          .append("image")
+          .attr("href", (d) => d.url)
+          .style("opacity", "0.85")
+          .merge(images as any)
+          .attr("x", (d) => d.x)
+          .attr("y", (d) => d.y)
+          .attr("width", (d) => d.size)
+          .attr("height", (d) => d.size)
+          .attr("preserveAspectRatio", "none");
+      };
+
+      // Initial tiles update
+      updateTiles(d3.zoomIdentity);
 
       // Main map group for pan/zoom
       const mapGroup = svg.append("g").attr("class", "map-group");
@@ -502,6 +553,7 @@ export default function VietnamMap() {
         .scaleExtent([0.8, 12])
         .on("zoom", (event) => {
           mapGroup.attr("transform", event.transform);
+          updateTiles(event.transform);
         });
 
       svg.call(zoom as any);
@@ -545,6 +597,11 @@ export default function VietnamMap() {
             style={{ width: `${visitedPercent()}%` }}
           />
         </div>
+      </div>
+
+      {/* Map Attribution */}
+      <div class="absolute bottom-2 right-3 z-30 text-[10px] text-darkslate-400/80 pointer-events-none select-none">
+        © <a href="https://carto.com/" target="_blank" rel="noopener noreferrer" class="pointer-events-auto hover:underline hover:text-darkslate-300">CARTO</a> • © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="pointer-events-auto hover:underline hover:text-darkslate-300">OpenStreetMap</a>
       </div>
     </div>
   );
