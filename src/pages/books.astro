@@ -3,7 +3,10 @@ import Layout from "../layouts/Layout.astro";
 import BackLink from "../components/BackLink.astro";
 import LoaderAnimation from "../components/LoaderAnimation.astro";
 import { SITE } from "../site-config";
-import { booksData, type Book } from "../data/books";
+import { type Book } from "../data/books";
+import { getLiveGoodreadsBooks } from "../lib/goodreads";
+
+const booksData: Book[] = await getLiveGoodreadsBooks();
 
 const readingBooks = booksData.filter((b) => b.status === "reading");
 const completedBooks = booksData.filter((b) => b.status === "completed");
