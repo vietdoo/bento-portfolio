@@ -65,7 +65,14 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
   "Ninh Binh": { vi: "Ninh Bình", region: "Đồng bằng sông Hồng" },
   "Phu Tho": { vi: "Phú Thọ", region: "Đông Bắc Bộ" },
   "Quang Ngai": { vi: "Quảng Ngãi", region: "Nam Trung Bộ" },
-  "Quang Ninh": { vi: "Quảng Ninh", region: "Đông Bắc Bộ" },
+  "Quang Ninh": {
+    vi: "Quảng Ninh",
+    region: "Đông Bắc Bộ",
+    labelDx: 16,
+    labelDy: -4,
+    highlights: ["Vịnh Hạ Long", "Đảo Cô Tô", "Yên Tử", "Vân Đồn"],
+    travelDate: "Đã ghé thăm • Mùa thu 2024"
+  },
   "Quang Tri": { vi: "Quảng Trị", region: "Bắc Trung Bộ" },
   "Son La": { vi: "Sơn La", region: "Tây Bắc Bộ" },
   "Tay Ninh": { vi: "Tây Ninh", region: "Đông Nam Bộ" },

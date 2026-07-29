@@ -34,5 +34,6 @@ export const SITE = {
     "Ha Noi",
     "Ho Chi Minh",
     "Da Nang",
+    "Quang Ninh",
   ],
 };
