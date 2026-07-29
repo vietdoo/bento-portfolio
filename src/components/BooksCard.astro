@@ -2,8 +2,22 @@
 import Card from "./Card/index.astro";
 import { booksData } from "../data/books";
 
-const featuredCovers = booksData.slice(0, 4);
 const currentlyReading = booksData.find((b) => b.status === "reading");
+const totalBooks = booksData.length;
+
+// Split books for 2 background shelf rows
+const row1Books = booksData.slice(0, 6);
+const row2Books = booksData.slice(6, 12);
+
+// Varied spine colors, heights, and styles for natural bookshelf feel
+const spineStyles = [
+  { color: "from-amber-600/40 via-amber-700/60 to-darkslate-800", height: "h-11", width: "w-4" },
+  { color: "from-primary-600/50 via-primary-700/60 to-darkslate-800", height: "h-13", width: "w-5" },
+  { color: "from-cyan-600/40 via-cyan-700/60 to-darkslate-800", height: "h-10", width: "w-3.5" },
+  { color: "from-purple-600/40 via-purple-700/60 to-darkslate-800", height: "h-12", width: "w-4" },
+  { color: "from-emerald-600/40 via-emerald-700/60 to-darkslate-800", height: "h-14", width: "w-4.5" },
+  { color: "from-rose-600/40 via-rose-700/60 to-darkslate-800", height: "h-10.5", width: "w-3.5" },
+];
 ---
 
 <Card
@@ -11,36 +25,88 @@ const currentlyReading = booksData.find((b) => b.status === "reading");
   rowSpan="md:row-span-1"
   href="/books"
 >
-  <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none opacity-40 group-hover:opacity-65 transition-all duration-300">
-    <div class="absolute -right-3 -bottom-5 flex gap-2.5 transform -rotate-6 group-hover:-rotate-3 group-hover:scale-105 transition-all duration-500 ease-out">
-      {featuredCovers.map((book, idx) => (
-        <div 
-          class="w-14 h-22 rounded-lg shadow-lg border border-white/10 overflow-hidden flex-shrink-0 bg-darkslate-700 transform relative"
-          style={`transform: translateY(${idx * 3}px) rotate(${idx * 2 - 3}deg); z-index: ${5 - idx};`}
-        >
-          <img 
-            src={book.coverImage} 
-            alt={book.title}
-            class="w-full h-full object-cover"
-            loading="lazy" 
-          />
-        </div>
-      ))}
+  <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <!-- Bookshelf ("Kho Sách") Background Matrix -->
+    <div class="bookshelf-grid-container w-full h-full relative flex flex-col justify-between p-3 pt-2.5 opacity-70 group-hover:opacity-95 transition-opacity duration-500 select-none">
+      
+      <!-- Shelf Row 1 -->
+      <div class="shelf-row flex items-end justify-between px-1 relative pb-0.5">
+        <!-- Wooden/Metal Shelf Bar -->
+        <div class="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-white/20 via-white/10 to-white/20 shadow-sm"></div>
+        
+        {row1Books.map((book, idx) => {
+          const style = spineStyles[idx % spineStyles.length];
+          const isFeatured = idx === 0 || idx === 3;
+          return (
+            <div
+              class={`bs-spine relative rounded-t-[2px] border-t border-x border-white/15 transition-all duration-300 ease-out flex-shrink-0 ${
+                isFeatured ? "w-9 h-13 shadow-md overflow-hidden bg-darkslate-700" : `${style.width} ${style.height} bg-gradient-to-b ${style.color}`
+              }`}
+              data-index={idx}
+            >
+              {isFeatured ? (
+                <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover opacity-80" loading="lazy" />
+              ) : (
+                <div class="w-full h-full flex flex-col items-center justify-between py-1.5 opacity-60">
+                  <div class="w-1.5 h-1 rounded-full bg-white/40"></div>
+                  <div class="w-0.5 h-6 bg-white/20"></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Shelf Row 2 -->
+      <div class="shelf-row flex items-end justify-between px-1 relative pb-0.5">
+        <!-- Wooden/Metal Shelf Bar -->
+        <div class="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-white/20 via-white/10 to-white/20 shadow-sm"></div>
+
+        {row2Books.map((book, idx) => {
+          const style = spineStyles[(idx + 2) % spineStyles.length];
+          const isFeatured = idx === 1 || idx === 4;
+          return (
+            <div
+              class={`bs-spine relative rounded-t-[2px] border-t border-x border-white/15 transition-all duration-300 ease-out flex-shrink-0 ${
+                isFeatured ? "w-9 h-13 shadow-md overflow-hidden bg-darkslate-700" : `${style.width} ${style.height} bg-gradient-to-b ${style.color}`
+              }`}
+              data-index={idx + 6}
+            >
+              {isFeatured ? (
+                <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover opacity-80" loading="lazy" />
+              ) : (
+                <div class="w-full h-full flex flex-col items-center justify-between py-1.5 opacity-60">
+                  <div class="w-1.5 h-1 rounded-full bg-white/40"></div>
+                  <div class="w-0.5 h-6 bg-white/20"></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Overlay Vignette Gradient for Legibility -->
+      <div class="absolute inset-0 bg-gradient-to-t from-darkslate-600 via-darkslate-600/80 to-darkslate-600/35 pointer-events-none"></div>
     </div>
-    <div class="absolute inset-0 bg-gradient-to-t from-darkslate-500 via-darkslate-500/70 to-transparent"></div>
   </div>
 
-  <div class="flex flex-col justify-between h-full relative z-10">
-    <div class="flex items-center gap-2">
-      <span class="relative flex h-2 w-2">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+  <!-- Content Layer -->
+  <div class="flex-1 flex flex-col justify-between h-full relative z-10">
+    <div class="flex items-center justify-between pr-6">
+      <div class="flex items-center gap-1.5">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+        </span>
+        <span class="text-[10px] font-semibold tracking-wider uppercase text-primary-400">Reading Log</span>
+      </div>
+      <span class="text-[10px] font-medium text-white/60 bg-darkslate-700/80 px-2 py-0.5 rounded-full border border-white/10">
+        {totalBooks} books
       </span>
-      <span class="text-[10px] font-semibold tracking-wider uppercase text-primary-400">Reading Log</span>
     </div>
 
     <div>
-      <h2 class="text-xl font-bold text-white m-0 tracking-tight">Bookshelf 📚</h2>
+      <h2 class="text-xl font-bold text-white m-0 tracking-tight">Bookshelf</h2>
       {currentlyReading && (
         <p class="text-xs text-darkslate-300 m-0 mt-1 line-clamp-1">
           <span class="text-white/60">Reading:</span> {currentlyReading.title}
@@ -49,3 +115,73 @@ const currentlyReading = booksData.find((b) => b.status === "reading");
     </div>
   </div>
 </Card>
+
+<style>
+  .bs-spine.active {
+    transform: translateY(-4px) scale(1.05);
+    border-color: color-mix(in srgb, var(--primary-500) 85%, transparent) !important;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--primary-500) 50%, transparent) !important;
+  }
+</style>
+
+<script is:inline>
+  (function setupBookshelf() {
+    function startAnimation() {
+      const container = document.querySelector('.bookshelf-grid-container');
+      if (!container) return;
+      const spines = container.querySelectorAll('.bs-spine');
+      if (!spines.length) return;
+
+      const card = container.closest('.card') || container.parentElement;
+
+      if (container.dataset.animated === 'true') return;
+      container.dataset.animated = 'true';
+
+      let step = 0;
+      function animateWave() {
+        spines.forEach((spine, idx) => {
+          if (idx === step || idx === (step + 1) % spines.length) {
+            spine.classList.add('active');
+          } else {
+            spine.classList.remove('active');
+          }
+        });
+        step = (step + 1) % spines.length;
+      }
+
+      setInterval(animateWave, 400);
+
+      if (card) {
+        card.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+
+          spines.forEach((spine) => {
+            const sRect = spine.getBoundingClientRect();
+            const sX = sRect.left - rect.left + sRect.width / 2;
+            const dist = Math.abs(x - sX);
+
+            if (dist < 35) {
+              spine.classList.add('active');
+              setTimeout(() => {
+                spine.classList.remove('active');
+              }, 400);
+            }
+          });
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startAnimation);
+    } else {
+      startAnimation();
+    }
+    document.addEventListener('astro:page-load', () => {
+      const container = document.querySelector('.bookshelf-grid-container');
+      if (container) container.dataset.animated = 'false';
+      startAnimation();
+    });
+  })();
+</script>
+
