@@ -172,7 +172,7 @@ export function parseGoodreadsXML(xmlText: string): GoodreadsParsedOutput {
 }
 
 /**
- * Fetches and parses live Goodreads data
+ * Fetches and parses live Goodreads data in JSON Output Format
  */
 export async function getParsedGoodreadsData(): Promise<GoodreadsParsedOutput> {
   try {
@@ -192,7 +192,6 @@ export async function getParsedGoodreadsData(): Promise<GoodreadsParsedOutput> {
     return parseGoodreadsXML(xmlText);
   } catch (error) {
     console.warn("Using fallback cached Goodreads data due to network:", error);
-    // Fallback constructed from booksData
     const read = booksData.filter(b => b.status === 'completed').map(b => ({
       id: b.id,
       title: b.title,
@@ -231,5 +230,90 @@ export async function getParsedGoodreadsData(): Promise<GoodreadsParsedOutput> {
       currently_reading: currently,
       read_books: read
     };
+  }
+}
+
+/**
+ * Compatibility helper function for Astro UI
+ */
+export async function getLiveGoodreadsBooks(): Promise<Book[]> {
+  try {
+    const data = await getParsedGoodreadsData();
+    const liveBooks: Book[] = [];
+
+    // Add currently reading
+    data.currently_reading.forEach(b => {
+      const match = booksData.find(existing => existing.title.toLowerCase().includes(b.title.toLowerCase()) || b.title.toLowerCase().includes(existing.title.toLowerCase()));
+      if (match) {
+        liveBooks.push({ ...match, status: 'reading', statusLabel: 'Đang đọc' });
+      } else {
+        liveBooks.push({
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          category: 'tech',
+          categoryLabel: 'Technical Book',
+          status: 'reading',
+          statusLabel: 'Đang đọc',
+          coverImage: b.cover_url,
+          yearRead: '2026',
+          dateRead: 'Currently Reading',
+          summary: 'Currently reading book on Goodreads.',
+          review: 'Synced from Goodreads profile.',
+          keyTakeaways: ['Goodreads live sync'],
+          goodreadsUrl: b.link,
+          tags: ['Goodreads', 'Reading']
+        });
+      }
+    });
+
+    // Add read books
+    data.read_books.forEach(b => {
+      const match = booksData.find(existing => existing.title.toLowerCase().includes(b.title.toLowerCase()) || b.title.toLowerCase().includes(existing.title.toLowerCase()));
+      if (match) {
+        liveBooks.push({
+          ...match,
+          status: 'completed',
+          statusLabel: 'Đã đọc',
+          rating: b.rating || match.rating,
+          ratingText: b.ratingText || match.ratingText,
+          yearRead: b.read_year ? b.read_year.toString() : match.yearRead,
+          dateRead: b.read_date || match.dateRead
+        });
+      } else {
+        liveBooks.push({
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          category: 'tech',
+          categoryLabel: 'Book',
+          status: 'completed',
+          statusLabel: 'Đã đọc',
+          coverImage: b.cover_url,
+          rating: b.rating,
+          ratingText: b.ratingText,
+          pages: b.pages,
+          yearRead: b.read_year ? b.read_year.toString() : '2026',
+          dateRead: b.read_date,
+          summary: 'Read book synced from Goodreads.',
+          review: 'Synced from Goodreads profile.',
+          keyTakeaways: ['Goodreads live sync'],
+          goodreadsUrl: b.link,
+          tags: ['Goodreads', 'Read']
+        });
+      }
+    });
+
+    // Append remaining books from local data so books shelf is always full and rich
+    booksData.forEach(b => {
+      if (!liveBooks.some(lb => lb.id === b.id || lb.title.toLowerCase() === b.title.toLowerCase())) {
+        liveBooks.push(b);
+      }
+    });
+
+    return liveBooks;
+  } catch (err) {
+    console.warn("getLiveGoodreadsBooks error fallback to booksData:", err);
+    return booksData;
   }
 }
