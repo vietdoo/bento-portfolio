@@ -37,8 +37,8 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Bookshelf & Goodreads Log`}
-  description="Lịch sử đọc sách đồng bộ 100% từ Goodreads profile RSS."
+  title={`${SITE.author.fullName} - Bookshelf`}
+  description="Personal reading log & bookshelf."
 >
   <!-- Detail Modal -->
   <div
@@ -138,22 +138,10 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
   <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 text-white">
     <BackLink href="/" class="mb-8" />
 
-    <!-- Goodreads Sync Header -->
-    <header class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight mb-1">Bookshelf</h1>
-        <p class="text-darkslate-300 text-xs sm:text-sm">Reading log synced 100% strictly from Goodreads RSS feed.</p>
-      </div>
-
-      <a
-        href={SITE.links.goodreads}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-darkslate-500/60 hover:bg-darkslate-500 border border-darkslate-400/60 text-xs text-darkslate-200 transition-all group"
-      >
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Synced with <strong class="text-white group-hover:text-zinc-200 transition-colors">goodreads.com/165632513</strong> ↗</span>
-      </a>
+    <!-- Clean Header -->
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold tracking-tight mb-1">Bookshelf</h1>
+      <p class="text-darkslate-300 text-xs sm:text-sm">Personal reading log &amp; bookshelf.</p>
     </header>
 
     <!-- SECTION 1: ANALYTICS CHARTS (Minimalist White & Gray Theme) -->
@@ -294,13 +282,6 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
         );
       })}
     </section>
-
-    <!-- Footer Attribution -->
-    <footer class="mt-16 pt-6 border-t border-darkslate-400/40 text-center text-xs text-darkslate-300">
-      <p>
-        Data &amp; Image Source: Synced 100% from <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-zinc-200 font-medium underline hover:text-white">Goodreads Profile (@165632513)</a> RSS feed.
-      </p>
-    </footer>
   </main>
 </Layout>
 
