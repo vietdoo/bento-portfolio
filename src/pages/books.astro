@@ -8,25 +8,39 @@ import { getLiveGoodreadsBooks } from "../lib/goodreads";
 
 const booksData: Book[] = await getLiveGoodreadsBooks();
 
-const readingBooks = booksData.filter((b) => b.status === "reading");
-const completedBooks = booksData.filter((b) => b.status === "completed");
-const wantToReadBooks = booksData.filter((b) => b.status === "want-to-read");
+// Group books by year
+const years = ["2026", "2025", "2024"];
 
-const avgRating = (
-  booksData
-    .filter((b) => b.rating)
-    .reduce((acc, b) => acc + (b.rating || 0), 0) /
-  booksData.filter((b) => b.rating).length
-).toFixed(1);
+const booksByYear: Record<string, Book[]> = {
+  "2026": booksData.filter((b) => b.yearRead === "2026"),
+  "2025": booksData.filter((b) => b.yearRead === "2025"),
+  "2024": booksData.filter((b) => b.yearRead === "2024"),
+};
+
+// Yearly stats calculation
+const yearlyCounts = {
+  "2024": booksByYear["2024"].length,
+  "2025": booksByYear["2025"].length,
+  "2026": booksByYear["2026"].length,
+};
+
+const maxYearlyCount = Math.max(...Object.values(yearlyCounts), 1);
+
+// Monthly stats for 2026 (Jan-Dec)
+const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthlyCounts2026 = Array.from({ length: 12 }, (_, i) => {
+  return booksByYear["2026"].filter((b) => b.monthRead === i + 1).length;
+});
+const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
 ---
 
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Bookshelf & Reading List`}
-  description="Bộ sưu tập sách kỹ thuật IT, kiến trúc hệ thống và phát triển bản thân. Giao diện tối giản, tự động đồng bộ từ Goodreads profile."
+  title={`${SITE.author.fullName} - Bookshelf & Reading Log`}
+  description="Lịch sử đọc sách theo năm, biểu đồ thống kê và bài tập đọc. Tự động đồng bộ từ Goodreads profile."
 >
-  <!-- Modern Minimal Detail Modal -->
+  <!-- Detail Modal -->
   <div
     id="book-modal"
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 p-4 sm:p-6"
@@ -36,7 +50,6 @@ const avgRating = (
       class="bg-darkslate-600/95 border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative text-white transform scale-95 transition-all duration-300"
       id="modal-content"
     >
-      <!-- Close Button -->
       <button
         id="modal-close"
         class="absolute top-4 right-4 text-darkslate-300 hover:text-white transition-colors bg-darkslate-700/80 hover:bg-darkslate-500 border border-white/10 rounded-full w-8 h-8 flex items-center justify-center text-xs font-semibold z-10"
@@ -45,9 +58,8 @@ const avgRating = (
         ✕
       </button>
 
-      <!-- Modal Header -->
       <div class="flex flex-col sm:flex-row gap-6 mb-6 pb-6 border-b border-white/10">
-        <div class="w-36 h-52 sm:w-40 sm:h-60 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-darkslate-800 flex-shrink-0 mx-auto sm:mx-0">
+        <div class="w-32 h-48 sm:w-40 sm:h-60 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-darkslate-800 flex-shrink-0 mx-auto sm:mx-0">
           <img id="modal-cover" src="" alt="" class="w-full h-full object-cover" />
         </div>
 
@@ -85,7 +97,6 @@ const avgRating = (
         </div>
       </div>
 
-      <!-- Detail content -->
       <div class="space-y-5 text-xs sm:text-sm">
         <div>
           <h3 class="text-[11px] font-semibold uppercase tracking-wider text-darkslate-300 mb-1.5">Summary</h3>
@@ -133,356 +144,165 @@ const avgRating = (
     </div>
   </div>
 
-  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-10 text-white">
+  <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 text-white">
     <BackLink href="/" class="mb-8" />
 
-    <!-- Minimal Header -->
-    <header class="mb-10">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <div class="flex items-center gap-2">
-          <span class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30">
-            Reading Log
-          </span>
-        </div>
-
-        <!-- Goodreads Sync Pill -->
-        <a
-          href={SITE.links.goodreads}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-darkslate-500/60 hover:bg-darkslate-500 border border-darkslate-400/60 text-xs text-darkslate-200 transition-all group"
-        >
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Synced with <strong class="text-white group-hover:text-primary-400 transition-colors">goodreads.com/vietdoo</strong> ↗</span>
-        </a>
+    <!-- Goodreads Sync Header -->
+    <header class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight mb-1">Bookshelf</h1>
+        <p class="text-darkslate-300 text-xs sm:text-sm">My personal reading log, yearly stats, and book notes.</p>
       </div>
 
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
-        Bookshelf
-      </h1>
-      <p class="text-darkslate-300 text-sm max-w-xl leading-relaxed">
-        A curated library of software engineering, system design, and personal development books I'm reading or have finished.
-      </p>
-
-      <!-- Minimal Stats Bar -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
-          <span class="text-[11px] text-darkslate-300 font-medium">Currently Reading 📖</span>
-          <span class="text-xl font-bold text-sky-400 mt-1">{readingBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
-        </div>
-        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
-          <span class="text-[11px] text-darkslate-300 font-medium">Completed ✅</span>
-          <span class="text-xl font-bold text-emerald-400 mt-1">{completedBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
-        </div>
-        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
-          <span class="text-[11px] text-darkslate-300 font-medium">Plan to Read 📌</span>
-          <span class="text-xl font-bold text-amber-400 mt-1">{wantToReadBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
-        </div>
-        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
-          <span class="text-[11px] text-darkslate-300 font-medium">Average Rating ⭐</span>
-          <span class="text-xl font-bold text-amber-300 mt-1">{avgRating} <span class="text-xs font-normal text-darkslate-300">/ 5.0</span></span>
-        </div>
-      </div>
+      <a
+        href={SITE.links.goodreads}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-darkslate-500/60 hover:bg-darkslate-500 border border-darkslate-400/60 text-xs text-darkslate-200 transition-all group"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Synced with <strong class="text-white group-hover:text-primary-400 transition-colors">goodreads.com/vietdoo</strong> ↗</span>
+      </a>
     </header>
 
-    <!-- Controls Bar -->
-    <section class="bg-darkslate-500/60 border border-darkslate-400/60 rounded-xl p-3.5 mb-8 shadow-sm">
-      <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
-        <!-- Search Input -->
-        <div class="relative flex-1">
-          <svg class="w-4 h-4 absolute left-3 top-3 text-darkslate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Search books, authors, or topics..."
-            class="w-full pl-9 pr-4 py-2 bg-darkslate-700/60 border border-darkslate-400/60 focus:border-primary-500 rounded-lg text-xs text-white placeholder-darkslate-300 outline-none transition-colors"
-          />
-        </div>
+    <!-- SECTION 1: ANALYTICS CHARTS (Matching reference layout) -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+      <!-- Card 1: BOOKS PER YEAR -->
+      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-52">
+        <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">BOOKS PER YEAR</h3>
 
-        <!-- Filter Tabs & View Switcher -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- View Mode Toggle (Grid vs Minimal List) -->
-          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="view-mode-toggle">
-            <button data-view="grid" class="view-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">Grid</button>
-            <button data-view="list" class="view-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">List</button>
-          </div>
-
-          <!-- Category Filter -->
-          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="category-filters">
-            <button data-cat="all" class="cat-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">All</button>
-            <button data-cat="tech" class="cat-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Tech</button>
-            <button data-cat="selfhelp" class="cat-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Self-Help</button>
-          </div>
-
-          <!-- Status Filter -->
-          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="status-filters">
-            <button data-status="all" class="status-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">All Status</button>
-            <button data-status="reading" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Reading</button>
-            <button data-status="completed" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Read</button>
-            <button data-status="want-to-read" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Plan</button>
-          </div>
+        <div class="flex items-end justify-around h-32 pt-4 px-2">
+          {["2024", "2025", "2026"].map((yr) => {
+            const count = yearlyCounts[yr as keyof typeof yearlyCounts] || 0;
+            const pct = Math.max(15, Math.round((count / maxYearlyCount) * 100));
+            return (
+              <div class="flex flex-col items-center gap-1.5 flex-1 group">
+                <span class="text-[11px] font-mono text-amber-400 font-bold opacity-80 group-hover:opacity-100">{count}</span>
+                <div class="w-10 sm:w-12 bg-amber-500/80 group-hover:bg-amber-400 rounded-sm transition-all duration-300 shadow-sm" style={`height: ${pct}%;`}></div>
+                <span class="text-[11px] font-mono text-darkslate-300 mt-1">{yr.slice(2)}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div class="mt-2.5 text-[11px] text-darkslate-300 flex justify-between items-center pt-2 border-t border-white/5">
-        <span>Showing <b id="visible-count" class="text-white">{booksData.length}</b> / {booksData.length} books</span>
-        <span class="text-[10px] text-darkslate-300">Click any book for notes &amp; review</span>
+      <!-- Card 2: MONTHLY ACTIVITY -->
+      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-52">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY</h3>
+          <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px] font-mono">
+            <span class="px-2 py-0.5 rounded bg-amber-500/80 text-black font-bold">2026</span>
+            <span class="px-2 py-0.5 rounded text-darkslate-300">All</span>
+          </div>
+        </div>
+
+        <div class="flex items-end justify-between h-32 pt-6 px-1 gap-1">
+          {monthLabels.map((m, idx) => {
+            const count = monthlyCounts2026[idx];
+            const pct = count > 0 ? Math.max(25, Math.round((count / maxMonthlyCount) * 100)) : 8;
+            return (
+              <div class="flex flex-col items-center gap-1 flex-1 group">
+                <div 
+                  class={`w-full max-w-[14px] rounded-xs transition-all duration-300 ${
+                    count > 0 ? "bg-amber-500/90 group-hover:bg-amber-400" : "bg-darkslate-400/20"
+                  }`} 
+                  style={`height: ${pct}%;`}
+                ></div>
+                <span class="text-[9px] font-mono text-darkslate-300 mt-1">{m}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
 
-    <!-- SECTION 1: MINIMAL GRID VIEW -->
-    <section id="grid-view-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-      {booksData.map((book) => (
-        <article
-          class="book-card group bg-darkslate-500/60 border border-darkslate-400/60 hover:border-primary-500 rounded-xl p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer relative overflow-hidden"
-          data-id={book.id}
-          data-category={book.category}
-          data-status={book.status}
-          data-title={book.title.toLowerCase()}
-          data-author={book.author.toLowerCase()}
-          data-tags={book.tags.join(" ").toLowerCase()}
-        >
-          <div>
-            <!-- Cover Container -->
-            <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden mb-3.5 shadow-md border border-white/10 bg-darkslate-800">
-              <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+    <!-- SECTION 2: YEAR-GROUPED READING TIMELINE (Matching reference layout) -->
+    <section class="space-y-12">
+      {years.map((year) => {
+        const yearBooks = booksByYear[year];
+        if (!yearBooks || yearBooks.length === 0) return null;
 
-              <!-- Category Badge -->
-              <span class="absolute top-2 left-2 px-2 py-0.5 text-[9px] font-semibold rounded bg-black/75 backdrop-blur-md text-white border border-white/10 uppercase tracking-wider">
-                {book.category === "tech" ? "Tech" : "Self-Help"}
-              </span>
-
-              <!-- Status Badge -->
-              <span
-                class={`absolute top-2 right-2 px-2 py-0.5 text-[9px] font-semibold rounded-full backdrop-blur-md border flex items-center gap-1 ${
-                  book.status === "reading"
-                    ? "bg-sky-950/80 text-sky-400 border-sky-500/40"
-                    : book.status === "completed"
-                    ? "bg-emerald-950/80 text-emerald-400 border-emerald-500/40"
-                    : "bg-amber-950/80 text-amber-400 border-amber-500/40"
-                }`}
-              >
-                {book.status === "reading" && <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>}
-                {book.statusLabel}
-              </span>
+        return (
+          <div class="space-y-4">
+            <!-- Year Header Divider -->
+            <div class="flex items-center gap-4">
+              <h2 class="text-xl font-bold text-white tracking-tight">{year}</h2>
+              <div class="flex-1 h-[1px] bg-darkslate-400/40"></div>
+              <span class="text-xs font-mono text-darkslate-300">{yearBooks.length} books</span>
             </div>
 
-            <!-- Book Info -->
-            <h3 class="text-sm font-bold text-white tracking-tight leading-snug group-hover:text-primary-400 transition-colors line-clamp-2 mb-1">
-              {book.title}
-            </h3>
-            <p class="text-xs font-medium text-darkslate-300 mb-2.5">{book.author}</p>
+            <!-- Horizontal Book Cards Grid (2 columns per row) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {yearBooks.map((book) => (
+                <article
+                  class="book-card group bg-darkslate-500/40 hover:bg-darkslate-500/70 border border-darkslate-400/60 hover:border-amber-500/70 rounded-2xl p-4 flex gap-4 items-center transition-all duration-300 cursor-pointer shadow-sm relative overflow-hidden"
+                  data-id={book.id}
+                >
+                  <!-- Book Cover Image Left -->
+                  <div class="w-20 sm:w-24 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0 bg-darkslate-800 border border-white/10 shadow-md">
+                    <img 
+                      src={book.coverImage} 
+                      alt={book.title} 
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                      loading="lazy" 
+                    />
+                  </div>
 
-            <!-- Progress bar or Rating -->
-            {book.status === "reading" && book.progress && (
-              <div class="bg-darkslate-700/50 border border-white/5 rounded-lg p-2 mb-2.5">
-                <div class="flex justify-between text-[10px] font-semibold mb-1">
-                  <span class="text-sky-400">Progress</span>
-                  <span class="text-white">{book.progress}%</span>
-                </div>
-                <div class="w-full h-1 bg-darkslate-800 rounded-full overflow-hidden">
-                  <div class="h-full bg-primary-500 rounded-full" style={`width: ${book.progress}%`}></div>
-                </div>
-              </div>
-            )}
+                  <!-- Book Content Right -->
+                  <div class="flex-1 min-w-0 flex flex-col justify-between h-32 py-0.5">
+                    <div>
+                      <h3 class="text-sm font-bold text-white tracking-tight line-clamp-1 group-hover:text-amber-400 transition-colors">
+                        {book.title}
+                      </h3>
+                      <p class="text-xs text-darkslate-300 font-medium truncate mt-0.5">
+                        {book.author}
+                      </p>
 
-            {book.status === "completed" && book.rating && (
-              <div class="flex items-center gap-1 mb-2.5 text-xs">
-                <span class="text-amber-400 font-bold">★ {book.rating.toFixed(1)}</span>
-                <span class="text-darkslate-300 text-[10px]">/ 5.0</span>
-              </div>
-            )}
+                      <!-- Star Rating & Goodreads sentiment string -->
+                      <div class="flex items-center gap-1.5 mt-2 text-xs">
+                        {book.rating ? (
+                          <>
+                            <span class="text-amber-400 font-bold tracking-tighter">
+                              {"★".repeat(Math.floor(book.rating))}
+                            </span>
+                            <span class="text-[11px] font-mono text-darkslate-300">
+                              {book.ratingText || "it was amazing"}
+                            </span>
+                          </>
+                        ) : (
+                          <span class="text-[11px] font-mono text-amber-400/90 font-semibold">
+                            📌 plan to read
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-            <!-- Quote preview -->
-            {book.quote && (
-              <p class="text-[11px] text-darkslate-300 italic line-clamp-2 mb-2.5 bg-darkslate-700/30 p-2 rounded-lg border border-white/5">
-                "{book.quote}"
-              </p>
-            )}
+                    <!-- Bottom Metadata Row: Pages & Read Date -->
+                    <div class="flex items-center justify-between text-[11px] font-mono text-darkslate-300 pt-2 border-t border-white/5">
+                      <span>Pages: {book.pages || "—"}</span>
+                      <span>Read: {book.dateRead || book.yearRead}</span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
-
-          <!-- Card Footer -->
-          <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-darkslate-300 font-medium group-hover:text-white transition-colors">
-            <span>Notes &amp; Review</span>
-            <span class="text-primary-400 group-hover:translate-x-0.5 transition-transform">Details →</span>
-          </div>
-        </article>
-      ))}
+        );
+      })}
     </section>
 
-    <!-- SECTION 2: CLEAN MINIMAL LIST VIEW -->
-    <section id="list-view-container" class="hidden space-y-2.5">
-      {booksData.map((book) => (
-        <article
-          class="book-card group bg-darkslate-500/50 border border-darkslate-400/60 hover:border-primary-500 rounded-xl p-3.5 flex items-center justify-between gap-4 transition-all duration-200 hover:bg-darkslate-500/80 cursor-pointer"
-          data-id={book.id}
-          data-category={book.category}
-          data-status={book.status}
-          data-title={book.title.toLowerCase()}
-          data-author={book.author.toLowerCase()}
-          data-tags={book.tags.join(" ").toLowerCase()}
-        >
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-10 h-14 rounded overflow-hidden flex-shrink-0 bg-darkslate-800 border border-white/10">
-              <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
-            </div>
-
-            <div class="min-w-0">
-              <h3 class="text-sm font-bold text-white truncate group-hover:text-primary-400 transition-colors">
-                {book.title}
-              </h3>
-              <p class="text-xs text-darkslate-300 truncate">{book.author}</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3 flex-shrink-0 text-xs">
-            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-medium rounded bg-darkslate-700 text-darkslate-300 border border-white/10 uppercase">
-              {book.category === "tech" ? "Tech" : "Self-Help"}
-            </span>
-
-            {book.rating && (
-              <span class="text-amber-400 font-semibold text-xs hidden md:inline-block">★ {book.rating.toFixed(1)}</span>
-            )}
-
-            <span
-              class={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full border ${
-                book.status === "reading"
-                  ? "bg-sky-950/80 text-sky-400 border-sky-500/40"
-                  : book.status === "completed"
-                  ? "bg-emerald-950/80 text-emerald-400 border-emerald-500/40"
-                  : "bg-amber-950/80 text-amber-400 border-amber-500/40"
-              }`}
-            >
-              {book.statusLabel}
-            </span>
-
-            <span class="text-darkslate-300 group-hover:text-primary-400 transition-colors">→</span>
-          </div>
-        </article>
-      ))}
-    </section>
-
-    <!-- Empty state -->
-    <div id="no-results" class="hidden text-center py-16 bg-darkslate-500/40 rounded-xl border border-darkslate-400/60 mt-6">
-      <p class="text-base font-semibold text-white mb-1">No books found</p>
-      <p class="text-xs text-darkslate-300">Try clearing filters or searching for a different keyword.</p>
-    </div>
-
-    <!-- Goodreads Footer Attribution -->
+    <!-- Footer Attribution -->
     <footer class="mt-16 pt-6 border-t border-darkslate-400/40 text-center text-xs text-darkslate-300">
       <p>
-        Data &amp; Image Source: Synced continuously from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-primary-400 font-medium underline hover:text-primary-300">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
+        Data &amp; Image Source: Synced continuously from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-400 font-medium underline hover:text-amber-300">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
       </p>
     </footer>
   </main>
 </Layout>
 
-<style>
-  .cat-btn.active, .status-btn.active, .view-btn.active {
-    background-color: var(--primary-500) !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-500) 40%, transparent);
-  }
-</style>
-
 <script is:inline define:vars={{ booksData }}>
   (function initBookshelf() {
-    let currentCat = 'all';
-    let currentStatus = 'all';
-    let searchQuery = '';
-    let currentView = 'grid';
-
     const cards = document.querySelectorAll('.book-card');
-    const visibleCountEl = document.getElementById('visible-count');
-    const noResultsEl = document.getElementById('no-results');
-    const searchInput = document.getElementById('search-input');
-    const gridContainer = document.getElementById('grid-view-container');
-    const listContainer = document.getElementById('list-view-container');
-
-    // View Mode Switcher (Grid vs List)
-    document.querySelectorAll('#view-mode-toggle .view-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#view-mode-toggle .view-btn').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentView = btn.dataset.view;
-
-        if (currentView === 'grid') {
-          gridContainer.classList.remove('hidden');
-          listContainer.classList.add('hidden');
-        } else {
-          gridContainer.classList.add('hidden');
-          listContainer.classList.remove('hidden');
-        }
-      });
-    });
-
-    // Filter Logic
-    function filterBooks() {
-      let count = 0;
-      cards.forEach((card) => {
-        const cat = card.dataset.category;
-        const status = card.dataset.status;
-        const title = card.dataset.title;
-        const author = card.dataset.author;
-        const tags = card.dataset.tags;
-
-        const matchCat = currentCat === 'all' || cat === currentCat;
-        const matchStatus = currentStatus === 'all' || status === currentStatus;
-        const matchSearch =
-          !searchQuery ||
-          title.includes(searchQuery) ||
-          author.includes(searchQuery) ||
-          tags.includes(searchQuery);
-
-        if (matchCat && matchStatus && matchSearch) {
-          card.classList.remove('hidden');
-          count++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      // Divide count by 2 since cards exist in both grid and list view
-      const actualVisible = Math.ceil(count / 2);
-
-      if (visibleCountEl) visibleCountEl.textContent = actualVisible;
-      if (noResultsEl) {
-        if (actualVisible === 0) noResultsEl.classList.remove('hidden');
-        else noResultsEl.classList.add('hidden');
-      }
-    }
-
-    // Category Tabs
-    document.querySelectorAll('#category-filters .cat-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#category-filters .cat-btn').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentCat = btn.dataset.cat;
-        filterBooks();
-      });
-    });
-
-    // Status Tabs
-    document.querySelectorAll('#status-filters .status-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#status-filters .status-btn').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentStatus = btn.dataset.status;
-        filterBooks();
-      });
-    });
-
-    // Search Input
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.toLowerCase().trim();
-        filterBooks();
-      });
-    }
-
-    // Modal Logic
     const modal = document.getElementById('book-modal');
     const modalContent = document.getElementById('modal-content');
     const modalClose = document.getElementById('modal-close');
@@ -513,7 +333,7 @@ const avgRating = (
       if (book.rating) {
         ratingContainer.classList.remove('hidden');
         document.getElementById('modal-rating-stars').textContent = '★'.repeat(Math.floor(book.rating));
-        document.getElementById('modal-rating-val').textContent = `${book.rating.toFixed(1)} / 5.0`;
+        document.getElementById('modal-rating-val').textContent = `${book.rating.toFixed(1)} / 5.0 (${book.ratingText || 'it was amazing'})`;
       } else {
         ratingContainer.classList.add('hidden');
       }
@@ -528,7 +348,7 @@ const avgRating = (
       }
 
       document.getElementById('modal-pages').textContent = book.pages ? `📄 ${book.pages} pages` : '';
-      document.getElementById('modal-year').textContent = book.yearRead ? `📅 Read in ${book.yearRead}` : '';
+      document.getElementById('modal-year').textContent = book.dateRead ? `📅 ${book.dateRead}` : `📅 Read in ${book.yearRead}`;
       document.getElementById('modal-summary').textContent = book.summary;
       document.getElementById('modal-review').textContent = book.review;
 
