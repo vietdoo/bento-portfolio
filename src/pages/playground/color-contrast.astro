@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import ColorContrastPlayground from "../../components/playground/colorContrastPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Color Contrast Checker`}
+  description="WCAG accessibility contrast ratio calculator for text and background colors."
+  scrollable={true}
+>
+  <ColorContrastPlayground client:load />
+</PlaygroundShell>

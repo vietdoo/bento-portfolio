@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import MetaTagGeneratorPlayground from "../../components/playground/metaTagGeneratorPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Meta Tag Generator`}
+  description="Generate SEO and Open Graph meta tags with social card live previews."
+  scrollable={true}
+>
+  <MetaTagGeneratorPlayground client:load />
+</PlaygroundShell>
