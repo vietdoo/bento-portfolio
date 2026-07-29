@@ -23,63 +23,61 @@ const avgRating = (
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Classic Bookshelf & Personal Library`}
-  description="Bộ sưu tập sách kỹ thuật IT, kiến trúc hệ thống dữ liệu và phát triển bản thân. Tự động đồng bộ từ Goodreads profile."
+  title={`${SITE.author.fullName} - Bookshelf & Reading List`}
+  description="Bộ sưu tập sách kỹ thuật IT, kiến trúc hệ thống và phát triển bản thân. Giao diện tối giản, tự động đồng bộ từ Goodreads profile."
 >
-  <!-- Modal Detail Journal View -->
+  <!-- Modern Minimal Detail Modal -->
   <div
     id="book-modal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-lg opacity-0 pointer-events-none transition-all duration-300 p-4 sm:p-6"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 p-4 sm:p-6"
     aria-hidden="true"
   >
     <div
-      class="bg-gradient-to-b from-[#1c120a] to-[#120b06] border-2 border-amber-800/60 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.95)] relative text-amber-50 transform scale-95 transition-all duration-300 font-serif"
+      class="bg-darkslate-600/95 border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative text-white transform scale-95 transition-all duration-300"
       id="modal-content"
     >
       <!-- Close Button -->
       <button
         id="modal-close"
-        class="absolute top-4 right-4 text-amber-400/80 hover:text-amber-100 transition-colors bg-amber-950/80 hover:bg-amber-900 border border-amber-700/60 rounded-full w-9 h-9 flex items-center justify-center text-sm font-bold z-10 shadow-lg"
+        class="absolute top-4 right-4 text-darkslate-300 hover:text-white transition-colors bg-darkslate-700/80 hover:bg-darkslate-500 border border-white/10 rounded-full w-8 h-8 flex items-center justify-center text-xs font-semibold z-10"
         aria-label="Close modal"
       >
         ✕
       </button>
 
-      <!-- Modal Header Info -->
-      <div class="flex flex-col sm:flex-row gap-6 mb-6 pb-6 border-b border-amber-900/40">
-        <!-- Book Cover in Modal -->
-        <div class="w-36 h-52 sm:w-44 sm:h-64 rounded-xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.9)] border border-amber-600/50 bg-amber-950 flex-shrink-0 mx-auto sm:mx-0 relative group">
+      <!-- Modal Header -->
+      <div class="flex flex-col sm:flex-row gap-6 mb-6 pb-6 border-b border-white/10">
+        <div class="w-36 h-52 sm:w-40 sm:h-60 rounded-xl overflow-hidden shadow-lg border border-white/10 bg-darkslate-800 flex-shrink-0 mx-auto sm:mx-0">
           <img id="modal-cover" src="" alt="" class="w-full h-full object-cover" />
-          <div class="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/60 to-transparent"></div>
         </div>
 
         <div class="flex-1 flex flex-col justify-between">
           <div>
-            <div class="flex flex-wrap items-center gap-2 mb-3 font-sans">
-              <span id="modal-category" class="px-3 py-1 text-[11px] font-bold rounded-md bg-amber-950/90 text-amber-300 border border-amber-700/60 uppercase tracking-wider"></span>
-              <span id="modal-status" class="px-3 py-1 text-[11px] font-bold rounded-md uppercase tracking-wider"></span>
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span id="modal-category" class="px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30"></span>
+              <span id="modal-status" class="px-2.5 py-0.5 text-[10px] font-semibold rounded-full"></span>
             </div>
-            <h2 id="modal-title" class="text-2xl sm:text-3xl font-bold tracking-tight text-amber-100 mb-1 leading-tight"></h2>
-            <p id="modal-subtitle" class="text-xs text-amber-300/80 mb-3 italic font-sans"></p>
-            <p id="modal-author" class="text-sm font-semibold text-amber-400 tracking-wide"></p>
+            <h2 id="modal-title" class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-1"></h2>
+            <p id="modal-subtitle" class="text-xs text-darkslate-300 mb-3 italic"></p>
+            <p id="modal-author" class="text-xs font-semibold text-primary-400"></p>
           </div>
 
-          <div class="space-y-2 pt-3 font-sans text-xs text-amber-200/80">
+          <div class="space-y-2 pt-3 text-xs text-darkslate-300">
             <div id="modal-rating-container" class="flex items-center gap-1.5">
-              <span class="text-amber-400 text-sm font-bold" id="modal-rating-stars"></span>
-              <span id="modal-rating-val" class="font-semibold text-amber-100"></span>
+              <span class="text-amber-400 font-bold" id="modal-rating-stars"></span>
+              <span id="modal-rating-val" class="font-semibold text-white"></span>
             </div>
-            <div id="modal-progress-container" class="space-y-1.5 hidden">
-              <div class="flex justify-between text-xs font-semibold">
-                <span class="text-amber-300/70">Tiến độ đọc:</span>
-                <span id="modal-progress-val" class="text-amber-400 font-bold"></span>
+            <div id="modal-progress-container" class="space-y-1 hidden">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-darkslate-300">Progress:</span>
+                <span id="modal-progress-val" class="text-primary-400 font-bold"></span>
               </div>
-              <div class="w-full h-2 bg-amber-950 rounded-full overflow-hidden border border-amber-800/40">
-                <div id="modal-progress-bar" class="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 transition-all duration-500 rounded-full shadow-[0_0_10px_#f59e0b]"></div>
+              <div class="w-full h-1.5 bg-darkslate-800 rounded-full overflow-hidden border border-white/10">
+                <div id="modal-progress-bar" class="h-full bg-primary-500 transition-all duration-500 rounded-full"></div>
               </div>
-              <p id="modal-chapter" class="text-[11px] text-amber-300/70 mt-0.5"></p>
+              <p id="modal-chapter" class="text-[11px] text-darkslate-300 mt-0.5"></p>
             </div>
-            <div class="flex flex-wrap gap-4 text-amber-300/70 text-[12px] pt-1">
+            <div class="flex flex-wrap gap-4 text-darkslate-300 text-[11px] pt-1">
               <span id="modal-pages"></span>
               <span id="modal-year"></span>
             </div>
@@ -87,34 +85,28 @@ const avgRating = (
         </div>
       </div>
 
-      <!-- Journal content sections -->
-      <div class="space-y-6 text-sm">
+      <!-- Detail content -->
+      <div class="space-y-5 text-xs sm:text-sm">
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400/90 mb-2 font-sans flex items-center gap-2">
-            <span>📜</span> Tóm Tắt Tác Phẩm
-          </h3>
-          <p id="modal-summary" class="text-amber-100/90 leading-relaxed bg-amber-950/40 p-4 rounded-2xl border border-amber-900/40 text-sm shadow-inner"></p>
+          <h3 class="text-[11px] font-semibold uppercase tracking-wider text-darkslate-300 mb-1.5">Summary</h3>
+          <p id="modal-summary" class="text-darkslate-100 leading-relaxed bg-darkslate-700/40 p-3.5 rounded-xl border border-white/5"></p>
         </div>
 
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400/90 mb-2 font-sans flex items-center gap-2">
-            <span>✍️</span> Đánh Giá &amp; Ghi Chú Cá Nhân
-          </h3>
-          <p id="modal-review" class="text-amber-100/90 leading-relaxed text-sm"></p>
+          <h3 class="text-[11px] font-semibold uppercase tracking-wider text-darkslate-300 mb-1.5">Review &amp; Notes</h3>
+          <p id="modal-review" class="text-darkslate-200 leading-relaxed"></p>
         </div>
 
-        <div id="modal-quote-box" class="bg-gradient-to-r from-amber-950/70 via-amber-900/40 to-transparent border-l-4 border-amber-500 p-4.5 rounded-r-2xl my-4 shadow-md">
-          <p id="modal-quote" class="text-amber-200 italic text-base leading-relaxed"></p>
+        <div id="modal-quote-box" class="bg-primary-950/30 border-l-2 border-primary-500 p-3.5 rounded-r-xl my-3">
+          <p id="modal-quote" class="text-primary-200 italic text-xs sm:text-sm leading-relaxed"></p>
         </div>
 
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400/90 mb-3 font-sans flex items-center gap-2">
-            <span>💡</span> Bài Học Cốt Lõi (Key Takeaways)
-          </h3>
-          <ul id="modal-takeaways" class="space-y-2 list-none p-0 m-0 text-amber-100/90 font-sans text-xs"></ul>
+          <h3 class="text-[11px] font-semibold uppercase tracking-wider text-darkslate-300 mb-2">Key Takeaways</h3>
+          <ul id="modal-takeaways" class="space-y-1.5 list-none p-0 m-0 text-darkslate-200 text-xs"></ul>
         </div>
 
-        <div class="pt-5 border-t border-amber-900/40 flex flex-wrap justify-between items-center gap-3 font-sans">
+        <div class="pt-4 border-t border-white/10 flex flex-wrap justify-between items-center gap-3">
           <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
           <div class="flex gap-2">
             <a
@@ -122,7 +114,7 @@ const avgRating = (
               href="#"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-amber-950 hover:bg-amber-900 text-amber-200 border border-amber-700/60 transition-all shadow-md uppercase tracking-wider"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-darkslate-700 hover:bg-darkslate-600 text-darkslate-200 border border-white/10 transition-colors"
             >
               Goodreads ↗
             </a>
@@ -131,9 +123,9 @@ const avgRating = (
               href="#"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-amber-600 hover:bg-amber-500 text-amber-95 transition-all shadow-md uppercase tracking-wider"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors"
             >
-              Trang Chủ ↗
+              Official ↗
             </a>
           </div>
         </div>
@@ -141,273 +133,110 @@ const avgRating = (
     </div>
   </div>
 
-  <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 text-amber-50 min-h-screen relative">
-    <!-- Ambient Warm Library Lighting Effect -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-amber-600/15 via-amber-700/5 to-transparent blur-3xl -z-10 pointer-events-none"></div>
-
+  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-10 text-white">
     <BackLink href="/" class="mb-8" />
 
-    <!-- Classic Library Header -->
-    <header class="mb-12 text-center sm:text-left border-b border-amber-900/40 pb-8">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4 font-sans">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold uppercase tracking-widest shadow-md">
-          <span>🏛️</span> Personal Library &amp; Archives
+    <!-- Minimal Header -->
+    <header class="mb-10">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30">
+            Reading Log
+          </span>
         </div>
 
-        <!-- Goodreads Sync Badge -->
+        <!-- Goodreads Sync Pill -->
         <a
           href={SITE.links.goodreads}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 hover:text-emerald-100 hover:bg-emerald-900/90 text-xs font-semibold transition-all shadow-lg group"
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-darkslate-500/60 hover:bg-darkslate-500 border border-darkslate-400/60 text-xs text-darkslate-200 transition-all group"
         >
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Synced from <strong class="underline decoration-emerald-500/50 group-hover:decoration-emerald-300">Goodreads Profile</strong> ↗</span>
+          <span>Synced with <strong class="text-white group-hover:text-primary-400 transition-colors">goodreads.com/vietdoo</strong> ↗</span>
         </a>
       </div>
 
-      <h1 class="text-4xl sm:text-6xl font-serif font-extrabold text-amber-100 tracking-tight mb-4 leading-tight">
-        The Classic Bookshelf
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+        Bookshelf
       </h1>
-      <p class="text-amber-200/90 font-serif text-base sm:text-lg max-w-3xl leading-relaxed italic">
-        "Sách là ngọn đèn hải đăng chiếu sáng kiến trúc tư duy." Nơi lưu giữ các ấn phẩm kỹ thuật phần mềm, hệ thống dữ liệu phân tán và tri thức phát triển bản thân.
+      <p class="text-darkslate-300 text-sm max-w-xl leading-relaxed">
+        A curated library of software engineering, system design, and personal development books I'm reading or have finished.
       </p>
 
-      <!-- Sync Info Notice -->
-      <div class="mt-5 p-4 bg-gradient-to-r from-amber-950/50 via-amber-900/20 to-transparent border border-amber-900/40 rounded-2xl flex items-center gap-3.5 text-xs font-sans text-amber-300/90 max-w-2xl shadow-inner">
-        <span class="text-xl flex-shrink-0">🔄</span>
-        <span class="leading-relaxed">
-          <strong>Data &amp; Image Source:</strong> Danh sách sách, tiến độ đọc và đánh giá được tự động đồng bộ trực tiếp từ tài khoản <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-200 font-bold underline hover:text-amber-400">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
-        </span>
-      </div>
-
-      <!-- Vintage Brass Stats Counter -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 font-sans">
-        <div class="bg-gradient-to-b from-[#22160d] to-[#140c06] border border-amber-900/60 rounded-2xl p-4.5 shadow-xl text-center sm:text-left hover:border-amber-700/60 transition-all">
-          <span class="text-xs text-blue-400 uppercase font-bold tracking-wider">Đang đọc 📖</span>
-          <p class="text-3xl font-bold text-amber-100 mt-1 font-serif">{readingBooks.length} <span class="text-xs font-normal text-amber-400/70 font-sans">cuốn</span></p>
+      <!-- Minimal Stats Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
+          <span class="text-[11px] text-darkslate-300 font-medium">Currently Reading 📖</span>
+          <span class="text-xl font-bold text-sky-400 mt-1">{readingBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
         </div>
-        <div class="bg-gradient-to-b from-[#22160d] to-[#140c06] border border-amber-900/60 rounded-2xl p-4.5 shadow-xl text-center sm:text-left hover:border-emerald-700/60 transition-all">
-          <span class="text-xs text-emerald-400 uppercase font-bold tracking-wider">Đã đọc ✅</span>
-          <p class="text-3xl font-bold text-emerald-300 mt-1 font-serif">{completedBooks.length} <span class="text-xs font-normal text-amber-400/70 font-sans">cuốn</span></p>
+        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
+          <span class="text-[11px] text-darkslate-300 font-medium">Completed ✅</span>
+          <span class="text-xl font-bold text-emerald-400 mt-1">{completedBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
         </div>
-        <div class="bg-gradient-to-b from-[#22160d] to-[#140c06] border border-amber-900/60 rounded-2xl p-4.5 shadow-xl text-center sm:text-left hover:border-amber-700/60 transition-all">
-          <span class="text-xs text-amber-400 uppercase font-bold tracking-wider">Dự định đọc 📌</span>
-          <p class="text-3xl font-bold text-amber-300 mt-1 font-serif">{wantToReadBooks.length} <span class="text-xs font-normal text-amber-400/70 font-sans">cuốn</span></p>
+        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
+          <span class="text-[11px] text-darkslate-300 font-medium">Plan to Read 📌</span>
+          <span class="text-xl font-bold text-amber-400 mt-1">{wantToReadBooks.length} <span class="text-xs font-normal text-darkslate-300">books</span></span>
         </div>
-        <div class="bg-gradient-to-b from-[#22160d] to-[#140c06] border border-amber-900/60 rounded-2xl p-4.5 shadow-xl text-center sm:text-left hover:border-amber-700/60 transition-all">
-          <span class="text-xs text-amber-300 uppercase font-bold tracking-wider">Đánh giá TB ⭐</span>
-          <p class="text-3xl font-bold text-amber-300 mt-1 font-serif">{avgRating} <span class="text-xs font-normal text-amber-400/70 font-sans">/ 5.0</span></p>
+        <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-xl p-3 flex flex-col justify-between">
+          <span class="text-[11px] text-darkslate-300 font-medium">Average Rating ⭐</span>
+          <span class="text-xl font-bold text-amber-300 mt-1">{avgRating} <span class="text-xs font-normal text-darkslate-300">/ 5.0</span></span>
         </div>
       </div>
     </header>
 
-    <!-- Controls Filter Bar -->
-    <section class="bg-[#1a110a] border border-amber-900/60 rounded-2xl p-4 sm:p-5 mb-10 shadow-2xl font-sans">
-      <div class="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
+    <!-- Controls Bar -->
+    <section class="bg-darkslate-500/60 border border-darkslate-400/60 rounded-xl p-3.5 mb-8 shadow-sm">
+      <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
         <!-- Search Input -->
         <div class="relative flex-1">
-          <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-amber-500/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 absolute left-3 top-3 text-darkslate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
           <input
             type="text"
             id="search-input"
-            placeholder="Tìm tên sách, tác giả hoặc từ khóa..."
-            class="w-full pl-10 pr-4 py-2.5 bg-[#100a06] border border-amber-900/60 focus:border-amber-500 rounded-xl text-xs sm:text-sm text-amber-100 placeholder-amber-600/60 outline-none transition-colors"
+            placeholder="Search books, authors, or topics..."
+            class="w-full pl-9 pr-4 py-2 bg-darkslate-700/60 border border-darkslate-400/60 focus:border-primary-500 rounded-lg text-xs text-white placeholder-darkslate-300 outline-none transition-colors"
           />
         </div>
 
-        <!-- Filter Tabs & View Mode Switcher -->
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- View Switcher -->
-          <div class="flex bg-[#100a06] p-1 rounded-xl border border-amber-900/60 shadow-inner" id="view-mode-toggle">
-            <button data-view="shelf" class="view-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
-              <span>🪵</span> Giá Sách Gỗ
-            </button>
-            <button data-view="grid" class="view-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all flex items-center gap-1.5">
-              <span>📜</span> Thư Viện
-            </button>
+        <!-- Filter Tabs & View Switcher -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- View Mode Toggle (Grid vs Minimal List) -->
+          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="view-mode-toggle">
+            <button data-view="grid" class="view-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">Grid</button>
+            <button data-view="list" class="view-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">List</button>
           </div>
 
           <!-- Category Filter -->
-          <div class="flex bg-[#100a06] p-1 rounded-xl border border-amber-900/60 shadow-inner" id="category-filters">
-            <button data-cat="all" class="cat-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Tất cả</button>
-            <button data-cat="tech" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all">💻 Tech IT</button>
-            <button data-cat="selfhelp" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all">💡 Self-Help</button>
+          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="category-filters">
+            <button data-cat="all" class="cat-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">All</button>
+            <button data-cat="tech" class="cat-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Tech</button>
+            <button data-cat="selfhelp" class="cat-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Self-Help</button>
           </div>
 
           <!-- Status Filter -->
-          <div class="flex bg-[#100a06] p-1 rounded-xl border border-amber-900/60 shadow-inner" id="status-filters">
-            <button data-status="all" class="status-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Tất cả trạng thái</button>
-            <button data-status="reading" class="status-btn px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all">📖 Đang đọc</button>
-            <button data-status="completed" class="status-btn px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all">✅ Đã đọc</button>
-            <button data-status="want-to-read" class="status-btn px-3 py-1.5 rounded-lg text-xs font-bold text-amber-400/70 hover:text-amber-200 transition-all">📌 Dự định</button>
+          <div class="flex bg-darkslate-700/50 p-1 rounded-lg border border-darkslate-400/40" id="status-filters">
+            <button data-status="all" class="status-btn active px-2.5 py-1 rounded text-xs font-semibold transition-all">All Status</button>
+            <button data-status="reading" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Reading</button>
+            <button data-status="completed" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Read</button>
+            <button data-status="want-to-read" class="status-btn px-2.5 py-1 rounded text-xs font-semibold text-darkslate-300 hover:text-white transition-all">Plan</button>
           </div>
         </div>
       </div>
 
-      <div class="mt-3 text-xs text-amber-400/70 flex justify-between items-center pt-2 border-t border-amber-900/30">
-        <span>Hiển thị <b id="visible-count" class="text-amber-200">{booksData.length}</b> / {booksData.length} cuốn sách</span>
-        <span class="text-[11px] text-amber-400/60 italic font-serif">💡 Click vào bất kỳ cuốn sách nào để đọc nhật ký cảm nhận</span>
-      </div>
-    </section>
-
-    <!-- SECTION 1: PHYSICAL WOODEN SHELF VIEW -->
-    <section id="shelf-view-container" class="space-y-16 mb-16">
-      <!-- Shelf Group 1: Currently Reading -->
-      <div class="shelf-group" id="shelf-group-reading">
-        <div class="flex items-center gap-2.5 mb-4 font-serif">
-          <span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-[0_0_12px_#3b82f6] animate-pulse"></span>
-          <h2 class="text-2xl font-bold text-amber-100 tracking-wide">Đang Đọc (Currently Reading)</h2>
-          <span class="text-xs text-amber-400/60 font-sans">({readingBooks.length} cuốn)</span>
-        </div>
-
-        <div class="relative bg-gradient-to-b from-[#180f0a] via-[#120a06] to-[#0c0603] p-6 pt-12 rounded-t-3xl border-t border-x border-amber-900/50 shadow-2xl">
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 items-end justify-items-center">
-            {readingBooks.map((book) => (
-              <div
-                class="book-card book-shelf-item group cursor-pointer relative flex flex-col items-center transition-all duration-300 hover:-translate-y-5 hover:scale-105"
-                data-id={book.id}
-                data-category={book.category}
-                data-status={book.status}
-                data-title={book.title.toLowerCase()}
-                data-author={book.author.toLowerCase()}
-                data-tags={book.tags.join(" ").toLowerCase()}
-              >
-                <!-- Blue Silk Ribbon Bookmark -->
-                <div class="absolute -top-3.5 right-4 z-20 w-3.5 h-11 bg-gradient-to-b from-blue-500 to-blue-800 shadow-lg rounded-t-sm flex items-end justify-center pb-1">
-                  <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-200 transform rotate-45"></div>
-                </div>
-
-                <!-- 3D Book Cover -->
-                <div class="w-32 h-48 sm:w-36 sm:h-54 rounded-r-lg rounded-l-sm overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.9)] border border-amber-700/50 relative bg-amber-950 group-hover:shadow-[0_25px_50px_rgba(59,130,246,0.35)] transition-all">
-                  <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
-                  <div class="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/65 to-transparent"></div>
-                  <div class="absolute bottom-2 inset-x-2 bg-black/85 backdrop-blur-md border border-blue-500/50 rounded-md px-2 py-1 text-[10px] font-sans text-center text-blue-300 font-bold shadow-md">
-                    {book.progress}% • Ch. 10
-                  </div>
-                </div>
-
-                <p class="text-[11px] font-serif font-bold text-amber-200 text-center mt-2.5 line-clamp-1 group-hover:text-blue-300 transition-colors w-32 sm:w-36">
-                  {book.title}
-                </p>
-                <p class="text-[10px] font-sans text-amber-400/60 text-center">{book.author}</p>
-              </div>
-            ))}
-          </div>
-          <!-- Wooden Shelf Base Rack -->
-          <div class="w-full h-6 mt-5 bg-gradient-to-r from-[#29170c] via-[#482813] to-[#29170c] border-t-2 border-b border-amber-600/60 shadow-2xl rounded-sm flex items-center justify-between px-6">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Shelf Group 2: Completed Books -->
-      <div class="shelf-group" id="shelf-group-completed">
-        <div class="flex items-center gap-2.5 mb-4 font-serif">
-          <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981]"></span>
-          <h2 class="text-2xl font-bold text-amber-100 tracking-wide">Đã Hoàn Thành (Completed Works)</h2>
-          <span class="text-xs text-amber-400/60 font-sans">({completedBooks.length} cuốn)</span>
-        </div>
-
-        <div class="relative bg-gradient-to-b from-[#180f0a] via-[#120a06] to-[#0c0603] p-6 pt-12 rounded-t-3xl border-t border-x border-amber-900/50 shadow-2xl">
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 items-end justify-items-center">
-            {completedBooks.map((book) => (
-              <div
-                class="book-card book-shelf-item group cursor-pointer relative flex flex-col items-center transition-all duration-300 hover:-translate-y-5 hover:scale-105"
-                data-id={book.id}
-                data-category={book.category}
-                data-status={book.status}
-                data-title={book.title.toLowerCase()}
-                data-author={book.author.toLowerCase()}
-                data-tags={book.tags.join(" ").toLowerCase()}
-              >
-                <!-- Gold Silk Ribbon Bookmark -->
-                <div class="absolute -top-3.5 right-4 z-20 w-3.5 h-11 bg-gradient-to-b from-amber-500 to-amber-700 shadow-lg rounded-t-sm flex items-end justify-center pb-1">
-                  <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-100 transform rotate-45"></div>
-                </div>
-
-                <div class="w-32 h-48 sm:w-36 sm:h-54 rounded-r-lg rounded-l-sm overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.9)] border border-amber-700/50 relative bg-amber-950 group-hover:shadow-[0_25px_50px_rgba(245,158,11,0.35)] transition-all">
-                  <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
-                  <div class="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/65 to-transparent"></div>
-                  {book.rating && (
-                    <div class="absolute bottom-2 inset-x-2 bg-black/85 backdrop-blur-md border border-amber-500/50 rounded-md px-2 py-0.5 text-[10px] font-sans text-center text-amber-300 font-bold shadow-md">
-                      ★ {book.rating.toFixed(1)} / 5.0
-                    </div>
-                  )}
-                </div>
-
-                <p class="text-[11px] font-serif font-bold text-amber-200 text-center mt-2.5 line-clamp-1 group-hover:text-amber-300 transition-colors w-32 sm:w-36">
-                  {book.title}
-                </p>
-                <p class="text-[10px] font-sans text-amber-400/60 text-center">{book.author}</p>
-              </div>
-            ))}
-          </div>
-          <!-- Wooden Shelf Base Rack -->
-          <div class="w-full h-6 mt-5 bg-gradient-to-r from-[#29170c] via-[#482813] to-[#29170c] border-t-2 border-b border-amber-600/60 shadow-2xl rounded-sm flex items-center justify-between px-6">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Shelf Group 3: Want To Read -->
-      <div class="shelf-group" id="shelf-group-want">
-        <div class="flex items-center gap-2.5 mb-4 font-serif">
-          <span class="w-3.5 h-3.5 rounded-full bg-amber-500"></span>
-          <h2 class="text-2xl font-bold text-amber-100 tracking-wide">Dự Định Đọc (Plan to Read)</h2>
-          <span class="text-xs text-amber-400/60 font-sans">({wantToReadBooks.length} cuốn)</span>
-        </div>
-
-        <div class="relative bg-gradient-to-b from-[#180f0a] via-[#120a06] to-[#0c0603] p-6 pt-12 rounded-t-3xl border-t border-x border-amber-900/50 shadow-2xl">
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 items-end justify-items-center">
-            {wantToReadBooks.map((book) => (
-              <div
-                class="book-card book-shelf-item group cursor-pointer relative flex flex-col items-center transition-all duration-300 hover:-translate-y-5 hover:scale-105"
-                data-id={book.id}
-                data-category={book.category}
-                data-status={book.status}
-                data-title={book.title.toLowerCase()}
-                data-author={book.author.toLowerCase()}
-                data-tags={book.tags.join(" ").toLowerCase()}
-              >
-                <!-- Bronze Ribbon Bookmark -->
-                <div class="absolute -top-3.5 right-4 z-20 w-3.5 h-11 bg-gradient-to-b from-amber-700 to-amber-900 shadow-lg rounded-t-sm flex items-end justify-center pb-1">
-                  <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-300 transform rotate-45"></div>
-                </div>
-
-                <div class="w-32 h-48 sm:w-36 sm:h-54 rounded-r-lg rounded-l-sm overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.9)] border border-amber-700/50 relative bg-amber-950 group-hover:shadow-[0_25px_50px_rgba(217,119,6,0.35)] transition-all opacity-90 group-hover:opacity-100">
-                  <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
-                  <div class="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/65 to-transparent"></div>
-                  <div class="absolute bottom-2 inset-x-2 bg-black/85 backdrop-blur-md border border-amber-600/50 rounded-md px-2 py-0.5 text-[10px] font-sans text-center text-amber-400 font-bold shadow-md">
-                    📌 Dự định
-                  </div>
-                </div>
-
-                <p class="text-[11px] font-serif font-bold text-amber-200 text-center mt-2.5 line-clamp-1 group-hover:text-amber-300 transition-colors w-32 sm:w-36">
-                  {book.title}
-                </p>
-                <p class="text-[10px] font-sans text-amber-400/60 text-center">{book.author}</p>
-              </div>
-            ))}
-          </div>
-          <!-- Wooden Shelf Base Rack -->
-          <div class="w-full h-6 mt-5 bg-gradient-to-r from-[#29170c] via-[#482813] to-[#29170c] border-t-2 border-b border-amber-600/60 shadow-2xl rounded-sm flex items-center justify-between px-6">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-800/60 shadow-inner"></span>
-          </div>
-        </div>
+      <div class="mt-2.5 text-[11px] text-darkslate-300 flex justify-between items-center pt-2 border-t border-white/5">
+        <span>Showing <b id="visible-count" class="text-white">{booksData.length}</b> / {booksData.length} books</span>
+        <span class="text-[10px] text-darkslate-300">Click any book for notes &amp; review</span>
       </div>
     </section>
 
-    <!-- SECTION 2: EDITORIAL GRID VIEW -->
-    <section id="grid-view-container" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 font-serif">
+    <!-- SECTION 1: MINIMAL GRID VIEW -->
+    <section id="grid-view-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
       {booksData.map((book) => (
         <article
-          class="book-card group bg-gradient-to-b from-[#1c1109] to-[#120a05] border border-amber-900/60 hover:border-amber-500/80 rounded-3xl p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.9)] cursor-pointer relative overflow-hidden"
+          class="book-card group bg-darkslate-500/60 border border-darkslate-400/60 hover:border-primary-500 rounded-xl p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer relative overflow-hidden"
           data-id={book.id}
           data-category={book.category}
           data-status={book.status}
@@ -416,76 +245,135 @@ const avgRating = (
           data-tags={book.tags.join(" ").toLowerCase()}
         >
           <div>
-            <div class="relative w-full aspect-[2/3] rounded-xl overflow-hidden mb-4 shadow-2xl border border-amber-700/50 bg-amber-950">
+            <!-- Cover Container -->
+            <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden mb-3.5 shadow-md border border-white/10 bg-darkslate-800">
               <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              <div class="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/60 to-transparent"></div>
 
-              <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 text-[9px] font-bold rounded-md bg-black/80 backdrop-blur-md text-amber-300 border border-amber-700/60 font-sans uppercase tracking-wider">
-                {book.category === "tech" ? "Tech IT" : "Self-Help"}
+              <!-- Category Badge -->
+              <span class="absolute top-2 left-2 px-2 py-0.5 text-[9px] font-semibold rounded bg-black/75 backdrop-blur-md text-white border border-white/10 uppercase tracking-wider">
+                {book.category === "tech" ? "Tech" : "Self-Help"}
               </span>
 
+              <!-- Status Badge -->
               <span
-                class={`absolute top-2.5 right-2.5 px-2.5 py-0.5 text-[9px] font-bold rounded-full backdrop-blur-md border shadow-md font-sans uppercase ${
+                class={`absolute top-2 right-2 px-2 py-0.5 text-[9px] font-semibold rounded-full backdrop-blur-md border flex items-center gap-1 ${
                   book.status === "reading"
-                    ? "bg-blue-950/90 text-blue-300 border-blue-500/50"
+                    ? "bg-sky-950/80 text-sky-400 border-sky-500/40"
                     : book.status === "completed"
-                    ? "bg-emerald-950/90 text-emerald-300 border-emerald-500/50"
-                    : "bg-amber-950/90 text-amber-300 border-amber-500/50"
+                    ? "bg-emerald-950/80 text-emerald-400 border-emerald-500/40"
+                    : "bg-amber-950/80 text-amber-400 border-amber-500/40"
                 }`}
               >
+                {book.status === "reading" && <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>}
                 {book.statusLabel}
               </span>
             </div>
 
-            <h3 class="text-base font-bold text-amber-100 tracking-tight leading-snug group-hover:text-amber-300 transition-colors line-clamp-2 mb-1">
+            <!-- Book Info -->
+            <h3 class="text-sm font-bold text-white tracking-tight leading-snug group-hover:text-primary-400 transition-colors line-clamp-2 mb-1">
               {book.title}
             </h3>
-            <p class="text-xs font-sans text-amber-400/70 mb-3">{book.author}</p>
+            <p class="text-xs font-medium text-darkslate-300 mb-2.5">{book.author}</p>
 
+            <!-- Progress bar or Rating -->
             {book.status === "reading" && book.progress && (
-              <div class="bg-[#120a05] border border-amber-900/50 rounded-xl p-2.5 mb-3 font-sans">
-                <div class="flex justify-between text-[11px] font-semibold mb-1">
-                  <span class="text-blue-400">Tiến độ</span>
-                  <span class="text-amber-200">{book.progress}%</span>
+              <div class="bg-darkslate-700/50 border border-white/5 rounded-lg p-2 mb-2.5">
+                <div class="flex justify-between text-[10px] font-semibold mb-1">
+                  <span class="text-sky-400">Progress</span>
+                  <span class="text-white">{book.progress}%</span>
                 </div>
-                <div class="w-full h-1.5 bg-amber-950 rounded-full overflow-hidden">
-                  <div class="h-full bg-blue-500 rounded-full" style={`width: ${book.progress}%`}></div>
+                <div class="w-full h-1 bg-darkslate-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary-500 rounded-full" style={`width: ${book.progress}%`}></div>
                 </div>
               </div>
             )}
 
             {book.status === "completed" && book.rating && (
-              <div class="flex items-center gap-1 mb-3 text-xs font-sans">
+              <div class="flex items-center gap-1 mb-2.5 text-xs">
                 <span class="text-amber-400 font-bold">★ {book.rating.toFixed(1)}</span>
-                <span class="text-amber-400/60 text-[11px]">/ 5.0</span>
+                <span class="text-darkslate-300 text-[10px]">/ 5.0</span>
               </div>
             )}
 
+            <!-- Quote preview -->
             {book.quote && (
-              <p class="text-[11px] text-amber-200/80 italic line-clamp-2 mb-3 bg-amber-950/50 p-2.5 rounded-xl border border-amber-900/40">
+              <p class="text-[11px] text-darkslate-300 italic line-clamp-2 mb-2.5 bg-darkslate-700/30 p-2 rounded-lg border border-white/5">
                 "{book.quote}"
               </p>
             )}
           </div>
 
-          <div class="pt-3 border-t border-amber-900/50 flex items-center justify-between text-[11px] font-sans text-amber-400/80 group-hover:text-amber-200">
-            <span>Chi tiết &amp; Ghi chú</span>
-            <span class="text-amber-400 group-hover:translate-x-1 transition-transform">Xem →</span>
+          <!-- Card Footer -->
+          <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] text-darkslate-300 font-medium group-hover:text-white transition-colors">
+            <span>Notes &amp; Review</span>
+            <span class="text-primary-400 group-hover:translate-x-0.5 transition-transform">Details →</span>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <!-- SECTION 2: CLEAN MINIMAL LIST VIEW -->
+    <section id="list-view-container" class="hidden space-y-2.5">
+      {booksData.map((book) => (
+        <article
+          class="book-card group bg-darkslate-500/50 border border-darkslate-400/60 hover:border-primary-500 rounded-xl p-3.5 flex items-center justify-between gap-4 transition-all duration-200 hover:bg-darkslate-500/80 cursor-pointer"
+          data-id={book.id}
+          data-category={book.category}
+          data-status={book.status}
+          data-title={book.title.toLowerCase()}
+          data-author={book.author.toLowerCase()}
+          data-tags={book.tags.join(" ").toLowerCase()}
+        >
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-14 rounded overflow-hidden flex-shrink-0 bg-darkslate-800 border border-white/10">
+              <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
+            </div>
+
+            <div class="min-w-0">
+              <h3 class="text-sm font-bold text-white truncate group-hover:text-primary-400 transition-colors">
+                {book.title}
+              </h3>
+              <p class="text-xs text-darkslate-300 truncate">{book.author}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 flex-shrink-0 text-xs">
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-medium rounded bg-darkslate-700 text-darkslate-300 border border-white/10 uppercase">
+              {book.category === "tech" ? "Tech" : "Self-Help"}
+            </span>
+
+            {book.rating && (
+              <span class="text-amber-400 font-semibold text-xs hidden md:inline-block">★ {book.rating.toFixed(1)}</span>
+            )}
+
+            <span
+              class={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full border ${
+                book.status === "reading"
+                  ? "bg-sky-950/80 text-sky-400 border-sky-500/40"
+                  : book.status === "completed"
+                  ? "bg-emerald-950/80 text-emerald-400 border-emerald-500/40"
+                  : "bg-amber-950/80 text-amber-400 border-amber-500/40"
+              }`}
+            >
+              {book.statusLabel}
+            </span>
+
+            <span class="text-darkslate-300 group-hover:text-primary-400 transition-colors">→</span>
           </div>
         </article>
       ))}
     </section>
 
     <!-- Empty state -->
-    <div id="no-results" class="hidden text-center py-20 bg-[#160e09] rounded-3xl border border-amber-900/50 mt-6 font-serif shadow-2xl">
-      <p class="text-xl font-bold text-amber-200 mb-1">Không tìm thấy cuốn sách nào</p>
-      <p class="text-xs text-amber-400/70 font-sans">Thử bỏ các tiêu chí lọc hoặc gõ từ khóa tìm kiếm khác.</p>
+    <div id="no-results" class="hidden text-center py-16 bg-darkslate-500/40 rounded-xl border border-darkslate-400/60 mt-6">
+      <p class="text-base font-semibold text-white mb-1">No books found</p>
+      <p class="text-xs text-darkslate-300">Try clearing filters or searching for a different keyword.</p>
     </div>
 
-    <!-- Goodreads Footer Sync Notice -->
-    <footer class="mt-20 pt-8 border-t border-amber-900/40 text-center font-sans text-xs text-amber-400/70">
+    <!-- Goodreads Footer Attribution -->
+    <footer class="mt-16 pt-6 border-t border-darkslate-400/40 text-center text-xs text-darkslate-300">
       <p>
-        Data &amp; Image Source: The reading list and reviews on this page are continuously synced from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-200 font-bold underline hover:text-amber-400">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
+        Data &amp; Image Source: Synced continuously from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-primary-400 font-medium underline hover:text-primary-300">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
       </p>
     </footer>
   </main>
@@ -493,10 +381,9 @@ const avgRating = (
 
 <style>
   .cat-btn.active, .status-btn.active, .view-btn.active {
-    background-color: #78350f !important;
-    color: #fef3c7 !important;
-    border-color: #d97706 !important;
-    box-shadow: 0 4px 12px rgba(120, 53, 15, 0.6);
+    background-color: var(--primary-500) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-500) 40%, transparent);
   }
 </style>
 
@@ -505,28 +392,28 @@ const avgRating = (
     let currentCat = 'all';
     let currentStatus = 'all';
     let searchQuery = '';
-    let currentView = 'shelf';
+    let currentView = 'grid';
 
     const cards = document.querySelectorAll('.book-card');
     const visibleCountEl = document.getElementById('visible-count');
     const noResultsEl = document.getElementById('no-results');
     const searchInput = document.getElementById('search-input');
-    const shelfContainer = document.getElementById('shelf-view-container');
     const gridContainer = document.getElementById('grid-view-container');
+    const listContainer = document.getElementById('list-view-container');
 
-    // View Switcher (Shelf vs Grid)
+    // View Mode Switcher (Grid vs List)
     document.querySelectorAll('#view-mode-toggle .view-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('#view-mode-toggle .view-btn').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         currentView = btn.dataset.view;
 
-        if (currentView === 'shelf') {
-          shelfContainer.classList.remove('hidden');
-          gridContainer.classList.add('hidden');
-        } else {
-          shelfContainer.classList.add('hidden');
+        if (currentView === 'grid') {
           gridContainer.classList.remove('hidden');
+          listContainer.classList.add('hidden');
+        } else {
+          gridContainer.classList.add('hidden');
+          listContainer.classList.remove('hidden');
         }
       });
     });
@@ -557,18 +444,12 @@ const avgRating = (
         }
       });
 
-      ['reading', 'completed', 'want'].forEach((groupKey) => {
-        const groupEl = document.getElementById(`shelf-group-${groupKey}`);
-        if (groupEl) {
-          const visibleInGroup = groupEl.querySelectorAll('.book-card:not(.hidden)').length;
-          if (visibleInGroup === 0) groupEl.classList.add('hidden');
-          else groupEl.classList.remove('hidden');
-        }
-      });
+      // Divide count by 2 since cards exist in both grid and list view
+      const actualVisible = Math.ceil(count / 2);
 
-      if (visibleCountEl) visibleCountEl.textContent = count;
+      if (visibleCountEl) visibleCountEl.textContent = actualVisible;
       if (noResultsEl) {
-        if (count === 0) noResultsEl.classList.remove('hidden');
+        if (actualVisible === 0) noResultsEl.classList.remove('hidden');
         else noResultsEl.classList.add('hidden');
       }
     }
@@ -613,17 +494,17 @@ const avgRating = (
       document.getElementById('modal-cover').alt = book.title;
       document.getElementById('modal-title').textContent = book.title;
       document.getElementById('modal-subtitle').textContent = book.subtitle || '';
-      document.getElementById('modal-author').textContent = `Tác giả: ${book.author}`;
+      document.getElementById('modal-author').textContent = `By ${book.author}`;
       document.getElementById('modal-category').textContent = book.categoryLabel;
 
       const statusEl = document.getElementById('modal-status');
       statusEl.textContent = book.statusLabel;
       if (book.status === 'reading') {
-        statusEl.className = 'px-3 py-1 text-[11px] font-bold rounded-md bg-blue-950/90 text-blue-300 border border-blue-700/50 font-sans uppercase tracking-wider';
+        statusEl.className = 'px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-sky-950/80 text-sky-400 border border-sky-500/40';
       } else if (book.status === 'completed') {
-        statusEl.className = 'px-3 py-1 text-[11px] font-bold rounded-md bg-emerald-950/90 text-emerald-300 border border-emerald-700/50 font-sans uppercase tracking-wider';
+        statusEl.className = 'px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/40';
       } else {
-        statusEl.className = 'px-3 py-1 text-[11px] font-bold rounded-md bg-amber-950/90 text-amber-300 border border-amber-700/50 font-sans uppercase tracking-wider';
+        statusEl.className = 'px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-amber-950/80 text-amber-400 border border-amber-500/40';
       }
 
       const ratingContainer = document.getElementById('modal-rating-container');
@@ -646,8 +527,8 @@ const avgRating = (
         progressContainer.classList.add('hidden');
       }
 
-      document.getElementById('modal-pages').textContent = book.pages ? `📄 ${book.pages} trang` : '';
-      document.getElementById('modal-year').textContent = book.yearRead ? `📅 Đọc năm ${book.yearRead}` : '';
+      document.getElementById('modal-pages').textContent = book.pages ? `📄 ${book.pages} pages` : '';
+      document.getElementById('modal-year').textContent = book.yearRead ? `📅 Read in ${book.yearRead}` : '';
       document.getElementById('modal-summary').textContent = book.summary;
       document.getElementById('modal-review').textContent = book.review;
 
@@ -664,8 +545,8 @@ const avgRating = (
       if (book.keyTakeaways && book.keyTakeaways.length > 0) {
         book.keyTakeaways.forEach((t) => {
           const li = document.createElement('li');
-          li.className = 'flex items-start gap-2.5 text-xs leading-relaxed bg-amber-950/40 p-3 rounded-xl border border-amber-900/40';
-          li.innerHTML = `<span class="text-amber-400 font-bold text-sm font-serif">✒️</span> <span>${t}</span>`;
+          li.className = 'flex items-start gap-2 text-xs leading-relaxed bg-darkslate-700/40 p-2.5 rounded-lg border border-white/5';
+          li.innerHTML = `<span class="text-primary-400 font-bold text-sm">✓</span> <span>${t}</span>`;
           takeawaysEl.appendChild(li);
         });
       }
@@ -675,7 +556,7 @@ const avgRating = (
       if (book.tags) {
         book.tags.forEach((tag) => {
           const span = document.createElement('span');
-          span.className = 'px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-amber-950 text-amber-300 border border-amber-800/50 uppercase';
+          span.className = 'px-2 py-0.5 text-[10px] font-semibold rounded bg-darkslate-700 text-darkslate-300 border border-white/10';
           span.textContent = `#${tag}`;
           tagsEl.appendChild(span);
         });
