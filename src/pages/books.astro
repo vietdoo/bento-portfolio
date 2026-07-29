@@ -3,42 +3,40 @@ import Layout from "../layouts/Layout.astro";
 import BackLink from "../components/BackLink.astro";
 import LoaderAnimation from "../components/LoaderAnimation.astro";
 import { SITE } from "../site-config";
-import { type Book } from "../data/books";
-import { getLiveGoodreadsBooks } from "../lib/goodreads";
+import { getLiveGoodreadsBooks, type GoodreadsBook } from "../lib/goodreads";
 
-const booksData: Book[] = await getLiveGoodreadsBooks();
+const booksData: GoodreadsBook[] = await getLiveGoodreadsBooks();
 
-// Group books by year
-const years = ["2026", "2025", "2024"];
+// Extract years present in Goodreads RSS dynamically
+const years = Array.from(new Set(booksData.map((b) => b.yearRead || "2023"))).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
 
-const booksByYear: Record<string, Book[]> = {
-  "2026": booksData.filter((b) => b.yearRead === "2026"),
-  "2025": booksData.filter((b) => b.yearRead === "2025"),
-  "2024": booksData.filter((b) => b.yearRead === "2024"),
-};
+const booksByYear: Record<string, GoodreadsBook[]> = {};
+years.forEach((yr) => {
+  booksByYear[yr] = booksData.filter((b) => b.yearRead === yr);
+});
 
-// Yearly stats calculation
-const yearlyCounts = {
-  "2024": booksByYear["2024"].length,
-  "2025": booksByYear["2025"].length,
-  "2026": booksByYear["2026"].length,
-};
+// Calculate yearly counts strictly from Goodreads
+const yearlyCounts: Record<string, number> = {};
+years.forEach((yr) => {
+  yearlyCounts[yr] = booksByYear[yr].length;
+});
 
 const maxYearlyCount = Math.max(...Object.values(yearlyCounts), 1);
 
-// Monthly stats for 2026 (Jan-Dec)
+// Monthly stats for current active year or 2026
 const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const monthlyCounts2026 = Array.from({ length: 12 }, (_, i) => {
-  return booksByYear["2026"].filter((b) => b.monthRead === i + 1).length;
+const activeYear = years[0] || "2026";
+const monthlyCountsActiveYear = Array.from({ length: 12 }, (_, i) => {
+  return (booksByYear[activeYear] || []).filter((b) => b.monthRead === i + 1).length;
 });
-const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
+const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
 ---
 
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Bookshelf & Reading Log`}
-  description="Lịch sử đọc sách theo năm, biểu đồ thống kê và bài tập đọc. Tự động đồng bộ từ Goodreads profile."
+  title={`${SITE.author.fullName} - Bookshelf & Goodreads Log`}
+  description="Lịch sử đọc sách đồng bộ 100% từ Goodreads profile RSS."
 >
   <!-- Detail Modal -->
   <div
@@ -129,15 +127,6 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
             >
               Goodreads ↗
             </a>
-            <a
-              id="modal-link"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors"
-            >
-              Official ↗
-            </a>
           </div>
         </div>
       </div>
@@ -151,7 +140,7 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
     <header class="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold tracking-tight mb-1">Bookshelf</h1>
-        <p class="text-darkslate-300 text-xs sm:text-sm">My personal reading log, yearly stats, and book notes.</p>
+        <p class="text-darkslate-300 text-xs sm:text-sm">Reading log synced 100% strictly from Goodreads RSS feed.</p>
       </div>
 
       <a
@@ -161,25 +150,25 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
         class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-darkslate-500/60 hover:bg-darkslate-500 border border-darkslate-400/60 text-xs text-darkslate-200 transition-all group"
       >
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Synced with <strong class="text-white group-hover:text-primary-400 transition-colors">goodreads.com/vietdoo</strong> ↗</span>
+        <span>Synced with <strong class="text-white group-hover:text-primary-400 transition-colors">goodreads.com/165632513</strong> ↗</span>
       </a>
     </header>
 
-    <!-- SECTION 1: ANALYTICS CHARTS (Matching reference layout) -->
+    <!-- SECTION 1: ANALYTICS CHARTS -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
       <!-- Card 1: BOOKS PER YEAR -->
       <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-52">
         <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">BOOKS PER YEAR</h3>
 
         <div class="flex items-end justify-around h-32 pt-4 px-2">
-          {["2024", "2025", "2026"].map((yr) => {
-            const count = yearlyCounts[yr as keyof typeof yearlyCounts] || 0;
+          {years.map((yr) => {
+            const count = yearlyCounts[yr] || 0;
             const pct = Math.max(15, Math.round((count / maxYearlyCount) * 100));
             return (
               <div class="flex flex-col items-center gap-1.5 flex-1 group">
                 <span class="text-[11px] font-mono text-amber-400 font-bold opacity-80 group-hover:opacity-100">{count}</span>
                 <div class="w-10 sm:w-12 bg-amber-500/80 group-hover:bg-amber-400 rounded-sm transition-all duration-300 shadow-sm" style={`height: ${pct}%;`}></div>
-                <span class="text-[11px] font-mono text-darkslate-300 mt-1">{yr.slice(2)}</span>
+                <span class="text-[11px] font-mono text-darkslate-300 mt-1">{yr}</span>
               </div>
             );
           })}
@@ -191,14 +180,14 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY</h3>
           <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px] font-mono">
-            <span class="px-2 py-0.5 rounded bg-amber-500/80 text-black font-bold">2026</span>
+            <span class="px-2 py-0.5 rounded bg-amber-500/80 text-black font-bold">{activeYear}</span>
             <span class="px-2 py-0.5 rounded text-darkslate-300">All</span>
           </div>
         </div>
 
         <div class="flex items-end justify-between h-32 pt-6 px-1 gap-1">
           {monthLabels.map((m, idx) => {
-            const count = monthlyCounts2026[idx];
+            const count = monthlyCountsActiveYear[idx];
             const pct = count > 0 ? Math.max(25, Math.round((count / maxMonthlyCount) * 100)) : 8;
             return (
               <div class="flex flex-col items-center gap-1 flex-1 group">
@@ -216,7 +205,7 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
       </div>
     </section>
 
-    <!-- SECTION 2: YEAR-GROUPED READING TIMELINE (Matching reference layout) -->
+    <!-- SECTION 2: YEAR-GROUPED READING TIMELINE -->
     <section class="space-y-12">
       {years.map((year) => {
         const yearBooks = booksByYear[year];
@@ -271,7 +260,7 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
                           </>
                         ) : (
                           <span class="text-[11px] font-mono text-amber-400/90 font-semibold">
-                            📌 plan to read
+                            📌 {book.statusLabel}
                           </span>
                         )}
                       </div>
@@ -294,7 +283,7 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
     <!-- Footer Attribution -->
     <footer class="mt-16 pt-6 border-t border-darkslate-400/40 text-center text-xs text-darkslate-300">
       <p>
-        Data &amp; Image Source: Synced continuously from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-400 font-medium underline hover:text-amber-300">Goodreads Profile (@vietdoo)</a> &amp; Open Library API.
+        Data &amp; Image Source: Synced 100% from <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-400 font-medium underline hover:text-amber-300">Goodreads Profile (@165632513)</a> RSS feed.
       </p>
     </footer>
   </main>
@@ -384,7 +373,7 @@ const maxMonthlyCount = Math.max(...monthlyCounts2026, 1);
 
       const grLinkEl = document.getElementById('modal-goodreads-link');
       if (grLinkEl) {
-        grLinkEl.href = book.goodreadsUrl || 'https://www.goodreads.com/vietdoo';
+        grLinkEl.href = book.goodreadsUrl || 'https://www.goodreads.com/user/show/165632513';
       }
 
       const linkEl = document.getElementById('modal-link');
