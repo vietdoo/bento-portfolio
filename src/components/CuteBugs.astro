@@ -67,6 +67,9 @@
     let mouseY = -1000;
     let isHovering = false;
 
+    // Cached bounds of the text/buttons block bugs and their speech bubbles should avoid.
+    let avoidRect: { left: number; right: number; top: number; bottom: number } | null = null;
+
     // Filter bugs enabled in bugsConfig.ts
     const activeBugsConfig = BUGS_CONFIG.filter((b) => b.enabled);
     if (activeBugsConfig.length === 0) return;
@@ -89,10 +92,12 @@
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      avoidRect = measureAvoidRect();
 
       bugs.forEach((b) => {
-        b.x = Math.max(35, Math.min(width - 35, b.x));
-        b.y = Math.max(height * 0.3, Math.min(height - 25, b.y));
+        const margin = b.size * 0.9;
+        b.x = Math.max(margin, Math.min(width - margin, b.x));
+        b.y = Math.max(height * 0.3, Math.min(height - margin * 0.7, b.y));
       });
     }
 
@@ -105,9 +110,31 @@
     });
     resizeObserver.observe(container);
 
+    // Bugs get smaller on cramped/mobile cards so they actually fit their play area.
+    function getSizeScale() {
+      const widthScale = width / 400;
+      const heightScale = height / 300;
+      return Math.max(0.55, Math.min(1, Math.min(widthScale, heightScale)));
+    }
+
+    // The text/buttons block bugs and their speech bubbles shouldn't cover, in container-relative coordinates.
+    function measureAvoidRect() {
+      const card = container!.closest(".card");
+      const safeBelowEl = card?.querySelector<HTMLElement>("[data-bug-safe-below]");
+      if (!card || !safeBelowEl) return null;
+      const rect = safeBelowEl.getBoundingClientRect();
+      const containerRect = container!.getBoundingClientRect();
+      return {
+        left: rect.left - containerRect.left,
+        right: rect.right - containerRect.left,
+        top: rect.top - containerRect.top,
+        bottom: rect.bottom - containerRect.top,
+      };
+    }
+
     function getHidingSpots() {
       const spots: Array<{ x: number; y: number; edgeAngle: number; type: 'edge' | 'button' }> = [];
-      const introCard = container!.parentElement;
+      const introCard = container!.closest(".card");
       if (!introCard) return spots;
 
       spots.push({ x: 40, y: height - 8, edgeAngle: -Math.PI / 2, type: 'edge' });
@@ -130,14 +157,38 @@
       return spots;
     }
 
-    function setRandomWalkTarget(bug: Bug) {
-      const minY = Math.max(40, height * 0.35);
-      const maxY = Math.max(minY + 20, height - 25);
-      const minX = 30;
-      const maxX = Math.max(minX + 20, width - 30);
+    // Picks a random walk target, steering clear of the text/buttons block whenever there's
+    // enough room; falls back to the strip just below that block on very cramped cards.
+    function pickWalkPoint(size: number) {
+      const margin = size * 0.85;
+      const minX = margin;
+      const maxX = Math.max(minX + 20, width - margin);
+      const minY = Math.max(40, height * 0.3);
+      const maxY = Math.max(minY + 20, height - margin * 0.7);
+      const avoid = avoidRect;
 
-      bug.targetX = minX + Math.random() * (maxX - minX);
-      bug.targetY = minY + Math.random() * (maxY - minY);
+      if (avoid) {
+        const pad = size * 0.5;
+        for (let attempt = 0; attempt < 8; attempt++) {
+          const x = minX + Math.random() * (maxX - minX);
+          const y = minY + Math.random() * (maxY - minY);
+          const inside =
+            x > avoid.left - pad && x < avoid.right + pad && y > avoid.top - pad && y < avoid.bottom + pad;
+          if (!inside) return { x, y };
+        }
+        // No free spot found after several tries (very cramped card): hug the floor
+        // just beneath the text/buttons block instead of overlapping it.
+        const fallbackY = Math.min(Math.max(avoid.bottom + size * 0.6, minY), maxY);
+        return { x: minX + Math.random() * (maxX - minX), y: fallbackY };
+      }
+
+      return { x: minX + Math.random() * (maxX - minX), y: minY + Math.random() * (maxY - minY) };
+    }
+
+    function setRandomWalkTarget(bug: Bug) {
+      const point = pickWalkPoint(bug.size);
+      bug.targetX = point.x;
+      bug.targetY = point.y;
       bug.state = 'WALK';
       bug.stateTimer = 3 + Math.random() * 4;
       bug.speed = bug.baseSpeed;
@@ -175,6 +226,7 @@
 
     function initBugs() {
       bugs.length = 0;
+      const sizeScale = getSizeScale();
       activeBugsConfig.forEach((specInfo, i) => {
         const bug: Bug = {
           id: i,
@@ -191,7 +243,7 @@
           state: 'WALK',
           stateTimer: 2 + Math.random() * 3,
           legPhase: Math.random() * Math.PI * 2,
-          size: 36 + Math.random() * 4,
+          size: (36 + Math.random() * 4) * sizeScale,
           hidingSpot: null,
           peekAmount: 0,
           emotion: null,
@@ -258,8 +310,8 @@
           bug.speed = bug.baseSpeed * 2.5;
           bug.targetX = bug.x + Math.sign(dx || 1) * (80 + Math.random() * 60);
           bug.targetY = bug.y + Math.sign(dy || 1) * (50 + Math.random() * 40);
-          bug.targetX = Math.max(30, Math.min(width - 30, bug.targetX));
-          bug.targetY = Math.max(height * 0.35, Math.min(height - 25, bug.targetY));
+          bug.targetX = Math.max(bug.size * 0.85, Math.min(width - bug.size * 0.85, bug.targetX));
+          bug.targetY = Math.max(height * 0.3, Math.min(height - bug.size * 0.6, bug.targetY));
         }
       });
     });
@@ -305,8 +357,8 @@
             bug.speed = bug.baseSpeed * 2.2;
             bug.targetX = bug.x + (dx / (dist || 1)) * 90;
             bug.targetY = bug.y + (dy / (dist || 1)) * 70;
-            bug.targetX = Math.max(30, Math.min(width - 30, bug.targetX));
-            bug.targetY = Math.max(height * 0.35, Math.min(height - 25, bug.targetY));
+            bug.targetX = Math.max(bug.size * 0.85, Math.min(width - bug.size * 0.85, bug.targetX));
+            bug.targetY = Math.max(height * 0.3, Math.min(height - bug.size * 0.6, bug.targetY));
           }
         }
 
@@ -423,10 +475,21 @@
           bX = maxRelativeX - bubbleW;
         }
 
-        // Clamp vertical position if bug is near top
+        // Clamp vertical position if bug is near the top edge, or if the bubble
+        // would land on top of the text/buttons block (checking horizontal overlap too,
+        // since on desktop that block only occupies part of the card's width).
         let bY = -s * 1.65 - bubbleH;
         let isAbove = true;
-        if (b.y + bY < margin) {
+        let minAllowedTop = margin;
+        if (avoidRect) {
+          const bubbleAbsLeft = b.x + bX;
+          const bubbleAbsRight = b.x + bX + bubbleW;
+          const overlapsAvoidX = bubbleAbsRight > avoidRect.left && bubbleAbsLeft < avoidRect.right;
+          if (overlapsAvoidX) {
+            minAllowedTop = Math.max(margin, avoidRect.bottom + margin);
+          }
+        }
+        if (b.y + bY < minAllowedTop) {
           bY = s * 1.65;
           isAbove = false;
         }

@@ -19,14 +19,14 @@ import CuteBugs from "./CuteBugs.astro";
     <CuteBugs />
   </div>
   <div class="flex w-full h-full relative z-10 pointer-events-none">
-    <div class="flex flex-col justify-between md:max-h-[300px] gap-4 pointer-events-auto">
+    <div data-bug-safe-below class="flex flex-col justify-between md:max-h-[300px] gap-3 md:gap-4 pointer-events-auto">
       <div class="flex flex-col h-full">
         <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
 
         <p class="sr-only">
           Hi, I'm {SITE.author.fullName} ({SITE.author.shortName}), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
         </p>
-        <p aria-hidden="true" class="m-0 font-light text-md">
+        <p aria-hidden="true" class="m-0 font-light text-sm md:text-base">
           <span>
             Hi, I'm <b class="font-bold">{SITE.author.fullName}</b> (<span class="text-primary-400 font-semibold">{SITE.author.shortName}</span>), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices.
           </span>

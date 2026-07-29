@@ -7,18 +7,18 @@ import { SITE } from "../site-config";
 <Card colSpan="md:col-span-1" rowSpan="md:row-span-4">
   <div class="h-full">
     <header class="flex items-center">
-      <h2 class="text-white text-xl font-bold">
+      <h2 class="text-white text-base sm:text-lg md:text-xl font-bold">
         Let's start working together!
       </h2>
     </header>
-    <address class="flex flex-col mt-4">
-      <h2 class="text-darkslate-300">Contact Details</h2>
-      <p class="text-sm">{SITE.links.email}</p>
-      <p>{SITE.location.countryName}</p>
+    <address class="flex flex-col mt-3 md:mt-4">
+      <h2 class="text-darkslate-300 text-sm md:text-base">Contact Details</h2>
+      <p class="text-xs md:text-sm">{SITE.links.email}</p>
+      <p class="text-xs md:text-sm">{SITE.location.countryName}</p>
     </address>
-    <div class="flex flex-col mt-4 w-fit">
-      <h2 class="text-darkslate-300">Socials</h2>
-      <ul>
+    <div class="flex flex-col mt-3 md:mt-4 w-fit">
+      <h2 class="text-darkslate-300 text-sm md:text-base">Socials</h2>
+      <ul class="text-xs md:text-sm">
         <li>
           <a href={LINKS.linkedin} target="_blank">Linkedin</a>
         </li>
