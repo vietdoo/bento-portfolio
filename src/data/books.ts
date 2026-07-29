@@ -18,6 +18,7 @@ export interface Book {
   review: string;
   keyTakeaways: string[];
   link?: string;
+  goodreadsUrl?: string;
   tags: string[];
 }
 
@@ -46,6 +47,7 @@ export const booksData: Book[] = [
       "Cách thiết kế idempotency và exactly-once semantics trong stream processing với Kafka & Flink."
     ],
     link: "https://dataintensive.net/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/23463279-designing-data-intensive-applications",
     tags: ["Big Data", "Distributed Systems", "Database", "Architecture"]
   },
   {
@@ -70,6 +72,7 @@ export const booksData: Book[] = [
       "FIRST principles trong Unit Testing: Fast, Independent, Repeatable, Self-validating, Timely."
     ],
     link: "https://www.oreilly.com/library/view/clean-code-a/9780132350884/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/3735293-clean-code",
     tags: ["Clean Code", "Refactoring", "Best Practices", "Software Quality"]
   },
   {
@@ -94,6 +97,7 @@ export const booksData: Book[] = [
       "Thiết kế Caching Layers & Message Queues để de-couple các microservices có lưu lượng tăng đột biến."
     ],
     link: "https://bytebytego.com/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/54109276-system-design-interview-an-insider-s-guide",
     tags: ["System Design", "Scalability", "Microservices", "Interview"]
   },
   {
@@ -118,6 +122,7 @@ export const booksData: Book[] = [
       "Saga Pattern (Orchestration vs Choreography) giải quyết bài toán nhất quán dữ liệu liên dịch vụ."
     ],
     link: "https://samnewman.io/books/building_microservices_2nd_edition/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/59345719-building-microservices",
     tags: ["Microservices", "Distributed Systems", "Cloud", "Saga Pattern"]
   },
   {
@@ -140,6 +145,7 @@ export const booksData: Book[] = [
       "Distributed Consensus Algorithms: Raft, Paxos và Spanner TrueTime."
     ],
     link: "https://www.databass.dev/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/44144499-database-internals",
     tags: ["Database", "Storage Engines", "Internals", "Distributed Consensus"]
   },
   {
@@ -164,6 +170,7 @@ export const booksData: Book[] = [
       "Phương pháp Tracer Bullets giúp phản hồi nhanh chóng từ khách hàng bằng phiên bản chạy được đầu cuối."
     ],
     link: "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/48495695-the-pragmatic-programmer",
     tags: ["Pragmatic", "Career", "Software Craftsmanship", "Best Practices"]
   },
   {
@@ -186,6 +193,7 @@ export const booksData: Book[] = [
       "Cách viết RFCs / Technical Docs để dẫn dắt định hướng công nghệ tổ chức."
     ],
     link: "https://staffeng.com/book",
+    goodreadsUrl: "https://www.goodreads.com/book/show/56886470-staff-engineer",
     tags: ["Staff Engineer", "Leadership", "Career Growth", "Architecture"]
   },
   {
@@ -210,6 +218,7 @@ export const booksData: Book[] = [
       "Thiết kế môi trường: Làm cho thói quen tốt trở nên rõ ràng và thói quen xấu trở nên khó khăn."
     ],
     link: "https://jamesclear.com/atomic-habits",
+    goodreadsUrl: "https://www.goodreads.com/book/show/40121378-atomic-habits",
     tags: ["Habits", "Productivity", "Mindset", "Self Improvement"]
   },
   {
@@ -234,6 +243,7 @@ export const booksData: Book[] = [
       "Áp dụng Time-Blocking: Lên kế hoạch chi tiết cho từng giờ trong ngày làm việc."
     ],
     link: "https://calnewport.com/books/deep-work/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/25744928-deep-work",
     tags: ["Focus", "Deep Work", "Productivity", "Time Management"]
   },
   {
@@ -260,6 +270,7 @@ export const booksData: Book[] = [
       "Lãi suất kép (Compounding) hoạt động tốt nhất khi bạn kiên nhẫn và tránh những sai lầm thảm họa."
     ],
     link: "https://www.morganhousel.com/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/41881472-the-psychology-of-money",
     tags: ["Finance", "Mindset", "Wisdom", "Wealth"]
   },
   {
@@ -284,6 +295,7 @@ export const booksData: Book[] = [
       "Tích lũy tài sản tri thức cá nhân theo thời gian thông qua blog/website riêng."
     ],
     link: "https://austinkleon.com/show-your-work/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/18290401-show-your-work",
     tags: ["Creativity", "Blogging", "Personal Brand", "Sharing"]
   },
   {
@@ -306,6 +318,7 @@ export const booksData: Book[] = [
       "Đánh giá và điều chỉnh (Reflect) thói quen sử dụng điện thoại mỗi tối."
     ],
     link: "https://maketime.blog/",
+    goodreadsUrl: "https://www.goodreads.com/book/show/37880824-make-time",
     tags: ["Time Management", "Focus", "Energy", "Productivity"]
   }
 ];

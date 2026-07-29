@@ -20,8 +20,8 @@ const avgRating = (
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Classic Bookshelf & Personal Library`}
-  description="Thư viện sách cá nhân cổ điển: Tài liệu kỹ thuật IT, kiến trúc hệ thống dữ liệu và tri thức phát triển bản thân."
+  title={`${SITE.author.fullName} - Classic Bookshelf & Goodreads Profile`}
+  description="Thư viện sách cá nhân cổ điển: Dữ liệu và tiến độ đọc được đồng bộ trực tiếp từ Goodreads profile."
 >
   <!-- Modal Detail View (Classic Journal style) -->
   <div
@@ -110,15 +110,26 @@ const avgRating = (
 
         <div class="pt-4 border-t border-amber-900/40 flex flex-wrap justify-between items-center gap-3 font-sans">
           <div id="modal-tags" class="flex flex-wrap gap-1.5"></div>
-          <a
-            id="modal-link"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-amber-700 hover:bg-amber-600 text-amber-95 transition-colors shadow-md uppercase tracking-wider"
-          >
-            Trang Chủ / Goodreads ↗
-          </a>
+          <div class="flex gap-2">
+            <a
+              id="modal-goodreads-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg bg-amber-900/80 hover:bg-amber-800 text-amber-200 border border-amber-700/60 transition-colors shadow-md uppercase tracking-wider"
+            >
+              Xem trên Goodreads ↗
+            </a>
+            <a
+              id="modal-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg bg-amber-700 hover:bg-amber-600 text-amber-95 transition-colors shadow-md uppercase tracking-wider"
+            >
+              Trang Chủ ↗
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -129,15 +140,37 @@ const avgRating = (
 
     <!-- Classic Library Header -->
     <header class="mb-12 text-center sm:text-left border-b border-amber-900/40 pb-8">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold font-sans uppercase tracking-widest mb-3">
-        <span>📚</span> Personal Library &amp; Archives
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4 font-sans">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-950/80 border border-amber-800/60 text-amber-300 text-xs font-bold uppercase tracking-widest">
+          <span>📚</span> Personal Library &amp; Archives
+        </div>
+
+        <!-- Goodreads Sync Badge -->
+        <a
+          href={SITE.links.goodreads}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 hover:text-emerald-200 hover:bg-emerald-900/90 text-xs font-semibold transition-all shadow-lg group"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Synced from <strong class="underline decoration-emerald-500/50 group-hover:decoration-emerald-300">Goodreads Profile</strong> ↗</span>
+        </a>
       </div>
+
       <h1 class="text-3xl sm:text-5xl font-serif font-bold text-amber-100 tracking-tight mb-3">
         The Classic Bookshelf
       </h1>
-      <p class="text-amber-200/80 font-serif text-sm sm:text-base max-w-2xl leading-relaxed italic">
+      <p class="text-amber-200/80 font-serif text-sm sm:text-base max-w-3xl leading-relaxed italic">
         "Sách là ngọn đèn hải đăng chiếu sáng kiến trúc tư duy." Nơi lưu giữ các ấn phẩm kỹ thuật phần mềm, hệ thống dữ liệu phân tán và tri thức phát triển bản thân.
       </p>
+
+      <!-- Sync Info Notice -->
+      <div class="mt-4 p-3.5 bg-amber-950/40 border border-amber-900/40 rounded-xl flex items-center gap-3 text-xs font-sans text-amber-300/80 max-w-2xl">
+        <span class="text-base flex-shrink-0">🔄</span>
+        <span>
+          <strong>Data &amp; Image Source:</strong> This reading list, book covers, and progress ratings are synced directly from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-200 font-bold underline hover:text-amber-400">Goodreads Profile</a> &amp; Open Library API.
+        </span>
+      </div>
 
       <!-- Vintage Brass Stats Counter -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 font-sans">
@@ -211,9 +244,9 @@ const avgRating = (
       </div>
     </section>
 
-    <!-- SECTION 1: PHYSICAL WOODEN SHELF VIEW (Chế độ xem Giá Sách Gỗ 3D) -->
+    <!-- SECTION 1: PHYSICAL WOODEN SHELF VIEW -->
     <section id="shelf-view-container" class="space-y-14 mb-16">
-      <!-- Shelf Group 1: Currently Reading (Sách Đang Đọc) -->
+      <!-- Shelf Group 1: Currently Reading -->
       <div class="shelf-group" id="shelf-group-reading">
         <div class="flex items-center gap-2 mb-4 font-serif">
           <span class="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6] animate-pulse"></span>
@@ -233,23 +266,18 @@ const avgRating = (
                 data-author={book.author.toLowerCase()}
                 data-tags={book.tags.join(" ").toLowerCase()}
               >
-                <!-- Vintage Ribbon Bookmark hanging top -->
                 <div class="absolute -top-3 right-4 z-20 w-3.5 h-10 bg-gradient-to-b from-blue-600 to-blue-800 shadow-md rounded-t-sm flex items-end justify-center pb-1">
                   <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-200 transform rotate-45"></div>
                 </div>
 
-                <!-- 3D Book Cover -->
                 <div class="w-32 h-48 sm:w-36 sm:h-54 rounded-r-md rounded-l-sm overflow-hidden shadow-[0_12px_25px_rgba(0,0,0,0.8)] border border-amber-700/50 relative bg-amber-950 group-hover:shadow-[0_20px_40px_rgba(59,130,246,0.3)] transition-all">
                   <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
-                  <!-- Book spine shadow -->
                   <div class="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/60 to-transparent"></div>
-                  <!-- Progress overlay badge -->
                   <div class="absolute bottom-2 inset-x-2 bg-black/80 backdrop-blur-md border border-blue-500/40 rounded px-2 py-1 text-[10px] font-sans text-center text-blue-300 font-bold">
                     {book.progress}% • Ch. 10
                   </div>
                 </div>
 
-                <!-- Book Label under shelf -->
                 <p class="text-[11px] font-serif font-bold text-amber-200 text-center mt-2 line-clamp-1 group-hover:text-blue-300 transition-colors w-32 sm:w-36">
                   {book.title}
                 </p>
@@ -257,7 +285,6 @@ const avgRating = (
               </div>
             ))}
           </div>
-          <!-- Wooden Shelf Base Rack -->
           <div class="w-full h-5 mt-4 bg-gradient-to-r from-[#2a170b] via-[#482813] to-[#2a170b] border-t-2 border-b border-amber-700/60 shadow-2xl rounded-sm flex items-center justify-between px-4">
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
@@ -265,7 +292,7 @@ const avgRating = (
         </div>
       </div>
 
-      <!-- Shelf Group 2: Completed Books (Sách Đã Đọc) -->
+      <!-- Shelf Group 2: Completed Books -->
       <div class="shelf-group" id="shelf-group-completed">
         <div class="flex items-center gap-2 mb-4 font-serif">
           <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
@@ -285,12 +312,10 @@ const avgRating = (
                 data-author={book.author.toLowerCase()}
                 data-tags={book.tags.join(" ").toLowerCase()}
               >
-                <!-- Gold Silk Ribbon Bookmark -->
                 <div class="absolute -top-3 right-4 z-20 w-3.5 h-10 bg-gradient-to-b from-amber-500 to-amber-700 shadow-md rounded-t-sm flex items-end justify-center pb-1">
                   <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-100 transform rotate-45"></div>
                 </div>
 
-                <!-- 3D Book Cover -->
                 <div class="w-32 h-48 sm:w-36 sm:h-54 rounded-r-md rounded-l-sm overflow-hidden shadow-[0_12px_25px_rgba(0,0,0,0.8)] border border-amber-700/50 relative bg-amber-950 group-hover:shadow-[0_20px_40px_rgba(245,158,11,0.3)] transition-all">
                   <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover" loading="lazy" />
                   <div class="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/60 to-transparent"></div>
@@ -308,7 +333,6 @@ const avgRating = (
               </div>
             ))}
           </div>
-          <!-- Wooden Shelf Base Rack -->
           <div class="w-full h-5 mt-4 bg-gradient-to-r from-[#2a170b] via-[#482813] to-[#2a170b] border-t-2 border-b border-amber-700/60 shadow-2xl rounded-sm flex items-center justify-between px-4">
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
@@ -316,7 +340,7 @@ const avgRating = (
         </div>
       </div>
 
-      <!-- Shelf Group 3: Want To Read (Dự Định Đọc) -->
+      <!-- Shelf Group 3: Want To Read -->
       <div class="shelf-group" id="shelf-group-want">
         <div class="flex items-center gap-2 mb-4 font-serif">
           <span class="w-3 h-3 rounded-full bg-amber-500"></span>
@@ -336,7 +360,6 @@ const avgRating = (
                 data-author={book.author.toLowerCase()}
                 data-tags={book.tags.join(" ").toLowerCase()}
               >
-                <!-- Bronze Ribbon Bookmark -->
                 <div class="absolute -top-3 right-4 z-20 w-3.5 h-10 bg-gradient-to-b from-amber-700 to-amber-900 shadow-md rounded-t-sm flex items-end justify-center pb-1">
                   <div class="w-1.5 h-1.5 border-b-2 border-r-2 border-amber-300 transform rotate-45"></div>
                 </div>
@@ -356,7 +379,6 @@ const avgRating = (
               </div>
             ))}
           </div>
-          <!-- Wooden Shelf Base Rack -->
           <div class="w-full h-5 mt-4 bg-gradient-to-r from-[#2a170b] via-[#482813] to-[#2a170b] border-t-2 border-b border-amber-700/60 shadow-2xl rounded-sm flex items-center justify-between px-4">
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
             <span class="w-2 h-2 rounded-full bg-amber-700/50"></span>
@@ -365,7 +387,7 @@ const avgRating = (
       </div>
     </section>
 
-    <!-- SECTION 2: EDITORIAL GRID VIEW (Chế độ xem Thư Viện Thẻ Bài Cổ Điển) -->
+    <!-- SECTION 2: EDITORIAL GRID VIEW -->
     <section id="grid-view-container" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 font-serif">
       {booksData.map((book) => (
         <article
@@ -378,7 +400,6 @@ const avgRating = (
           data-tags={book.tags.join(" ").toLowerCase()}
         >
           <div>
-            <!-- Cover inside card -->
             <div class="relative w-full aspect-[2/3] rounded-lg overflow-hidden mb-4 shadow-2xl border border-amber-700/40 bg-amber-950">
               <img src={book.coverImage} alt={book.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               <div class="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/50 to-transparent"></div>
@@ -444,6 +465,13 @@ const avgRating = (
       <p class="text-xl font-bold text-amber-200 mb-1">Không tìm thấy cuốn sách nào</p>
       <p class="text-xs text-amber-400/70 font-sans">Thử bỏ các tiêu chí lọc hoặc gõ từ khóa tìm kiếm khác.</p>
     </div>
+
+    <!-- Goodreads Footer Sync Notice -->
+    <footer class="mt-16 pt-8 border-t border-amber-900/40 text-center font-sans text-xs text-amber-400/60">
+      <p>
+        Data &amp; Image Source: The reading list and reviews on this page are synced from my <a href={SITE.links.goodreads} target="_blank" rel="noopener noreferrer" class="text-amber-200 font-bold underline hover:text-amber-400">Goodreads Profile</a> &amp; Open Library API.
+      </p>
+    </footer>
   </main>
 </Layout>
 
@@ -513,7 +541,6 @@ const avgRating = (
         }
       });
 
-      // Hide empty shelf groups in shelf mode
       ['reading', 'completed', 'want'].forEach((groupKey) => {
         const groupEl = document.getElementById(`shelf-group-${groupKey}`);
         if (groupEl) {
@@ -636,6 +663,11 @@ const avgRating = (
           span.textContent = `#${tag}`;
           tagsEl.appendChild(span);
         });
+      }
+
+      const grLinkEl = document.getElementById('modal-goodreads-link');
+      if (grLinkEl) {
+        grLinkEl.href = book.goodreadsUrl || 'https://www.goodreads.com/vietdoo';
       }
 
       const linkEl = document.getElementById('modal-link');
