@@ -92,12 +92,10 @@ const spineStyles = [
     </div>
   </div>
 
-  <!-- Subtitle Content Slot (Perfectly aligned with Countries / Vietnam Journey cards) -->
-  {currentlyReading && (
-    <p class="text-xs text-darkslate-300 m-0 mt-1 line-clamp-1 z-10 relative">
-      <span class="text-white/60">Reading:</span> {currentlyReading.title}
-    </p>
-  )}
+  <!-- Subtitle Content Slot (Aligned with Countries / Vietnam Journey cards) -->
+  <span class="text-xs text-white/60 z-10 relative">
+    {booksData.length} {booksData.length === 1 ? "book" : "books"}
+  </span>
 </Card>
 
 <style>
