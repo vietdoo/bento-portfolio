@@ -21,7 +21,7 @@ export const SITE = {
     medium: "https://vndo.vn",
     dribbble: "https://vndo.vn",
     email: "vietdoo@outlook.com",
-    goodreads: "https://www.goodreads.com/vietdoo",
+    goodreads: "https://www.goodreads.com/user/show/165632513",
   },
   cal: {
     username: "vietdoo",

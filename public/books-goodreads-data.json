@@ -1,0 +1,143 @@
+{
+  "stats": {
+    "total_books": 5,
+    "books_this_year": 0,
+    "total_pages": 1014,
+    "estimated_hours": 25.4,
+    "books_per_year": [
+      {
+        "year": 2024,
+        "count": 0
+      },
+      {
+        "year": 2025,
+        "count": 0
+      },
+      {
+        "year": 2026,
+        "count": 0
+      }
+    ]
+  },
+  "currently_reading": [
+    {
+      "id": "https://www.goodreads.com/review/show/5542469719?utm_medium=api&utm_source=rss",
+      "title": "The Data Warehouse Toolkit: The Complete Guide to Dimensional Modeling",
+      "author": "Ralph Kimball",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347291991l/748203.jpg",
+      "link": "https://www.goodreads.com/review/show/5542469719?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542465965?utm_medium=api&utm_source=rss",
+      "title": "Quẳng Gánh Lo Đi &amp; Vui Sống",
+      "author": "Dale Carnegie",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1335804906l/13628548.jpg",
+      "link": "https://www.goodreads.com/review/show/5542465965?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542461523?utm_medium=api&utm_source=rss",
+      "title": "Storytelling with Data: A Data Visualization Guide for Business Professionals",
+      "author": "Cole Nussbaumer Knaflic",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1444690744l/26535513._SX318_.jpg",
+      "link": "https://www.goodreads.com/review/show/5542461523?utm_medium=api&utm_source=rss"
+    }
+  ],
+  "read_books": [
+    {
+      "id": "https://www.goodreads.com/review/show/5542476572?utm_medium=api&utm_source=rss",
+      "title": "Đời ngắn đừng ngủ dài",
+      "author": "Robin Sharma",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1442188452l/26502517._SY475_.jpg",
+      "pages": 228,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542476572?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542465175?utm_medium=api&utm_source=rss",
+      "title": "Nhà Lãnh Đạo Không Chức Danh",
+      "author": "Robin Sharma",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1487644214l/34358223._SY475_.jpg",
+      "rating": 3,
+      "pages": 270,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542465175?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542458566?utm_medium=api&utm_source=rss",
+      "title": "Nhà Giả Kim",
+      "author": "Paulo Coelho",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1631611702l/21558662._SY475_.jpg",
+      "rating": 5,
+      "pages": 228,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542458566?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542459172?utm_medium=api&utm_source=rss",
+      "title": "Người Giàu Có Nhất Thành Babylon",
+      "author": "George S. Clason",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1631005729l/29610899._SY475_.jpg",
+      "rating": 4,
+      "pages": 0,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542459172?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542451747?utm_medium=api&utm_source=rss",
+      "title": "How to Win Friends & Influence People",
+      "author": "Dale Carnegie",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1442726934l/4865._SY475_.jpg",
+      "rating": 5,
+      "pages": 288,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542451747?utm_medium=api&utm_source=rss"
+    }
+  ],
+  "want_to_read": [
+    {
+      "id": "https://www.goodreads.com/review/show/5542470422?utm_medium=api&utm_source=rss",
+      "title": "Designing Data-Intensive Applications",
+      "author": "Martin Kleppmann",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1415816873l/23463279.jpg",
+      "pages": 562,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542470422?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542456929?utm_medium=api&utm_source=rss",
+      "title": "Hoàng Tử Bé",
+      "author": "Antoine de Saint-Exupéry",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1483156248l/12617037._SY475_.jpg",
+      "pages": 104,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542456929?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542452018?utm_medium=api&utm_source=rss",
+      "title": "Sapiens: A Brief History of Humankind",
+      "author": "Yuval Noah Harari",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1703329310l/23692271._SY475_.jpg",
+      "pages": 512,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542452018?utm_medium=api&utm_source=rss"
+    },
+    {
+      "id": "https://www.goodreads.com/review/show/5542450069?utm_medium=api&utm_source=rss",
+      "title": "Nghĩ Giàu Làm Giàu",
+      "author": "Napoleon Hill",
+      "cover_url": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1483063561l/19546624._SY475_.jpg",
+      "pages": 314,
+      "read_date": "May 11",
+      "read_year": 2023,
+      "link": "https://www.goodreads.com/review/show/5542450069?utm_medium=api&utm_source=rss"
+    }
+  ]
+}
