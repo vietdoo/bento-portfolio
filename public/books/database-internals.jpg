@@ -4,21 +4,48 @@
       <stop offset="0%" stop-color="#451a03" />
       <stop offset="100%" stop-color="#1c1917" />
     </linearGradient>
-    <linearGradient id="sp-database-internals" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#fff" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#000" stop-opacity="0.3"/>
+    <linearGradient id="spine-database-internals" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.4"/>
     </linearGradient>
   </defs>
+
+  <!-- Background -->
   <rect width="300" height="450" rx="8" fill="url(#bg-database-internals)" />
-  <rect x="20" y="24" width="100" height="20" rx="4" fill="#fb923c" fill-opacity="0.2" stroke="#fb923c" stroke-width="1"/>
-  <text x="28" y="38" font-family="sans-serif" font-size="9" font-weight="700" fill="#fb923c">STORAGE</text>
-  <text x="20" y="70" font-family="sans-serif" font-size="10" font-weight="600" fill="#94a3b8">STORAGE ENGINES</text>
-  <g transform="translate(115, 110) scale(1.4)"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="#fb923c" stroke-width="2" fill="none"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke="#fb923c" stroke-width="2" fill="none"/></g>
-  <rect x="20" y="200" width="260" height="2" fill="#fb923c" opacity="0.6"/>
-  <foreignObject x="20" y="215" width="260" height="150">
-    <div xmlns="http://www.w3.org/1999/xhtml" style="color:#fff;font-family:sans-serif;font-weight:800;font-size:20px;line-height:1.3;">Database Internals</div>
-  </foreignObject>
-  <text x="20" y="400" font-family="sans-serif" font-size="13" font-weight="600" fill="#fb923c">Alex Petrov</text>
-  <rect x="0" y="0" width="12" height="450" fill="url(#sp-database-internals)" />
-  <rect x="0.5" y="0.5" width="299" height="449" rx="7.5" fill="none" stroke="#ffffff" stroke-opacity="0.15" />
+
+  <!-- Classic Double Gold Frame -->
+  <rect x="14" y="14" width="272" height="422" rx="6" fill="none" stroke="#fb923c" stroke-opacity="0.5" stroke-width="1.5" />
+  <rect x="18" y="18" width="264" height="414" rx="4" fill="none" stroke="#fb923c" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="4,2" />
+
+  <!-- Top Category Ribbon -->
+  <rect x="35" y="32" width="230" height="22" rx="3" fill="#1c1917" stroke="#fb923c" stroke-opacity="0.6" stroke-width="1" />
+  <text x="150" y="47" font-family="Georgia, 'Times New Roman', serif" font-size="9" font-weight="700" fill="#fb923c" text-anchor="middle" letter-spacing="1.5">STORAGE ENGINES</text>
+
+  <!-- Central Emblem Ornament -->
+  <circle cx="150" cy="140" r="42" fill="#1c1917" stroke="#fb923c" stroke-width="1.5" stroke-opacity="0.6" />
+  <circle cx="150" cy="140" r="37" fill="none" stroke="#fb923c" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="3,2" />
+  <g transform="translate(133, 123) scale(1.4)">
+    <ellipse cx="12" cy="6" rx="8" ry="3" stroke="#fb923c" stroke-width="2" fill="none"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke="#fb923c" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Divider Ribbon -->
+  <line x1="40" y1="210" x2="260" y2="210" stroke="#fb923c" stroke-width="1.5" stroke-opacity="0.6" />
+  <polygon points="150,205 154,210 150,215 146,210" fill="#fb923c" />
+
+  <!-- Title Text -->
+  <text x="150" y="248" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-0.3">Database Internals</text>
+  <text x="150" y="276" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700" fill="#fef3c7" text-anchor="middle" letter-spacing="-0.2">Storage & Distributed Data</text>
+
+  <!-- Author Banner -->
+  <line x1="70" y1="330" x2="230" y2="330" stroke="#fb923c" stroke-width="1" stroke-opacity="0.3" />
+  <text x="150" y="365" font-family="Georgia, 'Times New Roman', serif" font-size="14" font-weight="600" fill="#fb923c" text-anchor="middle">Alex Petrov</text>
+  <text x="150" y="388" font-family="'Satoshi', sans-serif" font-size="9" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="2">CLASSIC EDITION</text>
+
+  <!-- Book Spine 3D Shadow -->
+  <rect x="0" y="0" width="16" height="450" fill="url(#spine-database-internals)" />
+  <line x1="16" y1="0" x2="16" y2="450" stroke="#000000" stroke-opacity="0.3" stroke-width="1" />
+
+  <!-- Outer Border -->
+  <rect x="0.5" y="0.5" width="299" height="449" rx="7.5" fill="none" stroke="#f97316" stroke-opacity="0.4" />
 </svg>
