@@ -7,8 +7,10 @@ import { getLiveGoodreadsBooks, type GoodreadsBook } from "../lib/goodreads";
 
 const booksData: GoodreadsBook[] = await getLiveGoodreadsBooks();
 
-// Extract years present in Goodreads RSS dynamically
-const years = Array.from(new Set(booksData.map((b) => b.yearRead || "2023"))).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+// Extract years present in Goodreads RSS dynamically (or fallback to recent years if sparse)
+const rawYears = Array.from(new Set(booksData.map((b) => b.yearRead || "2023"))).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+const defaultYearList = ["2026", "2025", "2024", "2023"];
+const years = Array.from(new Set([...rawYears, ...defaultYearList])).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
 
 const booksByYear: Record<string, GoodreadsBook[]> = {};
 years.forEach((yr) => {
@@ -23,9 +25,9 @@ years.forEach((yr) => {
 
 const maxYearlyCount = Math.max(...Object.values(yearlyCounts), 1);
 
-// Monthly stats for current active year or 2026
+// Monthly stats for active year (or most recent year with books)
 const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const activeYear = years[0] || "2026";
+const activeYear = years.find((yr) => (booksByYear[yr] || []).length > 0) || "2023";
 const monthlyCountsActiveYear = Array.from({ length: 12 }, (_, i) => {
   return (booksByYear[activeYear] || []).filter((b) => b.monthRead === i + 1).length;
 });
@@ -154,20 +156,29 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
       </a>
     </header>
 
-    <!-- SECTION 1: ANALYTICS CHARTS -->
+    <!-- SECTION 1: ANALYTICS CHARTS (Fixed deterministic rendering) -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
       <!-- Card 1: BOOKS PER YEAR -->
-      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-52">
+      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-56">
         <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">BOOKS PER YEAR</h3>
 
-        <div class="flex items-end justify-around h-32 pt-4 px-2">
-          {years.map((yr) => {
+        <div class="flex items-end justify-around h-36 pt-4 px-2">
+          {years.slice(0, 4).map((yr) => {
             const count = yearlyCounts[yr] || 0;
-            const pct = Math.max(15, Math.round((count / maxYearlyCount) * 100));
+            const barHeightPx = count > 0 ? Math.max(16, Math.round((count / maxYearlyCount) * 85)) : 8;
             return (
-              <div class="flex flex-col items-center gap-1.5 flex-1 group">
-                <span class="text-[11px] font-mono text-amber-400 font-bold opacity-80 group-hover:opacity-100">{count}</span>
-                <div class="w-10 sm:w-12 bg-amber-500/80 group-hover:bg-amber-400 rounded-sm transition-all duration-300 shadow-sm" style={`height: ${pct}%;`}></div>
+              <div class="flex flex-col items-center gap-1 flex-1 group">
+                <span class="text-[11px] font-mono text-amber-400 font-bold opacity-90 group-hover:opacity-100">{count}</span>
+                <div class="h-24 w-full flex items-end justify-center">
+                  <div 
+                    class={`w-10 sm:w-12 rounded-t-md transition-all duration-300 ${
+                      count > 0 
+                        ? "bg-gradient-to-t from-amber-600 via-amber-500 to-amber-400 group-hover:brightness-110 shadow-[0_0_12px_rgba(245,158,11,0.35)]" 
+                        : "bg-darkslate-400/20"
+                    }`} 
+                    style={`height: ${barHeightPx}px;`}
+                  ></div>
+                </div>
                 <span class="text-[11px] font-mono text-darkslate-300 mt-1">{yr}</span>
               </div>
             );
@@ -176,7 +187,7 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
       </div>
 
       <!-- Card 2: MONTHLY ACTIVITY -->
-      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-52">
+      <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-56">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY</h3>
           <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px] font-mono">
@@ -185,18 +196,22 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
           </div>
         </div>
 
-        <div class="flex items-end justify-between h-32 pt-6 px-1 gap-1">
+        <div class="flex items-end justify-between h-36 pt-4 px-1 gap-1">
           {monthLabels.map((m, idx) => {
             const count = monthlyCountsActiveYear[idx];
-            const pct = count > 0 ? Math.max(25, Math.round((count / maxMonthlyCount) * 100)) : 8;
+            const barHeightPx = count > 0 ? Math.max(20, Math.round((count / maxMonthlyCount) * 85)) : 6;
             return (
               <div class="flex flex-col items-center gap-1 flex-1 group">
-                <div 
-                  class={`w-full max-w-[14px] rounded-xs transition-all duration-300 ${
-                    count > 0 ? "bg-amber-500/90 group-hover:bg-amber-400" : "bg-darkslate-400/20"
-                  }`} 
-                  style={`height: ${pct}%;`}
-                ></div>
+                <div class="h-24 w-full flex items-end justify-center">
+                  <div 
+                    class={`w-full max-w-[14px] rounded-t-xs transition-all duration-300 ${
+                      count > 0 
+                        ? "bg-gradient-to-t from-amber-600 via-amber-500 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.4)]" 
+                        : "bg-darkslate-400/20"
+                    }`} 
+                    style={`height: ${barHeightPx}px;`}
+                  ></div>
+                </div>
                 <span class="text-[9px] font-mono text-darkslate-300 mt-1">{m}</span>
               </div>
             );
