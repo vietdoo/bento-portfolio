@@ -250,7 +250,7 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
                         {book.author}
                       </p>
 
-                      <!-- Star Rating & Goodreads sentiment string (Monochrome White/Gray) -->
+                      <!-- Star Rating & Goodreads sentiment string (Clean text, no icons) -->
                       <div class="flex items-center gap-1.5 mt-2 text-xs">
                         {book.rating ? (
                           <>
@@ -262,8 +262,8 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
                             </span>
                           </>
                         ) : (
-                          <span class="text-[11px] font-mono text-zinc-300 font-semibold">
-                            📌 {book.statusLabel}
+                          <span class="text-[11px] font-mono text-zinc-300 font-medium">
+                            {book.statusLabel}
                           </span>
                         )}
                       </div>
@@ -332,8 +332,8 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
         progressContainer.classList.add('hidden');
       }
 
-      document.getElementById('modal-pages').textContent = book.pages ? `📄 ${book.pages} pages` : '';
-      document.getElementById('modal-year').textContent = book.dateRead ? `📅 ${book.dateRead}` : `📅 Read in ${book.yearRead}`;
+      document.getElementById('modal-pages').textContent = book.pages ? `${book.pages} pages` : '';
+      document.getElementById('modal-year').textContent = book.dateRead ? `${book.dateRead}` : `Read in ${book.yearRead}`;
       document.getElementById('modal-summary').textContent = book.summary;
       document.getElementById('modal-review').textContent = book.review;
 
@@ -351,7 +351,7 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
         book.keyTakeaways.forEach((t) => {
           const li = document.createElement('li');
           li.className = 'flex items-start gap-2 text-xs leading-relaxed bg-darkslate-700/40 p-2.5 rounded-lg border border-white/5';
-          li.innerHTML = `<span class="text-zinc-300 font-bold text-sm">✓</span> <span>${t}</span>`;
+          li.innerHTML = `<span class="text-zinc-300 font-bold text-sm">•</span> <span>${t}</span>`;
           takeawaysEl.appendChild(li);
         });
       }
