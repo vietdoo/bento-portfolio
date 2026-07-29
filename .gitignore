@@ -30,4 +30,4 @@ pnpm-debug.log*
 context/
 
 # raw map source data
-data/
+/data/

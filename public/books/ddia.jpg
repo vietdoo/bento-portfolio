@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" width="300" height="450">
+  <defs>
+    <linearGradient id="bg-ddia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="sp-ddia" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" rx="8" fill="url(#bg-ddia)" />
+  <rect x="20" y="24" width="100" height="20" rx="4" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1"/>
+  <text x="28" y="38" font-family="sans-serif" font-size="9" font-weight="700" fill="#38bdf8">SYSTEMS</text>
+  <text x="20" y="70" font-family="sans-serif" font-size="10" font-weight="600" fill="#94a3b8">TECH & ARCHITECTURE</text>
+  <g transform="translate(115, 110) scale(1.4)"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#38bdf8" stroke-width="2" fill="none"/></g>
+  <rect x="20" y="200" width="260" height="2" fill="#38bdf8" opacity="0.6"/>
+  <foreignObject x="20" y="215" width="260" height="150">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="color:#fff;font-family:sans-serif;font-weight:800;font-size:20px;line-height:1.3;">Designing Data-Intensive Applications</div>
+  </foreignObject>
+  <text x="20" y="400" font-family="sans-serif" font-size="13" font-weight="600" fill="#38bdf8">Martin Kleppmann</text>
+  <rect x="0" y="0" width="12" height="450" fill="url(#sp-ddia)" />
+  <rect x="0.5" y="0.5" width="299" height="449" rx="7.5" fill="none" stroke="#ffffff" stroke-opacity="0.15" />
+</svg>
