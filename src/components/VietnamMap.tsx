@@ -77,7 +77,27 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
 
 const COUNTRY_NAME_VN: Record<string, string> = {
   Laos: "Lào",
-  Cambodia:// Clean Dark Slate Palette matching Bento Portfolio theme
+  Cambodia: "Campuchia",
+  Thailand: "Thái Lan",
+  China: "Trung Quốc",
+  Philippines: "Philippines",
+  Malaysia: "Malaysia",
+  Myanmar: "Myanmar",
+  Taiwan: "Đài Loan",
+};
+
+const NEIGHBOR_NAMES = new Set([
+  "Laos",
+  "Cambodia",
+  "Thailand",
+  "China",
+  "Philippines",
+  "Malaysia",
+  "Myanmar",
+  "Taiwan",
+]);
+
+// Clean Dark Slate Palette matching Bento Portfolio theme
 const OCEAN_FILL = "#0a131d";
 const OCEAN_STIPPLE = "#16283d";
 const PROVINCE_DEFAULT_FILL = "rgba(30, 56, 84, 0.75)";
