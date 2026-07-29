@@ -24,6 +24,7 @@ const spineStyles = [
   rowSpan="md:row-span-1"
   href="/books"
   title="Bookshelf"
+  padding="p-4 sm:p-5"
 >
   <div slot="background" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
     <!-- Animated Bookshelf Background ("Kệ Sách") -->
@@ -93,7 +94,7 @@ const spineStyles = [
   </div>
 
   <!-- Subtitle Content Slot (Showing Currently Reading Book) -->
-  <span class="text-xs text-white/60 z-10 relative truncate block max-w-full">
+  <span class="text-xs text-white/60 z-10 relative truncate block max-w-full leading-tight mt-0.5">
     {currentlyReading ? `Reading: ${currentlyReading.title}` : `${booksData.length} books`}
   </span>
 </Card>
