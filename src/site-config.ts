@@ -36,5 +36,11 @@ export const SITE = {
     "Ho Chi Minh",
     "Da Nang",
     "Quang Ninh",
+    "Lam Dong",
+    "Dong Nai",
+    "Tay Ninh",
+    "Khanh Hoa",
+    "Thanh Hoa",
+    "Ninh Binh",
   ],
 };
