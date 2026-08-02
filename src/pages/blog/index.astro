@@ -37,7 +37,7 @@ const posts = await getPublishedPosts();
               date={post.data.pubDate!}
               id={post.id}
               lang={post.data.lang}
-              title={post.data.title}
+              title={post.data.title ?? post.id}
             />
           ))}
         </ul>
