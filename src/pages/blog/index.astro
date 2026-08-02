@@ -2,22 +2,93 @@
 import Layout from "../../layouts/Layout.astro";
 import LoaderAnimation from "../../components/LoaderAnimation.astro";
 import BackLink from "../../components/BackLink.astro";
+import LangToggle from "../../components/Blog/LangToggle.astro";
+import PostRow from "../../components/Blog/PostRow.astro";
+import { getPublishedPosts } from "../../lib/blog";
 import { SITE } from "../../site-config";
+
+const posts = await getPublishedPosts();
 ---
 
 <LoaderAnimation />
 
 <Layout
-  description="Software developer with strong focus on the user experience animations and micro interactions"
+  description="Notes on architecture, agent orchestration and the small details behind the interfaces I build"
   title={`${SITE.author.fullName} - Blog`}
 >
   <main
-    class="w-screen h-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8"
+    class="w-screen min-h-screen flex flex-col justify-start items-start max-w-3xl mx-auto p-8"
   >
-    <BackLink href="/" class="mb-8" />
-    <h1 class="text-4xl font-bold mb-4 text-neutral-100">Posts</h1>
-    <p class="text-darkslate-300 text-sm">
-      Nothing to say right now... check back later (or don't, no pressure 🙃)
+    <div class="w-full mb-8 flex items-center justify-between gap-4">
+      <BackLink href="/" />
+      <LangToggle current="en" />
+    </div>
+    <h1 class="text-4xl font-bold mb-6 text-neutral-100">Posts</h1>
+    {
+      posts.length === 0 ? (
+        <p class="text-darkslate-300 text-sm">
+          Nothing to say right now... check back later (or don't, no pressure
+          🙃)
+        </p>
+      ) : (
+        <ul class="w-full p-0 m-0" data-post-list>
+          {posts.map((post) => (
+            <PostRow
+              date={post.data.pubDate!}
+              id={post.id}
+              lang={post.data.lang}
+              title={post.data.title}
+            />
+          ))}
+        </ul>
+      )
+    }
+    <p class="text-darkslate-300 text-xs mt-6" data-empty-lang hidden>
+      No posts in this language yet.
     </p>
   </main>
 </Layout>
+
+<script>
+  import { BLOG_LANG_KEY } from "../../lib/blog-lang";
+
+  function applyLanguage(lang: string) {
+    const rows = document.querySelectorAll<HTMLElement>("[data-post-lang]");
+    let visible = 0;
+    rows.forEach((row) => {
+      const matches = row.dataset.postLang === lang;
+      row.hidden = !matches;
+      if (matches) visible += 1;
+    });
+
+    const empty = document.querySelector<HTMLElement>("[data-empty-lang]");
+    if (empty) empty.hidden = visible > 0 || rows.length === 0;
+
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
+      .forEach((option) => {
+        option.setAttribute(
+          "aria-pressed",
+          String(option.dataset.langOption === lang),
+        );
+      });
+  }
+
+  function setupLanguageFilter() {
+    if (!document.querySelector("[data-post-list]")) return;
+
+    const stored = localStorage.getItem(BLOG_LANG_KEY);
+    applyLanguage(stored === "vi" ? "vi" : "en");
+
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
+      .forEach((option) => {
+        option.addEventListener("click", () => {
+          const lang = option.dataset.langOption;
+          if (lang) applyLanguage(lang);
+        });
+      });
+  }
+
+  document.addEventListener("astro:page-load", setupLanguageFilter);
+</script>

@@ -1,0 +1,90 @@
+---
+import { BLOG_LANG_KEY, type BlogLang } from "../../lib/blog-lang";
+
+interface Props {
+  current: BlogLang;
+  enHref?: string | undefined;
+  viHref?: string | undefined;
+  class?: string;
+}
+
+const {
+  current,
+  enHref,
+  viHref,
+  class: extraClass = "",
+} = Astro.props as Props;
+
+const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
+  [
+    { lang: "en", label: "EN", href: enHref },
+    { lang: "vi", label: "VI", href: viHref },
+  ];
+---
+
+<div
+  class:list={[
+    "inline-flex items-center gap-1 p-1 rounded-lg border-1 border-solid border-neutral-600 bg-neutral-900",
+    extraClass,
+  ]}
+  data-lang-toggle
+  data-storage-key={BLOG_LANG_KEY}
+>
+  {
+    options.map(({ lang, label, href }) =>
+      href ? (
+        <a
+          href={href}
+          data-lang-option={lang}
+          aria-current={lang === current ? "page" : undefined}
+          class:list={[
+            "px-3 py-1 text-xs font-semibold rounded-md decoration-none transition-colors",
+            lang === current
+              ? "bg-primary-500 text-neutral-900"
+              : "text-neutral-300 hover:text-white",
+          ]}
+        >
+          {label}
+        </a>
+      ) : (
+        <button
+          type="button"
+          data-lang-option={lang}
+          aria-pressed={lang === current}
+          class="lang-button px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors bg-transparent text-neutral-300"
+        >
+          {label}
+        </button>
+      ),
+    )
+  }
+</div>
+
+<style>
+  .lang-button:hover {
+    color: #ffffff;
+  }
+
+  [data-lang-option][aria-pressed="true"],
+  [data-lang-option][aria-current="page"] {
+    background-color: var(--primary-500);
+    color: #111111;
+  }
+</style>
+
+<script>
+  import { BLOG_LANG_KEY } from "../../lib/blog-lang";
+
+  function rememberLangChoice() {
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
+      .forEach((option) => {
+        option.addEventListener("click", () => {
+          const lang = option.dataset.langOption;
+          if (lang) localStorage.setItem(BLOG_LANG_KEY, lang);
+        });
+      });
+  }
+
+  document.addEventListener("astro:page-load", rememberLangChoice);
+</script>
