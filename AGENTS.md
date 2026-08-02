@@ -3,7 +3,7 @@
 ## Git Auto-Commit Directive
 - Khi lượng code thay đổi trong một hoặc nhiều phiên chat đã đủ hoàn thành một tính năng, sửa lỗi, hoặc cập nhật (meaningful logical unit of work), hãy tự động tạo commit Git.
 - **Quy chuẩn đặt tên commit**: Tuân thủ nghiêm ngặt **Conventional Commits v1.0.0** (`<type>(<scope>): <mô tả ngắn ở thì hiện tại>`). Ví dụ: `feat(bento): add project card animation`, `fix(ui): resolve text overflow on mobile`.
-- Tác giả commit: `vietdoo <20280115@student.hcmus.edu.vn>`.
+- Tác giả commit: `vietdoo <20280115@student.hcmus.edu.vn>`, hoặc chính danh tính bot/AI agent đang thực hiện commit (ví dụ `devin-ai-integration[bot]`). Không mạo danh tác giả khác.
 - Lưu ý: Không commit thư mục `context/` (đã nằm trong `.gitignore`).
 - Nếu husky hook báo lỗi do thiếu `pnpm` trong PATH, sử dụng cờ `--no-verify` khi commit.
 
