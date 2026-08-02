@@ -552,7 +552,9 @@
         ctx!.font = nameFont;
         const nameW = ctx!.measureText(b.name).width + 14;
         const nameH = 18;
-        const nameY = s * 1.05;
+        // Flip the tag above the bug when there's no room for it below (e.g. bugs
+        // hiding at the bottom edge, or the short bug strip on mobile).
+        const nameY = b.y + s * 1.05 + nameH + 4 > height ? -(s * 1.05 + nameH) : s * 1.05;
 
         const accentBorder = b.config.colors.accent || '#d97706';
 
