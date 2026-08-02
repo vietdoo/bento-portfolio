@@ -21,23 +21,20 @@ Agent thì stateless. Repo thì không. Vậy nên mọi ngữ cảnh quan trọ
 Bốn tầng, mỗi tầng một nhiệm vụ:
 
 <svg viewBox="0 0 720 300" width="100%" role="img" aria-label="Bốn tầng của kiến trúc handover" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="13" fill="#e5e7eb">
-    <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. HIẾN PHÁP — một file luật, nhiều adapter</text>
-    <text x="30" y="55">Bất biến kiến trúc, checklist DoD, giới hạn cứng. Đọc trước mọi task.</text>
-
-    <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. SỔ BÀN GIAO — log chỉ ghi thêm (append-only)</text>
-    <text x="30" y="127">Phiên trước làm gì, vì sao chọn như vậy, còn dang dở những gì.</text>
-
-    <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. BẢN ĐỒ — decision tree, module mapping, API contract, glossary</text>
-    <text x="30" y="199">Trả lời dứt khoát: "sửa chỗ này thì thuộc module nào?"</text>
-
-    <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — một script "ngu" chấm điểm agent</text>
-    <text x="30" y="271">Không dùng LLM. Thiếu đồng bộ docs/log là fail task.</text>
-  </g>
+ <g font-family="inherit" font-size="13" fill="#e5e7eb">
+ <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. HIẾN PHÁP — một file luật, nhiều adapter</text>
+ <text x="30" y="55">Bất biến kiến trúc, checklist DoD, giới hạn cứng. Đọc trước mọi task.</text>
+ <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. SỔ BÀN GIAO — log chỉ ghi thêm (append-only)</text>
+ <text x="30" y="127">Phiên trước làm gì, vì sao chọn như vậy, còn dang dở những gì.</text>
+ <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. BẢN ĐỒ — decision tree, module mapping, API contract, glossary</text>
+ <text x="30" y="199">Trả lời dứt khoát: "sửa chỗ này thì thuộc module nào?"</text>
+ <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — một script "ngu" chấm điểm agent</text>
+ <text x="30" y="271">Không dùng LLM. Thiếu đồng bộ docs/log là fail task.</text>
+ </g>
 </svg>
 
 Thiếu một tầng là hệ thống rò rỉ: có luật mà không có sổ thì agent quyết đi quyết lại; có sổ mà không có forcing function thì chẳng ai ghi.
@@ -49,28 +46,26 @@ Mỗi hãng lại đẻ ra một tên file quy tắc riêng. Cái bẫy là đ�
 Giữ đúng **một** nguồn sự thật, phần còn lại chỉ là con trỏ:
 
 <svg viewBox="0 0 720 260" width="100%" role="img" aria-label="Các file adapter trỏ về một file luật duy nhất" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="13" fill="#e5e7eb">
-    <rect x="260" y="100" width="200" height="60" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--primary-500)" stroke-width="2"/>
-    <text x="360" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="var(--primary-300)">AGENTS.md</text>
-    <text x="360" y="146" text-anchor="middle" font-size="12">nguồn sự thật duy nhất</text>
-
-    <rect x="30" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="105" y="46" text-anchor="middle">CLAUDE.md</text>
-    <rect x="30" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="105" y="226" text-anchor="middle">.cursor/rules</text>
-    <rect x="540" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="615" y="46" text-anchor="middle">GEMINI.md</text>
-    <rect x="540" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="615" y="226" text-anchor="middle">copilot-instructions</text>
-
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="none" opacity="0.8">
-      <path d="M180 41 H220 Q240 41 240 70 V115 H258"/>
-      <path d="M180 221 H220 Q240 221 240 190 V145 H258"/>
-      <path d="M540 41 H500 Q480 41 480 70 V115 H462"/>
-      <path d="M540 221 H500 Q480 221 480 190 V145 H462"/>
-    </g>
-    <text x="360" y="196" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">adapter chỉ 3 dòng: "đọc AGENTS.md, không chép lại luật ở đây"</text>
-  </g>
+ <g font-family="inherit" font-size="13" fill="#e5e7eb">
+ <rect x="260" y="100" width="200" height="60" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--primary-500)" stroke-width="2"/>
+ <text x="360" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="var(--primary-300)">AGENTS.md</text>
+ <text x="360" y="146" text-anchor="middle" font-size="12">nguồn sự thật duy nhất</text>
+ <rect x="30" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="105" y="46" text-anchor="middle">CLAUDE.md</text>
+ <rect x="30" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="105" y="226" text-anchor="middle">.cursor/rules</text>
+ <rect x="540" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="615" y="46" text-anchor="middle">GEMINI.md</text>
+ <rect x="540" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="615" y="226" text-anchor="middle">copilot-instructions</text>
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="none" opacity="0.8">
+ <path d="M180 41 H220 Q240 41 240 70 V115 H258"/>
+ <path d="M180 221 H220 Q240 221 240 190 V145 H258"/>
+ <path d="M540 41 H500 Q480 41 480 70 V115 H462"/>
+ <path d="M540 221 H500 Q480 221 480 190 V145 H462"/>
+ </g>
+ <text x="360" y="196" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">adapter chỉ 3 dòng: "đọc AGENTS.md, không chép lại luật ở đây"</text>
+ </g>
 </svg>
 
 File adapter chứa luật là một cái bug. File adapter chứa con trỏ mới là feature.
@@ -136,39 +131,38 @@ Chỉ vậy thôi — một trình đọc `git status` cộng vài regex. Nó kh
 Ghép bốn tầng lại, mọi agent — bất kể hãng nào — đều chạy đúng một chu trình:
 
 <svg viewBox="0 0 720 220" width="100%" role="img" aria-label="Vòng lặp phiên làm việc của agent" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="12" fill="#e5e7eb">
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
-      <rect x="12" y="60" width="120" height="56" rx="10"/>
-      <rect x="162" y="60" width="120" height="56" rx="10"/>
-      <rect x="312" y="60" width="120" height="56" rx="10"/>
-      <rect x="462" y="60" width="120" height="56" rx="10"/>
-      <rect x="600" y="60" width="108" height="56" rx="10"/>
-    </g>
-    <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
-    <text x="72" y="102" text-anchor="middle" font-size="11">kéo docs mới nhất</text>
-    <text x="222" y="84" text-anchor="middle" font-weight="700">ĐỌC SỔ</text>
-    <text x="222" y="102" text-anchor="middle" font-size="11">ý định phiên trước</text>
-    <text x="372" y="84" text-anchor="middle" font-weight="700">ĐỊNH TUYẾN</text>
-    <text x="372" y="102" text-anchor="middle" font-size="11">cây quyết định</text>
-    <text x="522" y="84" text-anchor="middle" font-weight="700">LÀM + ĐỒNG BỘ DOCS</text>
-    <text x="522" y="102" text-anchor="middle" font-size="11">code, test, contract</text>
-    <text x="654" y="84" text-anchor="middle" font-weight="700">KIỂM TRA</text>
-    <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 lỗi</text>
-
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
-      <path d="M132 88 H160" marker-end="url(#b)"/>
-      <path d="M282 88 H310" marker-end="url(#b)"/>
-      <path d="M432 88 H460" marker-end="url(#b)"/>
-      <path d="M582 88 H598" marker-end="url(#b)"/>
-      <path d="M654 116 V170 H72 V118" marker-end="url(#b)" stroke-dasharray="5 4" opacity="0.75"/>
-    </g>
-    <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">ghi entry bàn giao — agent kế tiếp bắt đầu từ đây</text>
-    <defs>
-      <marker id="b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
-      </marker>
-    </defs>
-  </g>
+ <g font-family="inherit" font-size="12" fill="#e5e7eb">
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
+ <rect x="12" y="60" width="120" height="56" rx="10"/>
+ <rect x="162" y="60" width="120" height="56" rx="10"/>
+ <rect x="312" y="60" width="120" height="56" rx="10"/>
+ <rect x="462" y="60" width="120" height="56" rx="10"/>
+ <rect x="600" y="60" width="108" height="56" rx="10"/>
+ </g>
+ <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
+ <text x="72" y="102" text-anchor="middle" font-size="11">kéo docs mới nhất</text>
+ <text x="222" y="84" text-anchor="middle" font-weight="700">ĐỌC SỔ</text>
+ <text x="222" y="102" text-anchor="middle" font-size="11">ý định phiên trước</text>
+ <text x="372" y="84" text-anchor="middle" font-weight="700">ĐỊNH TUYẾN</text>
+ <text x="372" y="102" text-anchor="middle" font-size="11">cây quyết định</text>
+ <text x="522" y="84" text-anchor="middle" font-weight="700">LÀM + ĐỒNG BỘ DOCS</text>
+ <text x="522" y="102" text-anchor="middle" font-size="11">code, test, contract</text>
+ <text x="654" y="84" text-anchor="middle" font-weight="700">KIỂM TRA</text>
+ <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 lỗi</text>
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
+ <path d="M132 88 H160" marker-end="url(#b)"/>
+ <path d="M282 88 H310" marker-end="url(#b)"/>
+ <path d="M432 88 H460" marker-end="url(#b)"/>
+ <path d="M582 88 H598" marker-end="url(#b)"/>
+ <path d="M654 116 V170 H72 V118" marker-end="url(#b)" stroke-dasharray="5 4" opacity="0.75"/>
+ </g>
+ <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">ghi entry bàn giao — agent kế tiếp bắt đầu từ đây</text>
+ <defs>
+ <marker id="b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+ <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
+ </marker>
+ </defs>
+ </g>
 </svg>
 
 Đọc ngữ cảnh → định tuyến → sửa code **kèm** docs → ghi entry bàn giao → để script phi-AI xác nhận. Vòng lặp khép kín: output của phiên này chính là định dạng input của phiên sau.

@@ -21,23 +21,20 @@ Agents are stateless. The repository is not. So every piece of context that matt
 Four planes, each with a distinct job:
 
 <svg viewBox="0 0 720 300" width="100%" role="img" aria-label="Four planes of the handover architecture" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="13" fill="#e5e7eb">
-    <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. CONSTITUTION — one rule file, many adapters</text>
-    <text x="30" y="55">Architecture invariants, DoD checklist, hard limits. Read before any task.</text>
-
-    <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. LEDGER — append-only handover log</text>
-    <text x="30" y="127">What happened last session, why, and what is still unfinished.</text>
-
-    <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. MAP — decision tree, module mapping, API contract, glossary</text>
-    <text x="30" y="199">Deterministic answer to "where does this change belong?"</text>
-
-    <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
-    <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — a dumb script that grades the agent</text>
-    <text x="30" y="271">No LLM involved. Fails the task if docs and log are out of sync.</text>
-  </g>
+ <g font-family="inherit" font-size="13" fill="#e5e7eb">
+ <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. CONSTITUTION — one rule file, many adapters</text>
+ <text x="30" y="55">Architecture invariants, DoD checklist, hard limits. Read before any task.</text>
+ <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. LEDGER — append-only handover log</text>
+ <text x="30" y="127">What happened last session, why, and what is still unfinished.</text>
+ <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. MAP — decision tree, module mapping, API contract, glossary</text>
+ <text x="30" y="199">Deterministic answer to "where does this change belong?"</text>
+ <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
+ <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — a dumb script that grades the agent</text>
+ <text x="30" y="271">No LLM involved. Fails the task if docs and log are out of sync.</text>
+ </g>
 </svg>
 
 Miss any one of them and the system leaks: rules without a ledger means agents repeat decisions; a ledger without a forcing function means nobody writes to it.
@@ -49,28 +46,26 @@ Every vendor invented its own instruction filename. The trap is to let each one 
 Keep exactly **one** source of truth and make the rest pointers:
 
 <svg viewBox="0 0 720 260" width="100%" role="img" aria-label="Adapter files pointing at a single rule file" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="13" fill="#e5e7eb">
-    <rect x="260" y="100" width="200" height="60" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--primary-500)" stroke-width="2"/>
-    <text x="360" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="var(--primary-300)">AGENTS.md</text>
-    <text x="360" y="146" text-anchor="middle" font-size="12">single source of truth</text>
-
-    <rect x="30" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="105" y="46" text-anchor="middle">CLAUDE.md</text>
-    <rect x="30" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="105" y="226" text-anchor="middle">.cursor/rules</text>
-    <rect x="540" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="615" y="46" text-anchor="middle">GEMINI.md</text>
-    <rect x="540" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
-    <text x="615" y="226" text-anchor="middle">copilot-instructions</text>
-
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="none" opacity="0.8">
-      <path d="M180 41 H220 Q240 41 240 70 V115 H258"/>
-      <path d="M180 221 H220 Q240 221 240 190 V145 H258"/>
-      <path d="M540 41 H500 Q480 41 480 70 V115 H462"/>
-      <path d="M540 221 H500 Q480 221 480 190 V145 H462"/>
-    </g>
-    <text x="360" y="196" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">adapters contain 3 lines: "read AGENTS.md, do not duplicate rules here"</text>
-  </g>
+ <g font-family="inherit" font-size="13" fill="#e5e7eb">
+ <rect x="260" y="100" width="200" height="60" rx="10" fill="rgba(255,255,255,0.06)" stroke="var(--primary-500)" stroke-width="2"/>
+ <text x="360" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="var(--primary-300)">AGENTS.md</text>
+ <text x="360" y="146" text-anchor="middle" font-size="12">single source of truth</text>
+ <rect x="30" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="105" y="46" text-anchor="middle">CLAUDE.md</text>
+ <rect x="30" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="105" y="226" text-anchor="middle">.cursor/rules</text>
+ <rect x="540" y="20" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="615" y="46" text-anchor="middle">GEMINI.md</text>
+ <rect x="540" y="200" width="150" height="42" rx="8" fill="none" stroke="rgba(255,255,255,0.35)"/>
+ <text x="615" y="226" text-anchor="middle">copilot-instructions</text>
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="none" opacity="0.8">
+ <path d="M180 41 H220 Q240 41 240 70 V115 H258"/>
+ <path d="M180 221 H220 Q240 221 240 190 V145 H258"/>
+ <path d="M540 41 H500 Q480 41 480 70 V115 H462"/>
+ <path d="M540 221 H500 Q480 221 480 190 V145 H462"/>
+ </g>
+ <text x="360" y="196" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">adapters contain 3 lines: "read AGENTS.md, do not duplicate rules here"</text>
+ </g>
 </svg>
 
 An adapter file that contains rules is a bug. An adapter file that contains a pointer is a feature.
@@ -136,39 +131,38 @@ That's it — a `git status` parser with a regex list. It cannot be sweet-talked
 Put the four planes together and every agent, regardless of vendor, runs the same cycle:
 
 <svg viewBox="0 0 720 220" width="100%" role="img" aria-label="The agent session loop" style="max-width:100%;height:auto;margin:24px 0">
-  <g font-family="inherit" font-size="12" fill="#e5e7eb">
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
-      <rect x="12" y="60" width="120" height="56" rx="10"/>
-      <rect x="162" y="60" width="120" height="56" rx="10"/>
-      <rect x="312" y="60" width="120" height="56" rx="10"/>
-      <rect x="462" y="60" width="120" height="56" rx="10"/>
-      <rect x="600" y="60" width="108" height="56" rx="10"/>
-    </g>
-    <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
-    <text x="72" y="102" text-anchor="middle" font-size="11">pull latest docs</text>
-    <text x="222" y="84" text-anchor="middle" font-weight="700">READ LEDGER</text>
-    <text x="222" y="102" text-anchor="middle" font-size="11">last session's intent</text>
-    <text x="372" y="84" text-anchor="middle" font-weight="700">ROUTE</text>
-    <text x="372" y="102" text-anchor="middle" font-size="11">decision tree</text>
-    <text x="522" y="84" text-anchor="middle" font-weight="700">WORK + SYNC DOCS</text>
-    <text x="522" y="102" text-anchor="middle" font-size="11">code, tests, contract</text>
-    <text x="654" y="84" text-anchor="middle" font-weight="700">VERIFY</text>
-    <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 errors</text>
-
-    <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
-      <path d="M132 88 H160" marker-end="url(#a)"/>
-      <path d="M282 88 H310" marker-end="url(#a)"/>
-      <path d="M432 88 H460" marker-end="url(#a)"/>
-      <path d="M582 88 H598" marker-end="url(#a)"/>
-      <path d="M654 116 V170 H72 V118" marker-end="url(#a)" stroke-dasharray="5 4" opacity="0.75"/>
-    </g>
-    <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">write the handover entry — the next agent starts here</text>
-    <defs>
-      <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
-      </marker>
-    </defs>
-  </g>
+ <g font-family="inherit" font-size="12" fill="#e5e7eb">
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
+ <rect x="12" y="60" width="120" height="56" rx="10"/>
+ <rect x="162" y="60" width="120" height="56" rx="10"/>
+ <rect x="312" y="60" width="120" height="56" rx="10"/>
+ <rect x="462" y="60" width="120" height="56" rx="10"/>
+ <rect x="600" y="60" width="108" height="56" rx="10"/>
+ </g>
+ <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
+ <text x="72" y="102" text-anchor="middle" font-size="11">pull latest docs</text>
+ <text x="222" y="84" text-anchor="middle" font-weight="700">READ LEDGER</text>
+ <text x="222" y="102" text-anchor="middle" font-size="11">last session's intent</text>
+ <text x="372" y="84" text-anchor="middle" font-weight="700">ROUTE</text>
+ <text x="372" y="102" text-anchor="middle" font-size="11">decision tree</text>
+ <text x="522" y="84" text-anchor="middle" font-weight="700">WORK + SYNC DOCS</text>
+ <text x="522" y="102" text-anchor="middle" font-size="11">code, tests, contract</text>
+ <text x="654" y="84" text-anchor="middle" font-weight="700">VERIFY</text>
+ <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 errors</text>
+ <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
+ <path d="M132 88 H160" marker-end="url(#a)"/>
+ <path d="M282 88 H310" marker-end="url(#a)"/>
+ <path d="M432 88 H460" marker-end="url(#a)"/>
+ <path d="M582 88 H598" marker-end="url(#a)"/>
+ <path d="M654 116 V170 H72 V118" marker-end="url(#a)" stroke-dasharray="5 4" opacity="0.75"/>
+ </g>
+ <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">write the handover entry — the next agent starts here</text>
+ <defs>
+ <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+ <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
+ </marker>
+ </defs>
+ </g>
 </svg>
 
 Read context → route → change code **and** docs together → append the ledger entry → let a non-AI script certify it. The loop closes: the output of one session is precisely the input format of the next.
