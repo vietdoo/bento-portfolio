@@ -97,8 +97,13 @@
       bugs.forEach((b) => {
         const margin = b.size * 0.9;
         b.x = Math.max(margin, Math.min(width - margin, b.x));
-        b.y = Math.max(height * 0.3, Math.min(height - margin * 0.7, b.y));
+        b.y = Math.max(height * 0.3, Math.min(maxBugY(b.size), b.y));
       });
+    }
+
+    // Lowest a bug can walk while its name tag still fits inside the canvas.
+    function maxBugY(size: number) {
+      return Math.max(size, height - (size * 1.05 + 24));
     }
 
     resize();
@@ -164,7 +169,7 @@
       const minX = margin;
       const maxX = Math.max(minX + 20, width - margin);
       const minY = Math.max(40, height * 0.3);
-      const maxY = Math.max(minY + 20, height - margin * 0.7);
+      const maxY = Math.max(minY + 20, maxBugY(size));
       const avoid = avoidRect;
 
       if (avoid) {
@@ -227,12 +232,14 @@
     function initBugs() {
       bugs.length = 0;
       const sizeScale = getSizeScale();
-      activeBugsConfig.forEach((specInfo, i) => {
+      // Narrow cards (mobile) only get a few bugs so their name tags and speech bubbles don't pile up.
+      const spawnConfig = width < 420 ? activeBugsConfig.slice(0, 3) : activeBugsConfig;
+      spawnConfig.forEach((specInfo, i) => {
         const bug: Bug = {
           id: i,
           species: specInfo.id,
           name: specInfo.name,
-          x: 35 + (i + 1) * ((width - 70) / (activeBugsConfig.length + 1)),
+          x: 35 + (i + 1) * ((width - 70) / (spawnConfig.length + 1)),
           y: height * 0.65 + (Math.random() - 0.5) * 30,
           targetX: 0,
           targetY: 0,
@@ -311,7 +318,7 @@
           bug.targetX = bug.x + Math.sign(dx || 1) * (80 + Math.random() * 60);
           bug.targetY = bug.y + Math.sign(dy || 1) * (50 + Math.random() * 40);
           bug.targetX = Math.max(bug.size * 0.85, Math.min(width - bug.size * 0.85, bug.targetX));
-          bug.targetY = Math.max(height * 0.3, Math.min(height - bug.size * 0.6, bug.targetY));
+          bug.targetY = Math.max(height * 0.3, Math.min(maxBugY(bug.size), bug.targetY));
         }
       });
     });
@@ -358,7 +365,7 @@
             bug.targetX = bug.x + (dx / (dist || 1)) * 90;
             bug.targetY = bug.y + (dy / (dist || 1)) * 70;
             bug.targetX = Math.max(bug.size * 0.85, Math.min(width - bug.size * 0.85, bug.targetX));
-            bug.targetY = Math.max(height * 0.3, Math.min(height - bug.size * 0.6, bug.targetY));
+            bug.targetY = Math.max(height * 0.3, Math.min(maxBugY(bug.size), bug.targetY));
           }
         }
 
@@ -545,7 +552,9 @@
         ctx!.font = nameFont;
         const nameW = ctx!.measureText(b.name).width + 14;
         const nameH = 18;
-        const nameY = s * 1.05;
+        // Flip the tag above the bug when there's no room for it below (e.g. bugs
+        // hiding at the bottom edge, or the short bug strip on mobile).
+        const nameY = b.y + s * 1.05 + nameH + 4 > height ? -(s * 1.05 + nameH) : s * 1.05;
 
         const accentBorder = b.config.colors.accent || '#d97706';
 

@@ -12,20 +12,103 @@ import MemojiAvatarGreen from "../assets/vietdoo_pixel.png";
 import MemojiAvatarPurple from "../assets/vietdoo_pixel.png";
 import MemojiAvatarYellow from "../assets/vietdoo_pixel.png";
 import CuteBugs from "./CuteBugs.astro";
+
+const themeSources = {
+  "data-memoji": true,
+  "data-theme-default": MemojiAvatarDefault.src,
+  "data-theme-yellow-theme": MemojiAvatarYellow.src,
+  "data-theme-blue-theme": MemojiAvatarBlue.src,
+  "data-theme-green-theme": MemojiAvatarGreen.src,
+  "data-theme-purple-theme": MemojiAvatarPurple.src,
+};
+
+const socials = [
+  { href: LINKS.github, icon: "ri:github-fill", label: "github profile", event: "github button" },
+  { href: LINKS.linkedin, icon: "ri:linkedin-box-fill", label: "linkedin profile", event: "linkedin button" },
+  { href: SITE.site.url, icon: "ri:global-line", label: "website", event: "website button" },
+];
 ---
 
 <Card colSpan="md:col-span-3" rowSpan="md:row-span-4">
-  <div slot="background" class="absolute inset-0 pointer-events-auto">
+  {/* Bugs roam the whole card on desktop, but only a dedicated strip at the bottom on mobile. */}
+  <div
+    slot="background"
+    class="absolute inset-x-0 bottom-0 h-[136px] md:inset-0 md:h-auto pointer-events-auto"
+  >
     <CuteBugs />
   </div>
-  <div class="flex w-full h-full relative z-10 pointer-events-none">
+
+  {/* ---------- Mobile layout ---------- */}
+  <div class="flex flex-col gap-4 relative z-10 pb-[124px] md:hidden">
+    <div data-bug-safe-below class="flex flex-col gap-4">
+      <div class="flex items-center gap-3">
+        <Image
+          quality="max"
+          src={MemojiAvatarDefault}
+          {...themeSources}
+          class="h-14 w-14 shrink-0 rounded-full object-cover object-top bg-darkslate-700 border border-darkslate-400 select-none"
+          alt={`memoji of ${SITE.author.firstName}`}
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div class="flex flex-col min-w-0">
+          <span class="text-[11px] uppercase tracking-widest text-darkslate-300">welcome</span>
+          <span class="text-base font-bold leading-tight truncate">{SITE.author.fullName}</span>
+          <span class="text-xs text-primary-400 leading-tight truncate">{SITE.author.jobTitle}</span>
+        </div>
+      </div>
+
+      <p class="sr-only">
+        Hi, I'm {SITE.author.fullName} ({SITE.author.shortName}), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
+      </p>
+      <p aria-hidden="true" class="m-0 text-[13px] font-light leading-relaxed text-white/80">
+        Software Engineer specializing in <b class="font-semibold text-white">Big Data</b>, Data
+        Engineering and scalable microservices. Reach out if you have a project in mind or just want
+        to say hello.
+      </p>
+
+      <a href={`mailto:${LINKS.email}`} class="block">
+        <Button
+          aria-label="send a message"
+          class="!w-full !max-h-none !py-2.5 !text-sm flex items-center justify-center gap-2"
+        >
+          <Icon name="ri:mail-send-line" class="h-4 w-4" />
+          <span data-umami-event="Send a message" class="font-bold">Send a message</span>
+        </Button>
+      </a>
+
+      <div class="grid grid-cols-4 gap-2">
+        {
+          socials.map((social) => (
+            <a href={social.href} aria-label={social.label} target="_blank" class="block">
+              <Button aria-label={social.label} class="!w-full !max-h-none !py-2 flex items-center justify-center">
+                <Icon name={social.icon} class="h-5 w-5" />
+                <span class="sr-only" data-umami-event={social.event}>
+                  {social.label}
+                </span>
+              </Button>
+            </a>
+          ))
+        }
+        <Tooltip client:visible class="!block w-full">
+          <Button
+            aria-label="easter egg btn"
+            class="!w-full !max-h-none !py-2 flex items-center justify-center"
+          >
+            <Icon name="ri:emotion-laugh-line" class="h-5 w-5" />
+            <span class="sr-only" data-umami-event="Easter egg button">Easter egg button</span>
+          </Button>
+        </Tooltip>
+      </div>
+    </div>
+  </div>
+
+  {/* ---------- Desktop layout ---------- */}
+  <div class="hidden md:flex w-full h-full relative z-10 pointer-events-none">
     <div data-bug-safe-below class="flex flex-col justify-between md:max-h-[300px] gap-3 md:gap-4 pointer-events-auto">
       <div class="flex flex-col h-full">
         <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
 
-        <p class="sr-only">
-          Hi, I'm {SITE.author.fullName} ({SITE.author.shortName}), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
-        </p>
         <p aria-hidden="true" class="m-0 font-light text-sm md:text-base">
           <span>
             Hi, I'm <b class="font-bold">{SITE.author.fullName}</b> (<span class="text-primary-400 font-semibold">{SITE.author.shortName}</span>), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices.
@@ -38,38 +121,18 @@ import CuteBugs from "./CuteBugs.astro";
       </div>
       <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
         <div class="flex gap-2 lg:gap-4">
-          <a href={LINKS.github} aria-label="github profile" target="_blank">
-            <Button aria-label="github profile">
-              <Icon name="ri:github-fill" />
-              <span class="sr-only" data-umami-event="github button"
-                >GitHub Profile</span
-              >
-            </Button>
-          </a>
-          <a
-            href={LINKS.linkedin}
-            aria-label="linkedin profile"
-            target="_blank"
-          >
-            <Button aria-label="linkedin profile">
-              <Icon name="ri:linkedin-box-fill" />
-              <span class="sr-only" data-umami-event="linkedin button"
-                >Linkedin Profile</span
-              >
-            </Button>
-          </a>
-          <a
-            href={SITE.site.url}
-            aria-label="website"
-            target="_blank"
-          >
-            <Button aria-label="website">
-              <Icon name="ri:global-line" />
-              <span class="sr-only" data-umami-event="website button"
-                >Website</span
-              >
-            </Button>
-          </a>
+          {
+            socials.map((social) => (
+              <a href={social.href} aria-label={social.label} target="_blank">
+                <Button aria-label={social.label}>
+                  <Icon name={social.icon} />
+                  <span class="sr-only" data-umami-event={social.event}>
+                    {social.label}
+                  </span>
+                </Button>
+              </a>
+            ))
+          }
           <Tooltip client:visible>
             <Button aria-label="easter egg btn">
               <Icon name="ri:emotion-laugh-line" />
@@ -79,7 +142,7 @@ import CuteBugs from "./CuteBugs.astro";
             </Button>
           </Tooltip>
         </div>
-        <a href="mailto:vietdoo@outlook.com" class="contents">
+        <a href={`mailto:${LINKS.email}`} class="contents">
           <Button aria-label="send a message">
             <span
               data-umami-event="Send a message"
@@ -93,12 +156,8 @@ import CuteBugs from "./CuteBugs.astro";
       id="memoji-avatar"
       quality="max"
       src={MemojiAvatarDefault}
-      data-theme-default={MemojiAvatarDefault.src}
-      data-theme-yellow-theme={MemojiAvatarYellow.src}
-      data-theme-blue-theme={MemojiAvatarBlue.src}
-      data-theme-green-theme={MemojiAvatarGreen.src}
-      data-theme-purple-theme={MemojiAvatarPurple.src}
-      class="w-auto max-h-[300px] select-none absolute right-[-110px] bottom-[-20px] z-[-1] opacity-50 md:opacity-100 md:relative md:right-auto md:bottom-auto md:z-auto pointer-events-none"
+      {...themeSources}
+      class="w-auto max-h-[300px] select-none relative z-[-1] opacity-100 pointer-events-none"
       alt={`memoji of ${SITE.author.firstName}`}
       loading="eager"
       fetchpriority="high"
@@ -110,23 +169,24 @@ import CuteBugs from "./CuteBugs.astro";
   import { animate } from "motion";
 
   function updateMemojiImage() {
-    const avatarImg = document.getElementById(
-      "memoji-avatar",
-    ) as HTMLImageElement;
-    if (!avatarImg) return;
+    const avatars = document.querySelectorAll<HTMLImageElement>("[data-memoji]");
+    if (avatars.length === 0) return;
 
     const theme = localStorage.getItem("theme") || "default";
     const themeClass = theme === "default" ? "default" : theme;
-    const imageSrc =
-      avatarImg.getAttribute(`data-theme-${themeClass}`) ||
-      avatarImg.getAttribute("data-theme-default");
 
-    if (imageSrc && avatarImg.src !== imageSrc) {
-      avatarImg.src = imageSrc;
-      if (avatarImg.srcset) {
-        avatarImg.srcset = "";
+    avatars.forEach((avatarImg) => {
+      const imageSrc =
+        avatarImg.getAttribute(`data-theme-${themeClass}`) ||
+        avatarImg.getAttribute("data-theme-default");
+
+      if (imageSrc && avatarImg.src !== imageSrc) {
+        avatarImg.src = imageSrc;
+        if (avatarImg.srcset) {
+          avatarImg.srcset = "";
+        }
       }
-    }
+    });
   }
 
   function initLevitatingAnimation() {
