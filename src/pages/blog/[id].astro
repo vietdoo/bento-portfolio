@@ -2,6 +2,7 @@
 import { getEntry, render } from "astro:content";
 import { getCollection } from "astro:content";
 import LayoutBlogPost from "../../layouts/LayoutBlogPost.astro";
+import { findTranslation } from "../../lib/blog";
 import { SITE } from "../../site-config";
 
 export const prerender = true;
@@ -24,15 +25,22 @@ if (!entry) {
   return Astro.redirect("/404");
 }
 
+const posts = await getCollection("blog");
+const englishVersion = findTranslation(posts, entry, "en");
+const vietnameseVersion = findTranslation(posts, entry, "vi");
+
 const { Content, remarkPluginFrontmatter } = await render(entry);
 ---
 
 <LayoutBlogPost
   description={entry.data.description!}
+  enHref={englishVersion ? `/blog/${englishVersion.id}` : undefined}
+  lang={entry.data.lang}
   minutesRead={remarkPluginFrontmatter.minutesRead}
   pubDate={entry.data.pubDate!}
   title={`${entry.data.title} | ${SITE.author.fullName}`}
   url={`blog/${entry.id}`}
+  viHref={vietnameseVersion ? `/blog/${vietnameseVersion.id}` : undefined}
 >
   <Content />
 </LayoutBlogPost>
@@ -77,9 +85,10 @@ const { Content, remarkPluginFrontmatter } = await render(entry);
     margin: 0 0 10px 0;
   }
 
-  a {
-    color: #1a0dab;
-    text-decoration: none;
+  article a {
+    color: var(--primary-400);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   a:hover {
@@ -98,10 +107,10 @@ const { Content, remarkPluginFrontmatter } = await render(entry);
     border-left: 5px solid #ccc;
   }
 
-  pre,
-  code {
+  article pre,
+  article code {
     font-family: "Courier New", monospace;
-    background-color: #f4f4f4;
+    background-color: rgba(255, 255, 255, 0.06);
     border-radius: 5px;
   }
 
@@ -110,10 +119,10 @@ const { Content, remarkPluginFrontmatter } = await render(entry);
     overflow-x: auto;
   }
 
-  code {
+  article code {
     padding: 2px 4px;
     font-size: 90%;
-    color: #d63384;
+    color: var(--primary-300);
   }
 
   img {
