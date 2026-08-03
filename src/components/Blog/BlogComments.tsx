@@ -61,12 +61,15 @@ export default function BlogComments(props: BlogCommentsProps) {
   const [error, setError] = createSignal<string | null>(null);
   const [success, setSuccess] = createSignal<string | null>(null);
 
-  const [name, setName] = createSignal("");
-  const [content, setContent] = createSignal("");
-  const [replyTo, setReplyTo] = createSignal<{ id: number; name: string } | null>(null);
+  // Top-level form state
+  const [isMainFormOpen, setIsMainFormOpen] = createSignal(false);
+  const [mainName, setMainName] = createSignal("");
+  const [mainContent, setMainContent] = createSignal("");
 
-  let formRef: HTMLFormElement | undefined;
-  let nameInputRef: HTMLInputElement | undefined;
+  // Inline reply state
+  const [replyingToId, setReplyingToId] = createSignal<number | null>(null);
+  const [replyName, setReplyName] = createSignal("");
+  const [replyContent, setReplyContent] = createSignal("");
 
   const fontStyle = {
     "font-family": "var(--font-satoshi), system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
@@ -90,24 +93,12 @@ export default function BlogComments(props: BlogCommentsProps) {
     fetchComments();
   });
 
-  const handleStartReply = (comment: CommentItem) => {
-    setReplyTo({ id: comment.id, name: comment.name });
-    formRef?.scrollIntoView({ behavior: "smooth", block: "center" });
-    setTimeout(() => {
-      nameInputRef?.focus();
-    }, 300);
-  };
-
-  const cancelReply = () => {
-    setReplyTo(null);
-  };
-
-  const handleSubmit = async (e: Event) => {
+  const handlePostMainComment = async (e: Event) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!name().trim() || !content().trim()) {
+    if (!mainName().trim() || !mainContent().trim()) {
       setError(
         isVi()
           ? "Vui lòng nhập tên và nội dung bình luận."
@@ -123,9 +114,8 @@ export default function BlogComments(props: BlogCommentsProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postSlug: props.postSlug,
-          name: name().trim(),
-          content: content().trim(),
-          parentId: replyTo()?.id,
+          name: mainName().trim(),
+          content: mainContent().trim(),
         }),
       });
 
@@ -136,12 +126,60 @@ export default function BlogComments(props: BlogCommentsProps) {
 
       const newComment = await res.json();
       setComments([newComment, ...comments()]);
-      setContent("");
-      setReplyTo(null);
+      setMainContent("");
+      setIsMainFormOpen(false);
       setSuccess(
         isVi()
           ? "Bình luận của bạn đã được gửi thành công!"
           : "Your comment has been posted successfully!",
+      );
+    } catch (err: any) {
+      setError(err.message || (isVi() ? "Đã có lỗi xảy ra." : "An error occurred."));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePostInlineReply = async (e: Event, parentId: number) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    if (!replyName().trim() || !replyContent().trim()) {
+      setError(
+        isVi()
+          ? "Vui lòng nhập tên và nội dung phản hồi."
+          : "Please enter your name and reply content.",
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          postSlug: props.postSlug,
+          name: replyName().trim(),
+          content: replyContent().trim(),
+          parentId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to post reply");
+      }
+
+      const newComment = await res.json();
+      setComments([newComment, ...comments()]);
+      setReplyContent("");
+      setReplyingToId(null);
+      setSuccess(
+        isVi()
+          ? "Câu phản hồi của bạn đã được đăng thành công!"
+          : "Your reply has been posted successfully!",
       );
     } catch (err: any) {
       setError(err.message || (isVi() ? "Đã có lỗi xảy ra." : "An error occurred."));
@@ -165,7 +203,6 @@ export default function BlogComments(props: BlogCommentsProps) {
     }
   };
 
-  // Group comments into root comments and child replies
   const rootComments = () => comments().filter((c) => !c.parentId);
   const getReplies = (parentId: number) =>
     comments().filter((c) => c.parentId === parentId);
@@ -175,6 +212,7 @@ export default function BlogComments(props: BlogCommentsProps) {
 
   return (
     <section class="mt-10 pt-8 border-t border-solid border-neutral-800 text-neutral-100 font-sans" style={fontStyle}>
+      {/* Top Header & Toggle Button */}
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-bold tracking-tight text-neutral-100 m-0" style={fontStyle}>
           {isVi() ? "Bình luận" : "Comments"}{" "}
@@ -182,96 +220,103 @@ export default function BlogComments(props: BlogCommentsProps) {
             ({comments().length})
           </span>
         </h3>
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsMainFormOpen(!isMainFormOpen());
+            setError(null);
+            setSuccess(null);
+          }}
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-neutral-700 bg-neutral-900/80 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
+          style={fontStyle}
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Show when={isMainFormOpen()} fallback={<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14" />}>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </Show>
+          </svg>
+          <span>{isVi() ? (isMainFormOpen() ? "Đóng form" : "Thêm bình luận") : (isMainFormOpen() ? "Close form" : "Add Comment")}</span>
+        </button>
       </div>
 
-      {/* Form Comment */}
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 p-5 mb-8 shadow-sm flex flex-col gap-4 font-sans"
-        style={fontStyle}
-      >
-        <Show when={replyTo()}>
-          <div class="flex items-center justify-between bg-primary-500/10 border border-primary-500/30 rounded-lg px-3 py-2 text-xs text-primary-400 font-sans">
-            <span>
-              {isVi() ? "Đang trả lời bình luận của" : "Replying to"} <strong>@{replyTo()?.name}</strong>
-            </span>
+      <Show when={error()}>
+        <div class="mb-4 text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg p-3" style={fontStyle}>
+          {error()}
+        </div>
+      </Show>
+
+      <Show when={success()}>
+        <div class="mb-4 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 rounded-lg p-3" style={fontStyle}>
+          {success()}
+        </div>
+      </Show>
+
+      {/* Main Comment Form (Expandable) */}
+      <Show when={isMainFormOpen()}>
+        <form
+          onSubmit={handlePostMainComment}
+          class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 p-5 mb-8 shadow-sm flex flex-col gap-4 font-sans transition-all"
+          style={fontStyle}
+        >
+          <div>
+            <label class="block text-xs font-medium text-neutral-300 mb-1.5" style={fontStyle}>
+              {isVi() ? "Họ tên" : "Name"} <span class="text-primary-400">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              maxLength={100}
+              placeholder={isVi() ? "Nguyễn Văn A" : "John Doe"}
+              value={mainName()}
+              onInput={(e) => setMainName(e.currentTarget.value)}
+              class={inputClasses}
+              style={fontStyle}
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-neutral-300 mb-1.5" style={fontStyle}>
+              {isVi() ? "Nội dung bình luận" : "Comment"} <span class="text-primary-400">*</span>
+            </label>
+            <textarea
+              required
+              rows={4}
+              maxLength={2000}
+              placeholder={
+                isVi()
+                  ? "Chia sẻ suy nghĩ của bạn về bài viết này..."
+                  : "Share your thoughts on this post..."
+              }
+              value={mainContent()}
+              onInput={(e) => setMainContent(e.currentTarget.value)}
+              class={`${inputClasses} resize-y min-h-[100px]`}
+              style={fontStyle}
+            />
+          </div>
+
+          <div class="flex justify-end gap-2">
             <button
               type="button"
-              onClick={cancelReply}
-              class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+              onClick={() => setIsMainFormOpen(false)}
+              class="px-3.5 py-2 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+              style={fontStyle}
             >
-              ✕ {isVi() ? "Hủy" : "Cancel"}
+              {isVi() ? "Hủy" : "Cancel"}
+            </button>
+            <button
+              type="submit"
+              disabled={submitting()}
+              class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50 font-sans"
+              style={fontStyle}
+            >
+              <Show when={submitting()} fallback={isVi() ? "Gửi bình luận" : "Post Comment"}>
+                {isVi() ? "Đang gửi..." : "Posting..."}
+              </Show>
             </button>
           </div>
-        </Show>
-
-        <div>
-          <label class="block text-xs font-medium text-neutral-300 mb-1.5" style={fontStyle}>
-            {isVi() ? "Họ tên" : "Name"} <span class="text-primary-400">*</span>
-          </label>
-          <input
-            ref={nameInputRef}
-            type="text"
-            required
-            maxLength={100}
-            placeholder={isVi() ? "Nguyễn Văn A" : "John Doe"}
-            value={name()}
-            onInput={(e) => setName(e.currentTarget.value)}
-            class={inputClasses}
-            style={fontStyle}
-          />
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-neutral-300 mb-1.5" style={fontStyle}>
-            {isVi() ? "Nội dung bình luận" : "Comment"} <span class="text-primary-400">*</span>
-          </label>
-          <textarea
-            required
-            rows={4}
-            maxLength={2000}
-            placeholder={
-              replyTo()
-                ? isVi()
-                  ? `Trả lời @${replyTo()?.name}...`
-                  : `Replying to @${replyTo()?.name}...`
-                : isVi()
-                ? "Chia sẻ suy nghĩ của bạn về bài viết này..."
-                : "Share your thoughts on this post..."
-            }
-            value={content()}
-            onInput={(e) => setContent(e.currentTarget.value)}
-            class={`${inputClasses} resize-y min-h-[100px]`}
-            style={fontStyle}
-          />
-        </div>
-
-        <Show when={error()}>
-          <div class="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg p-3" style={fontStyle}>
-            {error()}
-          </div>
-        </Show>
-
-        <Show when={success()}>
-          <div class="text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 rounded-lg p-3" style={fontStyle}>
-            {success()}
-          </div>
-        </Show>
-
-        <div class="flex justify-end">
-          <button
-            type="submit"
-            disabled={submitting()}
-            class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50 font-sans"
-            style={fontStyle}
-          >
-            <Show when={submitting()} fallback={isVi() ? "Gửi bình luận" : "Post Comment"}>
-              {isVi() ? "Đang gửi..." : "Posting..."}
-            </Show>
-          </button>
-        </div>
-      </form>
+        </form>
+      </Show>
 
       {/* Danh sách Comment */}
       <Show when={loading()}>
@@ -293,10 +338,11 @@ export default function BlogComments(props: BlogCommentsProps) {
           {(comment) => {
             const avatarBg = () => getAvatarBgColor(comment.ipAddress || comment.name);
             const replies = () => getReplies(comment.id);
+            const isReplyingThis = () => replyingToId() === comment.id;
 
             return (
               <div class="flex flex-col gap-3 font-sans">
-                {/* Main Comment */}
+                {/* Main Comment Card */}
                 <div class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/50 p-4 transition-colors" style={fontStyle}>
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2.5">
@@ -310,26 +356,119 @@ export default function BlogComments(props: BlogCommentsProps) {
                         {comment.name}
                       </span>
                     </div>
+
                     <div class="flex items-center gap-3">
                       <time class="text-xs text-neutral-400" style={fontStyle}>
                         {formatDate(comment.createdAt)}
                       </time>
+
+                      {/* Refined Reply Button */}
                       <button
                         type="button"
-                        onClick={() => handleStartReply(comment)}
-                        class="text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium cursor-pointer"
+                        onClick={() => {
+                          if (isReplyingThis()) {
+                            setReplyingToId(null);
+                          } else {
+                            setReplyingToId(comment.id);
+                            if (!replyName()) setReplyName(mainName());
+                          }
+                        }}
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-neutral-700 bg-neutral-900/80 text-xs font-medium text-neutral-300 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
                         style={fontStyle}
                       >
-                        {isVi() ? "Trả lời" : "Reply"}
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                        </svg>
+                        <span>{isVi() ? "Trả lời" : "Reply"}</span>
                       </button>
                     </div>
                   </div>
+
                   <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-10.5" style={fontStyle}>
                     {comment.content}
                   </p>
                 </div>
 
-                {/* Nested Replies */}
+                {/* Inline Reply Form (nested directly below this comment) */}
+                <Show when={isReplyingThis()}>
+                  <form
+                    onSubmit={(e) => handlePostInlineReply(e, comment.id)}
+                    class="ml-6 sm:ml-8 rounded-xl border border-solid border-neutral-800 bg-neutral-900/80 p-4 flex flex-col gap-3 font-sans transition-all"
+                    style={fontStyle}
+                  >
+                    <div class="flex items-center justify-between text-xs text-primary-400 font-medium">
+                      <span>
+                        {isVi() ? "Trả lời bình luận của" : "Replying to"} <strong>@{comment.name}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setReplyingToId(null)}
+                        class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        ✕ {isVi() ? "Đóng" : "Close"}
+                      </button>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-neutral-300 mb-1" style={fontStyle}>
+                        {isVi() ? "Họ tên" : "Name"} <span class="text-primary-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={100}
+                        placeholder={isVi() ? "Nguyễn Văn A" : "John Doe"}
+                        value={replyName()}
+                        onInput={(e) => setReplyName(e.currentTarget.value)}
+                        class={inputClasses}
+                        style={fontStyle}
+                      />
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-neutral-300 mb-1" style={fontStyle}>
+                        {isVi() ? "Nội dung phản hồi" : "Reply"} <span class="text-primary-400">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={3}
+                        maxLength={2000}
+                        placeholder={
+                          isVi()
+                            ? `Trả lời @${comment.name}...`
+                            : `Replying to @${comment.name}...`
+                        }
+                        value={replyContent()}
+                        onInput={(e) => setReplyContent(e.currentTarget.value)}
+                        class={`${inputClasses} resize-y min-h-[80px]`}
+                        style={fontStyle}
+                      />
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setReplyingToId(null)}
+                        class="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                        style={fontStyle}
+                      >
+                        {isVi() ? "Hủy" : "Cancel"}
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={submitting()}
+                        class="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50"
+                        style={fontStyle}
+                      >
+                        <Show when={submitting()} fallback={isVi() ? "Gửi phản hồi" : "Submit Reply"}>
+                          {isVi() ? "Đang gửi..." : "Submitting..."}
+                        </Show>
+                      </button>
+                    </div>
+                  </form>
+                </Show>
+
+                {/* Nested Replies List */}
                 <Show when={replies().length > 0}>
                   <div class="pl-6 sm:pl-8 space-y-3 border-l-2 border-solid border-neutral-800/80 ml-4">
                     <For each={replies()}>
