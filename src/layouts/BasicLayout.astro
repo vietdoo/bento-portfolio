@@ -227,15 +227,11 @@ const schema =
     <GridTransition />
     <slot name="loader" />
     {
-      !hideHeader && (
-        isHome ? (
-          <Navigation client:load />
-        ) : (
-          <SubpageNavigation client:load label={resolvedNavLabel} cta={navCta} />
-        )
+      !hideHeader && !isHome && (
+        <SubpageNavigation client:load label={resolvedNavLabel} cta={navCta} />
       )
     }
-    <div class={!hideHeader ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center"}>
+    <div class={!hideHeader && !isHome ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center"}>
       <slot />
     </div>
     {

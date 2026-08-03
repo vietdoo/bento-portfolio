@@ -65,10 +65,10 @@ export function SubpageNavigation(props: SubpageNavigationProps) {
                   window.location.href = "/";
                 }
               }}
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-darkslate-600/50 hover:bg-darkslate-600 border border-darkslate-400/40 text-darkslate-100 hover:text-white transition-all text-xs font-medium cursor-pointer"
+              class="flex items-center gap-2 px-4 py-2 rounded-full bg-darkslate-600/70 hover:bg-darkslate-500 border border-darkslate-400/50 text-white hover:border-primary-500/50 hover:shadow-md active:scale-95 transition-all text-sm font-semibold cursor-pointer shrink-0"
               aria-label="Quay lại"
             >
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
               <span>Back</span>
