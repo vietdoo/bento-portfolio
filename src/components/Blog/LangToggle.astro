@@ -36,13 +36,9 @@ const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
         <a
           href={href}
           data-lang-option={lang}
-          aria-current={lang === current ? "page" : undefined}
-          class:list={[
-            "px-3 py-1 text-xs font-semibold rounded-md decoration-none transition-colors",
-            lang === current
-              ? "bg-primary-500 text-neutral-900"
-              : "text-neutral-300 hover:text-white",
-          ]}
+          aria-current={lang === current ? "page" : "false"}
+          aria-pressed={lang === current ? "true" : "false"}
+          class="lang-option px-3 py-1 text-xs font-semibold rounded-md decoration-none transition-colors"
         >
           {label}
         </a>
@@ -50,8 +46,8 @@ const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
         <button
           type="button"
           data-lang-option={lang}
-          aria-pressed={lang === current}
-          class="lang-button px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors bg-transparent text-neutral-300"
+          aria-pressed={lang === current ? "true" : "false"}
+          class="lang-button px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors"
         >
           {label}
         </button>
@@ -61,14 +57,27 @@ const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
 </div>
 
 <style>
-  .lang-button:hover {
+  .lang-button,
+  .lang-option {
+    background-color: transparent;
+    color: #d4d4d4;
+  }
+
+  .lang-button:hover,
+  .lang-option:hover {
     color: #ffffff;
   }
 
   [data-lang-option][aria-pressed="true"],
   [data-lang-option][aria-current="page"] {
-    background-color: var(--primary-500);
-    color: #111111;
+    background-color: var(--primary-500) !important;
+    color: #111111 !important;
+  }
+
+  [data-lang-option][aria-pressed="false"]:not([aria-current="page"]),
+  [data-lang-option][aria-current="false"]:not([aria-pressed="true"]) {
+    background-color: transparent !important;
+    color: #d4d4d4 !important;
   }
 </style>
 
