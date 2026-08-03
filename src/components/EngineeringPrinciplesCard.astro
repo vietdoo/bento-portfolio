@@ -1,0 +1,83 @@
+---
+import Card from "./Card/index.astro";
+import { Icon } from "astro-icon/components";
+
+const principles = [
+  {
+    icon: "ri:lightbulb-line",
+    title: "Simplicity over cleverness",
+    subtitle: "Small solutions age better than clever ones.",
+  },
+  {
+    icon: "ri:line-chart-line",
+    title: "Scale by design",
+    subtitle: "Think beyond today's traffic.",
+  },
+  {
+    icon: "ri:bar-chart-2-line",
+    title: "Measure before optimize",
+    subtitle: "Data beats assumptions.",
+  },
+  {
+    icon: "ri:robot-3-line",
+    title: "Automate everything repeatable",
+    subtitle: "Humans solve problems, machines repeat them.",
+  },
+  {
+    icon: "ri:shield-check-line",
+    title: "Clean code survives longer",
+    subtitle: "Readable code is maintainable code.",
+  },
+];
+---
+
+<Card colSpan="md:col-span-1" rowSpan="md:row-span-4">
+  {/* Dotted matrix decorative footer */}
+  <div
+    slot="background"
+    aria-hidden="true"
+    class="absolute inset-x-0 bottom-0 h-28 pointer-events-none opacity-15 bg-[radial-gradient(var(--primary-400)_1px,transparent_1px)] [background-size:10px_10px] [mask-image:linear-gradient(to_bottom,transparent,black)] select-none"
+  >
+  </div>
+
+  <div class="h-full flex flex-col justify-between relative z-10 select-none">
+    {/* Top Header Section */}
+    <div class="flex items-start justify-between gap-2 mb-3 sm:mb-4">
+      <div>
+        <h2 class="text-base sm:text-lg md:text-xl font-bold text-white leading-tight m-0">
+          Engineering
+        </h2>
+        <h2 class="text-base sm:text-lg md:text-xl font-bold text-white leading-tight m-0">
+          Principles
+        </h2>
+      </div>
+      <div
+        class="p-1.5 rounded-lg bg-darkslate-700/60 border border-darkslate-400/40 text-primary-400 shrink-0"
+        aria-hidden="true"
+      >
+        <Icon name="ri:code-s-slash-line" class="h-5 w-5" />
+      </div>
+    </div>
+
+    {/* Middle Section: 5 Principles */}
+    <ul class="space-y-2.5 sm:space-y-3 md:space-y-3.5 m-0 p-0 list-none">
+      {
+        principles.map((item) => (
+          <li class="flex items-start gap-2.5 group/item">
+            <div class="p-1 rounded bg-primary-500/10 text-primary-400 shrink-0 mt-0.5 group-hover/item:text-primary-300 group-hover/item:bg-primary-500/20 transition-colors duration-150">
+              <Icon name={item.icon} class="h-4 w-4" />
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs sm:text-[13px] font-semibold text-neutral-100 group-hover/item:text-white transition-colors duration-150 leading-snug">
+                {item.title}
+              </span>
+              <span class="text-[10px] sm:text-[11px] text-darkslate-300 font-light leading-tight mt-0.5 line-clamp-1">
+                {item.subtitle}
+              </span>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Card>
