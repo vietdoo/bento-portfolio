@@ -42,14 +42,13 @@ const socials = [
   <div class="flex flex-col gap-4 relative z-10 pb-[124px] md:hidden">
     <div data-bug-safe-below class="flex flex-col gap-4">
       <div class="flex items-center gap-3">
-        <Image
-          quality="max"
-          src={MemojiAvatarDefault}
-          {...themeSources}
-          class="h-14 w-14 shrink-0 rounded-full object-cover object-top bg-darkslate-700 border border-darkslate-400 select-none"
-          alt={`memoji of ${SITE.author.firstName}`}
+        <img
+          src="https://github.com/vietdoo.png"
+          class="h-14 w-14 shrink-0 rounded-full object-cover bg-darkslate-700 border border-darkslate-400 select-none"
+          alt={`Avatar of ${SITE.author.fullName}`}
           loading="eager"
-          fetchpriority="high"
+          width="56"
+          height="56"
         />
         <div class="flex flex-col min-w-0">
           <span class="text-[11px] uppercase tracking-widest text-darkslate-300">welcome</span>
