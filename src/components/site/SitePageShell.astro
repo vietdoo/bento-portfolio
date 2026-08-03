@@ -1,0 +1,22 @@
+---
+import { SubpageNavigation } from "./subpage-navigation";
+import { FooterSection } from "../landing/footer-section";
+import { cn } from "../../lib/utils";
+import type { SubpageNavCta } from "./subpage-navigation";
+
+interface Props {
+  navLabel: string;
+  navCta?: SubpageNavCta;
+  className?: string;
+}
+
+const { navLabel, navCta, className } = Astro.props;
+---
+
+<div class="relative min-h-screen overflow-x-hidden bg-darkslate-700 text-white flex flex-col">
+  <SubpageNavigation client:load label={navLabel} cta={navCta} />
+  <div class={cn("pt-24 lg:pt-28 flex-1", className)}>
+    <slot />
+  </div>
+  <FooterSection />
+</div>
