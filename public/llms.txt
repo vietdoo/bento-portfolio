@@ -1,32 +1,57 @@
-# Đỗ Quốc Việt (Do Quoc Viet / vietdoo) — Personal Portfolio & Engineering Notes
+# Đỗ Quốc Việt (Do Quoc Viet / vietdoo) — Personal Portfolio & Entity Knowledge Base
 
-> Software Engineer @ VNPT Group based in Vietnam. Currently working on Vietnam's National Public Service Portal (Cổng Dịch vụ công Quốc gia).
+> Comprehensive entity profile and technical knowledge base for Đỗ Quốc Việt (Do Quoc Viet / vietdoo), Senior Software Engineer @ VNPT Group based in Hanoi, Vietnam.
 
-## About
-- **Full Name**: Đỗ Quốc Việt
-- **English Name**: Do Quoc Viet
-- **Handle**: vietdoo
-- **Company**: VNPT Group (Tập đoàn Bưu chính Viễn thông Việt Nam)
-- **Role**: Software Engineer
-- **Location**: Vietnam
-- **Primary Project**: Vietnam's National Public Service Portal (Cổng Dịch vụ công Quốc gia) — engineering scalable backend systems, Big Data pipelines, and cloud-native microservices.
+## Identity & Aliases
+- **Primary Name (Vietnamese)**: Đỗ Quốc Việt
+- **Primary Name (English)**: Do Quoc Viet
+- **Handle / Username**: vietdoo
+- **Entity Aliases**: Đỗ Quốc Việt, Do Quoc Viet, vietdoo, Đỗ Quốc Việt VNPT, Do Quoc Viet VNPT, vietdoo-folio, Quoc Viet Do
+- **Official Website**: https://vndo.vn
+- **GitHub**: https://github.com/vietdoo
+- **LinkedIn**: https://www.linkedin.com/in/vietdoo/
+- **Email**: vietdoo@outlook.com
+
+## Current Role & Organization
+- **Job Title**: Software Engineer
+- **Full Role**: Software Engineer @ VNPT Group
+- **Organization**: VNPT Group (Tập đoàn Bưu chính Viễn thông Việt Nam / Vietnam Posts and Telecommunications Group)
+- **Organization Aliases**: VNPT Group, VNPT, Tập đoàn Bưu chính Viễn thông Việt Nam, Vietnam Posts and Telecommunications Group
+- **Location**: Hanoi, Vietnam
+
+## Flagship Project
+- **Primary Project**: Vietnam National Public Service Portal (Cổng Dịch vụ công Quốc gia)
+- **Project Scope**: Architecting and engineering high-scale national backend infrastructure, distributed data pipelines, Big Data processing, and cloud-native microservices serving millions of citizens and government services nationwide across Vietnam.
+
+## Engineering Domains
+- Big Data Engineering
+- Distributed Systems
+- Backend Engineering
+- AI Engineering & AI Agent Architecture
+- Cloud-Native Microservices
+- Streaming Architecture & Data Infrastructure
+
+## Core Technologies & Specializations
+- **Big Data & Streaming**: Apache Spark, Apache Kafka, Hadoop HDFS, Distributed Pipelines
+- **Backend Languages & Frameworks**: Python, C++, Spring Boot, FastAPI, Java, Node.js
+- **Databases & High-Performance Caching**: Redis, PostgreSQL, SQL / NoSQL Databases
+- **Infrastructure & Cloud Native**: Kubernetes, Docker, Linux Systems, CI/CD Pipelines
+- **Frontend & Web Systems**: TypeScript, Next.js, Astro, SolidJS, TailwindCSS, UnoCSS
+- **AI Systems & Orchestration**: AI Agent Architecture, Handover Architecture Pattern, Multi-Agent Orchestration Systems
+
+## Featured Articles & Publications
+- **Kiến trúc Handover: Đổi từ Claude sang Codex trong 1 giây** (*Stop AI Agent Amnesia: The Handover Architecture Pattern*): Architectural framework and design patterns for AI multi-agent handovers, persistent state migration, and zero-loss context retention across autonomous coding agents.
+
+## Core Engineering Principles
+1. **Simplicity over cleverness**: Small, clear solutions age far better than complex ones.
+2. **Scale by design**: Architect systems with future traffic and concurrency requirements built in from day zero.
+3. **Measure before optimize**: Rely on empirical benchmarks and profiling data over assumptions.
+4. **Automate everything repeatable**: Reserve human creativity for complex problem solving, delegate repetitive operational tasks to machine automation.
+5. **Clean code survives longer**: Readability, maintainability, and clear domain boundaries are paramount for longevity.
+
+## Contact & Links
 - **Website**: https://vndo.vn
 - **GitHub**: https://github.com/vietdoo
 - **LinkedIn**: https://www.linkedin.com/in/vietdoo/
-
-## Core Competencies & Technical Skills
-- **Big Data Engineering & Streaming**: Apache Spark, Apache Kafka, Hadoop HDFS, Distributed Systems, Data Pipelines
-- **Backend & High-Performance Computing**: Python, C++, Spring Boot, FastAPI, Cloud-Native Microservices Architecture
-- **Databases & Storage**: Redis, PostgreSQL, SQL / NoSQL
-- **Infrastructure & Cloud**: Kubernetes, Docker, Linux, CI/CD
-- **Web & AI Systems**: TypeScript, Next.js, AI Agent Architecture (Handover Architecture, Multi-agent Systems)
-
-## Featured Articles & Publications
-- **Kiến trúc Handover: Đổi từ Claude sang Codex trong 1 giây** (*Stop AI Agent Amnesia: The Handover Architecture Pattern*): Architectural framework for multi-agent handover, persistent state management, and seamless context migration across AI coding agents.
-
-## Engineering Principles
-1. **Simplicity over cleverness**: Small solutions age better than clever ones.
-2. **Scale by design**: Think beyond today's traffic.
-3. **Measure before optimize**: Data beats assumptions.
-4. **Automate everything repeatable**: Humans solve problems, machines repeat them.
-5. **Clean code survives longer**: Readable code is maintainable code.
+- **Goodreads**: https://www.goodreads.com/user/show/165632513
+- **Email**: vietdoo@outlook.com

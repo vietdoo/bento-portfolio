@@ -17,65 +17,121 @@ interface Props {
 }
 
 const { title, description, page, pubDate, hideSoundToggle, hideCal } = Astro.props;
+const canonicalUrl = Astro.url.href.split("?")[0];
 const image = `${Astro.url.origin}/og-image.png`;
 
-const schema =
-  page !== "blog"
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: SITE.author.fullNameVi,
-        alternateName: SITE.author.alternateNames,
-        url: Astro.url.origin,
-        sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium, LINKS.goodreads],
-        image: "https://github.com/vietdoo.png",
-        jobTitle: SITE.author.jobTitle,
-        description: description,
-        knowsAbout: SITE.author.keywords,
-        worksFor: {
-          "@type": "Organization",
-          name: SITE.author.companyVi,
-          alternateName: [SITE.author.company, "VNPT"],
-          url: "https://vnpt.com.vn",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: SITE.location.countryName,
-            addressCountry: SITE.location.countryCode,
-          },
-        },
-        nationality: {
-          "@type": "Country",
-          name: SITE.location.countryName,
-        },
-      }
-    : {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": Astro.url.href,
-        },
-        headline: title || title,
-        description: description || title,
-        image: `${Astro.url.origin}/og-image.png`,
-        author: {
-          "@type": "Person",
-          name: SITE.author.fullNameVi,
-          alternateName: SITE.author.alternateNames,
-          url: Astro.url.origin,
-          sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium, LINKS.goodreads],
-        },
-        publisher: {
-          "@type": "Organization",
-          name: SITE.author.fullNameVi,
-          logo: {
-            "@type": "ImageObject",
-            url: "https://github.com/vietdoo.png",
-          },
-        },
-        datePublished: pubDate || new Date().toISOString(),
-        dateModified: pubDate || new Date().toISOString(),
-      };
+const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+const breadcrumbItems = [
+  {
+    "@type": "ListItem",
+    position: 1,
+    name: "Home",
+    item: Astro.url.origin,
+  },
+];
+
+if (!isHomePage) {
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: 2,
+    name: title,
+    item: canonicalUrl,
+  });
+}
+
+const personEntity = {
+  "@type": "Person",
+  "@id": `${Astro.url.origin}/#person`,
+  name: SITE.author.fullNameVi,
+  alternateName: SITE.author.alternateNames,
+  givenName: "Quốc Việt",
+  familyName: "Đỗ",
+  additionalName: SITE.author.shortName,
+  url: Astro.url.origin,
+  sameAs: [SITE.links.linkedin, SITE.links.github, SITE.links.medium, SITE.links.goodreads],
+  image: "https://github.com/vietdoo.png",
+  jobTitle: SITE.author.jobTitleFull,
+  description: SITE.site.description,
+  knowsAbout: [
+    ...SITE.author.domains,
+    ...SITE.author.coreTechnologies,
+    SITE.author.project,
+    SITE.author.projectVi,
+  ],
+  worksFor: {
+    "@type": "Organization",
+    "@id": "https://vnpt.com.vn/#organization",
+    name: SITE.author.companyVi,
+    alternateName: SITE.author.companyAliases,
+    url: "https://vnpt.com.vn",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: SITE.location.locality,
+      addressCountry: SITE.location.countryCode,
+    },
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: SITE.location.locality,
+    addressCountry: SITE.location.countryCode,
+  },
+  nationality: {
+    "@type": "Country",
+    name: SITE.location.countryName,
+  },
+};
+
+const webSiteEntity = {
+  "@type": "WebSite",
+  "@id": `${Astro.url.origin}/#website`,
+  url: Astro.url.origin,
+  name: SITE.site.title,
+  description: SITE.site.description,
+  publisher: { "@id": `${Astro.url.origin}/#person` },
+  inLanguage: ["en-US", "vi-VN"],
+};
+
+const webPageEntity = {
+  "@type": page === "blog" ? "ItemPage" : "WebPage",
+  "@id": canonicalUrl,
+  url: canonicalUrl,
+  name: title,
+  description: description,
+  isPartOf: { "@id": `${Astro.url.origin}/#website` },
+  about: { "@id": `${Astro.url.origin}/#person` },
+  author: { "@id": `${Astro.url.origin}/#person` },
+  inLanguage: "en-US",
+};
+
+const breadcrumbEntity = {
+  "@type": "BreadcrumbList",
+  "@id": `${canonicalUrl}#breadcrumb`,
+  itemListElement: breadcrumbItems,
+};
+
+const graphNodes: any[] = [personEntity, webSiteEntity, webPageEntity, breadcrumbEntity];
+
+if (page === "blog") {
+  graphNodes.push({
+    "@type": "BlogPosting",
+    "@id": `${canonicalUrl}#article`,
+    mainEntityOfPage: { "@id": canonicalUrl },
+    headline: title,
+    description: description,
+    image: image,
+    author: { "@id": `${Astro.url.origin}/#person` },
+    publisher: { "@id": `${Astro.url.origin}/#person` },
+    datePublished: pubDate || new Date().toISOString(),
+    dateModified: pubDate || new Date().toISOString(),
+    isPartOf: { "@id": `${Astro.url.origin}/#website` },
+    inLanguage: "en-US",
+  });
+}
+
+const jsonLdGraph = {
+  "@context": "https://schema.org",
+  "@graph": graphNodes,
+};
 ---
 
 <!doctype html>
@@ -88,7 +144,7 @@ const schema =
     <meta charset="UTF-8" />
     <ClientRouter />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <link rel="canonical" href={Astro.url.href} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -99,6 +155,7 @@ const schema =
     />
     <meta name="apple-mobile-web-app-title" content={SITE.author.fullNameVi} />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.author.fullNameVi} RSS Feed`} href="/rss.xml" />
     <meta content={Astro.generator} name="generator" />
     <title>{title}</title>
     <meta content={description} name="description" />
@@ -115,11 +172,12 @@ const schema =
     />
     <meta content={title} property="og:title" />
     <meta content={description} property="og:description" />
-    <meta content={Astro.url.origin} property="og:url" />
-    <meta property="og:site_name" content={SITE.author.fullName} />
+    <meta content={canonicalUrl} property="og:url" />
+    <meta property="og:site_name" content={SITE.author.fullNameVi} />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="vi_VN" />
     <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
+      content={image}
       property="og:image"
     />
     <meta property="og:image:alt" content={description} />
@@ -132,13 +190,13 @@ const schema =
     <meta name="twitter:site" content={`@${SITE.author.twitterHandle}`} />
     <meta name="twitter:creator" content={`@${SITE.author.twitterHandle}`} />
     <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
+      content={image}
       name="twitter:image"
     />
 
     <script
       is:inline
-      set:html={JSON.stringify(schema)}
+      set:html={JSON.stringify(jsonLdGraph)}
       type="application/ld+json"
     />
     <script
@@ -330,7 +388,7 @@ const schema =
     "color:var(--darkslate-200);font-size:12px;",
   );
   console.log(
-    "%c💼  linkedin.com/in/gianmarco-cavallo\n📧  contact@gianmarcocavallo.com",
+    "%c💼  linkedin.com/in/vietdoo\n📧  vietdoo@outlook.com",
     "color:var(--primary-300);font-size:12px;line-height:2;",
   );
 </script>

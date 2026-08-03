@@ -20,9 +20,9 @@ import { SITE } from "../site-config";
 </script>
 
 <BasicLayout
-  description="Bản đồ Việt Nam hiển thị các tỉnh thành đã ghé thăm"
+  description={`Bản đồ Việt Nam tương tác hiển thị các tỉnh thành đã ghé thăm bởi ${SITE.author.fullNameVi} (${SITE.author.shortName}), Software Engineer @ ${SITE.author.companyVi}.`}
   page="travel"
-  title={`${SITE.author.fullName} - Các Tỉnh Thành Đã Ghé Thăm`}
+  title={`${SITE.author.fullNameVi} (${SITE.author.shortName}) — Các Tỉnh Thành Đã Ghé Thăm`}
 >
   <BackLink href="/" class="absolute top-4 left-4 z-40" />
 

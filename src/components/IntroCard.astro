@@ -45,7 +45,7 @@ const socials = [
         <img
           src="https://github.com/vietdoo.png"
           class="h-12 w-12 shrink-0 rounded-full object-cover bg-darkslate-700 border border-darkslate-400 select-none"
-          alt={`Avatar of ${SITE.author.fullName}`}
+          alt={`Avatar of ${SITE.author.fullNameVi}`}
           loading="eager"
           width="48"
           height="48"
@@ -56,12 +56,12 @@ const socials = [
               CURRENTLY BUILDING
             </span>
           </div>
-          <span class="text-base font-bold leading-tight truncate">{SITE.author.fullName}</span>
-          <span class="text-xs text-primary-400 leading-tight truncate">{SITE.author.jobTitle}</span>
+          <h1 class="text-base font-bold leading-tight truncate m-0">{SITE.author.fullNameVi}</h1>
+          <p class="text-xs text-primary-400 leading-tight truncate m-0 font-medium">{SITE.author.jobTitleFull}</p>
         </div>
       </div>
 
-      <p aria-hidden="true" class="m-0 text-[13px] font-light leading-relaxed text-white/80">
+      <p class="m-0 text-[13px] font-light leading-relaxed text-white/80">
         <span class="block font-semibold text-white">Part programmer, part prompt whisperer, full-time builder.</span>
         <span class="block mt-1 text-xs text-darkslate-300">Feel free to reach out if you have a project in mind, want to collaborate, or just want to say hello.</span>
       </p>
@@ -112,7 +112,14 @@ const socials = [
           </span>
         </div>
 
-        <p aria-hidden="true" class="m-0 font-light text-sm md:text-base">
+        <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight mb-1 m-0">
+          {SITE.author.fullNameVi} <span class="text-primary-400 text-lg font-semibold">({SITE.author.shortName})</span>
+        </h1>
+        <p class="text-xs font-semibold text-primary-300 mb-2 m-0">
+          {SITE.author.jobTitleFull}
+        </p>
+
+        <p class="m-0 font-light text-sm md:text-base">
           <span class="block font-bold text-white text-base md:text-lg leading-snug">
             Part programmer, part prompt whisperer, full-time builder.
           </span>

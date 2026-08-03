@@ -66,6 +66,12 @@ export default defineConfig({
   integrations: [
     sitemap(),
     robotsTxt({
+      policy: [
+        {
+          userAgent: "*",
+          allow: "/",
+        },
+      ],
       sitemap: [
         `${siteNoTrailingSlash}/sitemap-index.xml`,
         `${siteNoTrailingSlash}/sitemap-0.xml`,
