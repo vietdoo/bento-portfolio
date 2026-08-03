@@ -37,6 +37,11 @@ describe("Helper Functions", () => {
       const date = new Date(2026, 0, 15); // Jan 15, 2026
       expect(formatDate(date)).toBe("January 15, 2026");
     });
+
+    it("formats publication dates in the selected locale", () => {
+      const date = new Date(2026, 7, 2);
+      expect(formatDate(date, "vi-VN")).toBe("2 tháng 8, 2026");
+    });
   });
 
   describe("formatTimeTo12H", () => {

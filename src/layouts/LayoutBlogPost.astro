@@ -4,51 +4,149 @@ import BackLink from "../components/BackLink.astro";
 import LangToggle from "../components/Blog/LangToggle.astro";
 import BasicLayout from "./BasicLayout.astro";
 import type { BlogLang } from "../lib/blog-lang";
+import { SITE } from "../site-config";
 
 type Props = {
-  title: string;
   description: string;
-  pubDate: Date;
-  minutesRead: string;
   url: string;
-  lang?: BlogLang;
   enHref?: string | undefined;
   viHref?: string | undefined;
+  translations: {
+    lang: BlogLang;
+    title: string;
+    pubDate: Date;
+    minutesRead: string;
+  }[];
 };
 
 const {
-  title,
   description,
-  pubDate,
-  minutesRead,
   url,
-  lang = "en",
   enHref,
   viHref,
+  translations,
 } = Astro.props;
 
 const hasTranslation = Boolean(enHref && viHref);
+const authorInitial = SITE.author.firstName.charAt(0).toUpperCase();
 ---
 
-<BasicLayout description={description} page="blog" slug={url} title={title}>
+<BasicLayout
+  description={description}
+  page="blog"
+  slug={url}
+  title={translations[0].title}
+>
   <main class="mx-auto max-w-3xl w-full min-h-screen p-8 text-neutral-100">
     <div class="mb-8 flex items-center justify-between gap-4">
       <BackLink href="/blog" />
       {
         hasTranslation && (
-          <LangToggle current={lang} enHref={enHref} viHref={viHref} />
+          <LangToggle current="en" enHref={enHref} viHref={viHref} />
         )
       }
     </div>
-    <div class="my-10">
-      <h1 class="text-5xl font-semibold">{title}</h1>
-      <div class="flex justify-between pt-4 text-gray-500 text-sm">
-        <p>{formatDate(pubDate)}</p>
-        <p>{minutesRead}</p>
-      </div>
-    </div>
-    <article class="prose prose-p:text-red-500 prose-slate prose-invert pb-16">
-      <slot />
-    </article>
+    {
+      translations.map((translation, index) => {
+        const isVietnamese = translation.lang === "vi";
+        const dateLocale = isVietnamese ? "vi-VN" : "en-US";
+        const authorLabel = isVietnamese ? "Viết bởi" : "Written by";
+        const publishedLabel = isVietnamese ? "Xuất bản" : "Published";
+        const readingLabel = isVietnamese ? "Thời gian đọc" : "Reading time";
+
+        return (
+          <div
+            class="my-10"
+            data-blog-language={translation.lang}
+            hidden={index > 0}
+          >
+            <h1
+              class="text-5xl font-semibold"
+              data-blog-title
+              data-document-title={translation.title}
+            >
+              {translation.title}
+            </h1>
+            <div
+              class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border-1 border-solid border-neutral-700 bg-neutral-900/70 px-4 py-4 text-sm"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  aria-hidden="true"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 font-semibold text-neutral-900"
+                >
+                  {authorInitial}
+                </div>
+                <div>
+                  <p class="m-0 text-xs text-neutral-400">{authorLabel}</p>
+                  <p class="m-0 font-medium text-neutral-100">
+                    {SITE.author.fullName}
+                  </p>
+                </div>
+              </div>
+              <dl class="m-0 flex flex-wrap gap-x-6 gap-y-3 text-neutral-300">
+                <div>
+                  <dt class="text-xs text-neutral-500">{publishedLabel}</dt>
+                  <dd class="m-0 mt-1">
+                    <time datetime={translation.pubDate.toISOString()}>
+                      {formatDate(translation.pubDate, dateLocale)}
+                    </time>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-neutral-500">{readingLabel}</dt>
+                  <dd class="m-0 mt-1">{translation.minutesRead}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        );
+      })
+    }
+    {
+      translations.map((translation, index) => (
+        <article
+          class="prose prose-p:text-red-500 prose-slate prose-invert pb-16"
+          data-blog-language={translation.lang}
+          hidden={index > 0}
+        >
+          <slot name={translation.lang} />
+        </article>
+      ))
+    }
   </main>
 </BasicLayout>
+
+<script>
+  function applyBlogLanguage() {
+    const lang = new URLSearchParams(window.location.search).get("lang") === "vi"
+      ? "vi"
+      : "en";
+    const availableLanguages = new Set(
+      Array.from(document.querySelectorAll<HTMLElement>("[data-blog-language]")).map(
+        (element) => element.dataset.blogLanguage,
+      ),
+    );
+    const selectedLang = availableLanguages.has(lang) ? lang : "en";
+
+    document.querySelectorAll<HTMLElement>("[data-blog-language]").forEach((element) => {
+      element.hidden = element.dataset.blogLanguage !== selectedLang;
+    });
+
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
+      .forEach((option) => {
+        const isCurrent = option.dataset.langOption === selectedLang;
+        option.setAttribute("aria-current", isCurrent ? "page" : "false");
+        option.setAttribute("aria-pressed", String(isCurrent));
+      });
+
+    const title = document.querySelector<HTMLElement>(
+      `[data-blog-title][data-blog-language="${selectedLang}"]`,
+    )?.dataset.documentTitle;
+    if (title) document.title = title;
+    document.documentElement.lang = selectedLang;
+  }
+
+  document.addEventListener("astro:page-load", applyBlogLanguage);
+</script>

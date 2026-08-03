@@ -33,7 +33,7 @@ The card uses a clear two-row hierarchy on wide screens and wraps without overfl
 
 ## Content and Data Flow
 
-The blog route reads `Astro.url.searchParams` to determine the selected locale. It resolves the selected localized title, description, and content from the existing bilingual blog data, then passes locale-aware labels and values into the post layout. Blog listing rows and language controls use a shared URL-building convention so their locale links stay consistent.
+The static blog route resolves the English entry and its Vietnamese translation from the existing bilingual blog data, then pre-renders both title/metadata/article variants. A small client-side script reads `lang` from the query string, shows the selected variant, updates the document language and title, and marks the matching language toggle as active. Blog listing rows, RSS items, and language controls use a shared URL-building convention so their locale links stay consistent.
 
 ## Error Handling
 

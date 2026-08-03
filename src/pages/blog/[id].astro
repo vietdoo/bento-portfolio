@@ -21,31 +21,58 @@ if (!id) {
   throw new Error("id is missing");
 }
 
-const lang = Astro.url.searchParams.get("lang") === "vi" ? "vi" : "en";
 const posts = await getCollection("blog");
-const entry = getLocalizedPost(posts, id, lang);
+const englishEntry = getLocalizedPost(posts, id, "en");
 
-if (!entry) {
+if (!englishEntry) {
   return Astro.redirect("/404");
 }
 
 const vietnameseVersion = getLocalizedPost(posts, id, "vi");
 const hasVietnameseTranslation = vietnameseVersion?.data.lang === "vi";
 
-const { Content, remarkPluginFrontmatter } = await render(entry);
+const { Content: EnglishContent, remarkPluginFrontmatter: englishFrontmatter } =
+  await render(englishEntry);
+const {
+  Content: VietnameseContent,
+  remarkPluginFrontmatter: vietnameseFrontmatter,
+} = hasVietnameseTranslation
+  ? await render(vietnameseVersion)
+  : { Content: undefined, remarkPluginFrontmatter: undefined };
 ---
 
 <LayoutBlogPost
-  description={entry.data.description!}
-  enHref={hasVietnameseTranslation ? getBlogPostHref(entry, "en") : undefined}
-  lang={entry.data.lang}
-  minutesRead={remarkPluginFrontmatter.minutesRead}
-  pubDate={entry.data.pubDate!}
-  title={`${entry.data.title} | ${SITE.author.fullName}`}
-  url={`blog/${getCanonicalBlogId(entry)}`}
-  viHref={hasVietnameseTranslation ? getBlogPostHref(entry, "vi") : undefined}
+  description={englishEntry.data.description!}
+  enHref={hasVietnameseTranslation ? getBlogPostHref(englishEntry, "en") : undefined}
+  translations={[
+    {
+      lang: "en",
+      minutesRead: englishFrontmatter.minutesRead,
+      pubDate: englishEntry.data.pubDate!,
+      title: `${englishEntry.data.title} | ${SITE.author.fullName}`,
+    },
+    ...(hasVietnameseTranslation && vietnameseFrontmatter
+      ? [
+          {
+            lang: "vi" as const,
+            minutesRead: vietnameseFrontmatter.minutesRead,
+            pubDate: vietnameseVersion.data.pubDate!,
+            title: `${vietnameseVersion.data.title} | ${SITE.author.fullName}`,
+          },
+        ]
+      : []),
+  ]}
+  url={`blog/${getCanonicalBlogId(englishEntry)}`}
+  viHref={
+    hasVietnameseTranslation ? getBlogPostHref(vietnameseVersion, "vi") : undefined
+  }
 >
-  <Content />
+  <EnglishContent slot="en" />
+  {
+    VietnameseContent && (
+      <VietnameseContent slot="vi" />
+    )
+  }
 </LayoutBlogPost>
 
 <style is:global>
