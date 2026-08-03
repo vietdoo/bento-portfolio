@@ -37,38 +37,43 @@ export function SubpageNavigation(props: SubpageNavigationProps) {
             isScrolled() ? "h-14" : "h-20"
           }`}
         >
-          {/* Logo & Trang chủ Link */}
-          <a href="/" class="flex items-center gap-2 group shrink-0 text-white no-underline">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              width={40}
-              height={40}
-              class={`rounded-sm object-cover transition-all duration-500 ${
-                isScrolled() ? "w-7 h-7" : "w-9 h-9"
-              }`}
-              onError={(e) => {
-                // Fallback to simple SVG logo if logo.png is missing
-                const target = e.currentTarget;
-                target.onerror = null;
-                target.src = "/favicon.svg";
+          {/* Logo Icon & Back Button */}
+          <div class="flex items-center gap-3 shrink-0">
+            <a href="/" class="flex items-center group text-white no-underline">
+              <img
+                src="/vndo.png"
+                alt="Logo"
+                width={40}
+                height={40}
+                class={`rounded-md object-cover transition-all duration-500 ${
+                  isScrolled() ? "w-7 h-7" : "w-9 h-9"
+                }`}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.onerror = null;
+                  target.src = "/icon-light-32x32.png";
+                }}
+              />
+            </a>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  window.location.href = "/";
+                }
               }}
-            />
-            <span
-              class={`font-display tracking-tight transition-all duration-500 text-white font-bold ${
-                isScrolled() ? "text-xl" : "text-2xl"
-              }`}
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-darkslate-600/50 hover:bg-darkslate-600 border border-darkslate-400/40 text-darkslate-100 hover:text-white transition-all text-xs font-medium cursor-pointer"
+              aria-label="Quay lại"
             >
-              BRAND
-            </span>
-            <span
-              class={`text-darkslate-200 font-mono transition-all duration-500 ${
-                isScrolled() ? "text-[10px] mt-0.5" : "text-xs mt-1"
-              }`}
-            >
-              ™
-            </span>
-          </a>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              <span>Back</span>
+            </button>
+          </div>
 
           {/* Center Page Indicator (Chỉ hiển thị trên md trở lên) */}
           <div class="hidden md:flex items-center justify-center gap-3 flex-1 px-4 min-w-0 pointer-events-none">
@@ -87,7 +92,7 @@ export function SubpageNavigation(props: SubpageNavigationProps) {
                 props.cta ? "hidden md:flex" : "flex"
               }`}
             >
-              Về trang chủ
+              Home
               <svg
                 class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 fill="none"
