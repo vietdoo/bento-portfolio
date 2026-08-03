@@ -28,7 +28,6 @@ const {
 } = Astro.props;
 
 const hasTranslation = Boolean(enHref && viHref);
-const authorInitial = SITE.author.firstName.charAt(0).toUpperCase();
 ---
 
 <BasicLayout
@@ -71,12 +70,14 @@ const authorInitial = SITE.author.firstName.charAt(0).toUpperCase();
               class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border-1 border-solid border-neutral-700 bg-neutral-900/70 px-4 py-4 text-sm"
             >
               <div class="flex items-center gap-3">
-                <div
-                  aria-hidden="true"
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 font-semibold text-neutral-900"
-                >
-                  {authorInitial}
-                </div>
+                <img
+                  src="https://avatars.githubusercontent.com/u/64247567"
+                  alt={`Avatar of ${SITE.author.fullName}`}
+                  class="h-10 w-10 rounded-full object-cover"
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                />
                 <div>
                   <p class="m-0 text-xs text-neutral-400">{authorLabel}</p>
                   <p class="m-0 font-medium text-neutral-100">
