@@ -142,7 +142,7 @@ const authorInitial = SITE.author.firstName.charAt(0).toUpperCase();
       });
 
     const title = document.querySelector<HTMLElement>(
-      `[data-blog-title][data-blog-language="${selectedLang}"]`,
+      `[data-blog-language="${selectedLang}"] [data-blog-title]`,
     )?.dataset.documentTitle;
     if (title) document.title = title;
     document.documentElement.lang = selectedLang;
