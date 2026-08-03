@@ -33,12 +33,7 @@ const posts = await getPublishedPosts();
       ) : (
         <ul class="w-full p-0 m-0" data-post-list>
           {posts.map((post) => (
-            <PostRow
-              date={post.data.pubDate!}
-              id={post.id}
-              lang={post.data.lang}
-              title={post.data.title ?? post.id}
-            />
+            <PostRow post={post} />
           ))}
         </ul>
       )
