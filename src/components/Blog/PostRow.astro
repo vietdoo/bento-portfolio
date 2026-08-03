@@ -1,34 +1,75 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../../lib/helpers";
-import type { BlogLang } from "../../lib/blog-lang";
+import { getBlogPostHref } from "../../lib/blog-lang";
 
 interface Props {
-  title: string;
-  date: Date;
-  id: string;
-  lang?: BlogLang;
+  post: CollectionEntry<"blog">;
 }
 
-const { title, date, id, lang } = Astro.props;
+const { post } = Astro.props;
+
+// Extract image from frontmatter or content body
+let thumbnail = post.data.image;
+if (!thumbnail && post.body) {
+  const match = post.body.match(/!\[.*?\]\((.*?)\)/);
+  if (match && match[1]) {
+    thumbnail = match[1];
+  }
+}
+
+const isVi = post.data.lang === "vi";
+const dateLocale = isVi ? "vi-VN" : "en-US";
 ---
 
 <li
-  class="list-none w-full text-neutral-100 hover:text-neutral-400 ease-in-out transition-colors border-b-neutral-400 border-dashed border-b-1 my-2"
-  data-post-lang={lang}
+  class="list-none w-full my-2.5"
+  data-post-lang={post.data.lang}
 >
   <a
-    class="text-sm md:text-base decoration-none flex justify-between gap-4"
-    href={`/blog/${id}`}
+    class="group relative flex flex-row items-center justify-between gap-3 sm:gap-5 w-full rounded-xl border border-white/15 bg-neutral-900/40 hover:bg-neutral-800/60 p-3 sm:p-4 transition-all duration-200 hover:border-white/30 hover:shadow-md decoration-none overflow-hidden"
+    href={getBlogPostHref(post)}
   >
-    <p class="inline-block">
-      {title}
-    </p>
-    <time
-      class="text-right tabular-nums whitespace-nowrap"
-      data-date={date.toISOString()}
-      datetime={date.toISOString()}
-    >
-      {formatDate(date)}
-    </time>
+    <!-- Left Text Info -->
+    <div class="flex-1 min-w-0 flex flex-col justify-center">
+      <!-- Category & Date Header -->
+      <div class="flex items-center gap-2 mb-1.5 text-[11px] text-neutral-400 font-mono">
+        {post.data.category && (
+          <span class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded bg-neutral-800 border border-white/10 text-neutral-300">
+            {post.data.category}
+          </span>
+        )}
+        <time
+          data-date={post.data.pubDate?.toISOString()}
+          datetime={post.data.pubDate?.toISOString()}
+        >
+          {post.data.pubDate && formatDate(post.data.pubDate, dateLocale)}
+        </time>
+      </div>
+
+      <!-- Title -->
+      <h2 class="text-sm sm:text-base font-semibold text-neutral-100 group-hover:text-white transition-colors line-clamp-2 leading-snug m-0">
+        {post.data.title ?? post.id}
+      </h2>
+
+      <!-- Description -->
+      {post.data.description && (
+        <p class="text-xs text-neutral-400 line-clamp-1 leading-relaxed mt-1 mb-0 font-normal">
+          {post.data.description}
+        </p>
+      )}
+    </div>
+
+    <!-- Right Compact Thumbnail -->
+    {thumbnail && (
+      <div class="w-24 h-16 sm:w-32 sm:h-20 md:w-36 md:h-22 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-neutral-950/80 relative">
+        <img
+          src={thumbnail}
+          alt={post.data.title ?? post.id}
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+    )}
   </a>
 </li>

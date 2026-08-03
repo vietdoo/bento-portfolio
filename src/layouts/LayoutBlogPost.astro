@@ -2,53 +2,262 @@
 import { formatDate } from "../lib/helpers";
 import BackLink from "../components/BackLink.astro";
 import LangToggle from "../components/Blog/LangToggle.astro";
+import ShareSection from "../components/Blog/ShareSection.astro";
 import BasicLayout from "./BasicLayout.astro";
 import type { BlogLang } from "../lib/blog-lang";
+import { SITE } from "../site-config";
 
 type Props = {
-  title: string;
   description: string;
-  pubDate: Date;
-  minutesRead: string;
   url: string;
-  lang?: BlogLang;
   enHref?: string | undefined;
   viHref?: string | undefined;
+  translations: {
+    lang: BlogLang;
+    title: string;
+    pubDate: Date;
+    minutesRead: string;
+  }[];
 };
 
 const {
-  title,
   description,
-  pubDate,
-  minutesRead,
   url,
-  lang = "en",
   enHref,
   viHref,
+  translations,
 } = Astro.props;
 
 const hasTranslation = Boolean(enHref && viHref);
 ---
 
-<BasicLayout description={description} page="blog" slug={url} title={title}>
+<BasicLayout
+  description={description}
+  page="blog"
+  slug={url}
+  title={translations[0].title}
+>
   <main class="mx-auto max-w-3xl w-full min-h-screen p-8 text-neutral-100">
     <div class="mb-8 flex items-center justify-between gap-4">
       <BackLink href="/blog" />
       {
         hasTranslation && (
-          <LangToggle current={lang} enHref={enHref} viHref={viHref} />
+          <LangToggle current="en" enHref={enHref} viHref={viHref} />
         )
       }
     </div>
-    <div class="my-10">
-      <h1 class="text-5xl font-semibold">{title}</h1>
-      <div class="flex justify-between pt-4 text-gray-500 text-sm">
-        <p>{formatDate(pubDate)}</p>
-        <p>{minutesRead}</p>
-      </div>
-    </div>
-    <article class="prose prose-p:text-red-500 prose-slate prose-invert pb-16">
-      <slot />
-    </article>
+    {
+      translations.map((translation, index) => {
+        const isVietnamese = translation.lang === "vi";
+        const dateLocale = isVietnamese ? "vi-VN" : "en-US";
+        const authorLabel = isVietnamese ? "Viết bởi" : "Written by";
+        const publishedLabel = isVietnamese ? "Xuất bản" : "Published";
+        const readingLabel = isVietnamese ? "Thời gian đọc" : "Reading time";
+        const displayReadingTime = isVietnamese
+          ? translation.minutesRead
+              ? translation.minutesRead.replace(/(\d+)\s*min(?:s)?\s*read/i, "~$1 phút đọc")
+              : "5 phút đọc"
+          : translation.minutesRead;
+
+        return (
+          <div
+            class="my-10"
+            data-blog-language={translation.lang}
+            hidden={index > 0}
+          >
+            <h1
+              class="text-4xl sm:text-5xl font-bold tracking-tight"
+              data-blog-title
+              data-document-title={translation.title}
+            >
+              {translation.title}
+            </h1>
+            <div
+              class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 px-4 py-4 text-sm"
+            >
+              <div class="flex items-center gap-3">
+                <img
+                  src="https://avatars.githubusercontent.com/u/64247567"
+                  alt={`Avatar of ${SITE.author.fullName}`}
+                  class="h-10 w-10 rounded-full object-cover"
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                />
+                <div>
+                  <p class="m-0 text-xs text-neutral-400">{authorLabel}</p>
+                  <p class="m-0 font-medium text-neutral-100">
+                    {SITE.author.fullName}
+                  </p>
+                </div>
+              </div>
+              <dl class="m-0 flex flex-wrap gap-x-6 gap-y-3 text-neutral-300">
+                <div>
+                  <dt class="text-xs text-neutral-500">{publishedLabel}</dt>
+                  <dd class="m-0 mt-1">
+                    <time datetime={translation.pubDate.toISOString()}>
+                      {formatDate(translation.pubDate, dateLocale)}
+                    </time>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-neutral-500">{readingLabel}</dt>
+                  <dd class="m-0 mt-1">{displayReadingTime}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        );
+      })
+    }
+    {
+      translations.map((translation, index) => (
+        <article
+          class="prose prose-slate prose-invert pb-8"
+          data-blog-language={translation.lang}
+          hidden={index > 0}
+        >
+          <slot name={translation.lang} />
+          <ShareSection title={translation.title} lang={translation.lang} />
+        </article>
+      ))
+    }
   </main>
 </BasicLayout>
+
+<script>
+  function applyBlogLanguage() {
+    const lang = new URLSearchParams(window.location.search).get("lang") === "vi"
+      ? "vi"
+      : "en";
+    const availableLanguages = new Set(
+      Array.from(document.querySelectorAll<HTMLElement>("[data-blog-language]")).map(
+        (element) => element.dataset.blogLanguage,
+      ),
+    );
+    const selectedLang = availableLanguages.has(lang) ? lang : "en";
+
+    document.querySelectorAll<HTMLElement>("[data-blog-language]").forEach((element) => {
+      element.hidden = element.dataset.blogLanguage !== selectedLang;
+    });
+
+    document
+      .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
+      .forEach((option) => {
+        const isCurrent = option.dataset.langOption === selectedLang;
+        option.dataset.active = isCurrent ? "true" : "false";
+        option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
+      });
+
+    const title = document.querySelector<HTMLElement>(
+      `[data-blog-language="${selectedLang}"] [data-blog-title]`,
+    )?.dataset.documentTitle;
+    if (title) document.title = title;
+    document.documentElement.lang = selectedLang;
+  }
+
+  document.addEventListener("astro:page-load", applyBlogLanguage);
+</script>
+
+<style is:global>
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  h5 {
+    font-size: 18px;
+  }
+
+  h6 {
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+  }
+
+  article a {
+    color: var(--primary-400);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  ul,
+  ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+
+  blockquote {
+    margin: 20px 0;
+    padding-left: 15px;
+    border-left: 5px solid #ccc;
+  }
+
+  article pre,
+  article code {
+    font-family: "Courier New", monospace;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+  }
+
+  pre {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  article code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: var(--primary-300);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+</style>

@@ -24,25 +24,23 @@ const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
 
 <div
   class:list={[
-    "inline-flex items-center gap-1 p-1 rounded-lg border-1 border-solid border-neutral-600 bg-neutral-900",
+    "inline-flex items-center gap-1 p-1 rounded-lg border border-solid border-neutral-700 bg-neutral-900/90",
     extraClass,
   ]}
   data-lang-toggle
   data-storage-key={BLOG_LANG_KEY}
 >
   {
-    options.map(({ lang, label, href }) =>
-      href ? (
+    options.map(({ lang, label, href }) => {
+      const isSelected = lang === current;
+      return href ? (
         <a
           href={href}
           data-lang-option={lang}
-          aria-current={lang === current ? "page" : undefined}
-          class:list={[
-            "px-3 py-1 text-xs font-semibold rounded-md decoration-none transition-colors",
-            lang === current
-              ? "bg-primary-500 text-neutral-900"
-              : "text-neutral-300 hover:text-white",
-          ]}
+          data-active={isSelected ? "true" : "false"}
+          aria-current={isSelected ? "page" : undefined}
+          aria-pressed={isSelected ? "true" : "false"}
+          class="lang-option px-3 py-1 text-xs font-semibold rounded-md decoration-none transition-colors"
         >
           {label}
         </a>
@@ -50,25 +48,38 @@ const options: { lang: BlogLang; label: string; href?: string | undefined }[] =
         <button
           type="button"
           data-lang-option={lang}
-          aria-pressed={lang === current}
-          class="lang-button px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors bg-transparent text-neutral-300"
+          data-active={isSelected ? "true" : "false"}
+          aria-pressed={isSelected ? "true" : "false"}
+          class="lang-button px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors"
         >
           {label}
         </button>
-      ),
-    )
+      );
+    })
   }
 </div>
 
-<style>
-  .lang-button:hover {
-    color: #ffffff;
+<style is:global>
+  [data-lang-toggle] [data-lang-option] {
+    transition: background-color 0.15s ease, color 0.15s ease;
+    background-color: transparent !important;
+    color: #d4d4d4 !important;
   }
 
-  [data-lang-option][aria-pressed="true"],
-  [data-lang-option][aria-current="page"] {
-    background-color: var(--primary-500);
-    color: #111111;
+  [data-lang-toggle] [data-lang-option]:hover {
+    color: #ffffff !important;
+  }
+
+  [data-lang-toggle] [data-lang-option][data-active="true"] {
+    background-color: var(--primary-500) !important;
+    color: #0b0b0b !important;
+    font-weight: 700 !important;
+  }
+
+  [data-lang-toggle] [data-lang-option][data-active="false"] {
+    background-color: transparent !important;
+    color: #d4d4d4 !important;
+    font-weight: 500 !important;
   }
 </style>
 

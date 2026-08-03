@@ -1,0 +1,12 @@
+---
+import { SubpageNavigation as SubpageNavSolid, type SubpageNavCta } from "./subpage-navigation";
+
+interface Props {
+  label: string;
+  cta?: SubpageNavCta;
+}
+
+const { label, cta } = Astro.props;
+---
+
+<SubpageNavSolid client:load label={label} cta={cta} />
