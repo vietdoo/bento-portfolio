@@ -3,6 +3,7 @@ import { formatDate } from "../lib/helpers";
 import BackLink from "../components/BackLink.astro";
 import LangToggle from "../components/Blog/LangToggle.astro";
 import ShareSection from "../components/Blog/ShareSection.astro";
+import BlogComments from "../components/Blog/BlogComments";
 import BasicLayout from "./BasicLayout.astro";
 import type { BlogLang } from "../lib/blog-lang";
 import { SITE } from "../site-config";
@@ -111,14 +112,13 @@ const hasTranslation = Boolean(enHref && viHref);
     }
     {
       translations.map((translation, index) => (
-        <article
-          class="prose prose-slate prose-invert pb-8"
-          data-blog-language={translation.lang}
-          hidden={index > 0}
-        >
-          <slot name={translation.lang} />
-          <ShareSection title={translation.title} lang={translation.lang} />
-        </article>
+        <div data-blog-language={translation.lang} hidden={index > 0}>
+          <article class="prose prose-slate prose-invert pb-8">
+            <slot name={translation.lang} />
+            <ShareSection title={translation.title} lang={translation.lang} />
+          </article>
+          <BlogComments postSlug={url} lang={translation.lang} client:visible />
+        </div>
       ))
     }
   </main>

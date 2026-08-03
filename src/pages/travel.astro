@@ -20,9 +20,9 @@ import { SITE } from "../site-config";
 </script>
 
 <BasicLayout
-  description="A 3d globe showing countries that you have visited so far"
+  description={`Interactive 3D globe showing countries visited by ${SITE.author.fullNameVi} (${SITE.author.shortName}), Software Engineer @ ${SITE.author.companyVi}.`}
   page="travel"
-  title={`${SITE.author.fullName} - Visited Countries`}
+  title={`${SITE.author.fullNameVi} (${SITE.author.shortName}) — Visited Countries`}
 >
   <Globe client:load enableHover={true} />
 </BasicLayout>

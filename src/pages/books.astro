@@ -37,8 +37,8 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
 <LoaderAnimation />
 
 <Layout
-  title={`${SITE.author.fullName} - Bookshelf`}
-  description="Personal reading log & bookshelf."
+  title={`${SITE.author.fullNameVi} (${SITE.author.shortName}) — Bookshelf`}
+  description={`Personal bookshelf, reading analytics, and book notes of ${SITE.author.fullNameVi} (${SITE.author.shortName}), Software Engineer @ ${SITE.author.companyVi}.`}
 >
   <!-- Detail Modal (Clean Human-Crafted, No Excessive Badges) -->
   <div
