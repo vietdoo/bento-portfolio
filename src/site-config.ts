@@ -1,9 +1,9 @@
 export const SITE = {
   site: {
     url: "https://vndo.vn",
-    title: "Đỗ Quốc Việt (Do Quoc Viet / vietdoo) — Software Engineer @ VNPT Group",
+    title: "Đỗ Quốc Việt (Do Quoc Viet / vietdoo) — Software Engineer @ VNPT | Founder @ VNDO",
     description:
-      "Official portfolio of Đỗ Quốc Việt (Do Quoc Viet / vietdoo), Software Engineer @ VNPT Group based in Vietnam. Specializing in Big Data engineering, distributed systems, high-performance backend, cloud-native microservices, and AI agent architecture.",
+      "Official portfolio of Đỗ Quốc Việt (Do Quoc Viet / vietdoo), Software Engineer @ VNPT & Founder @ VNDO. Specializing in Big Data engineering, distributed systems, high-performance backend, cloud-native microservices, and AI agent architecture.",
     locale: "en_US",
     alternateLocales: ["vi_VN"],
   },
@@ -23,15 +23,13 @@ export const SITE = {
       "Quoc Viet Do",
     ],
     jobTitle: "Software Engineer",
-    jobTitleFull: "Software Engineer @ VNPT Group",
-    company: "VNPT Group",
-    companyVi: "Tập đoàn Bưu chính Viễn thông Việt Nam",
-    companyEn: "Vietnam Posts and Telecommunications Group",
+    jobTitleFull: "Software Engineer @ VNPT | Founder @ VNDO",
+    company: "VNPT",
+    companyVi: "VNPT",
+    companyEn: "VNPT Group",
     companyAliases: [
       "VNPT Group",
       "VNPT",
-      "Tập đoàn Bưu chính Viễn thông Việt Nam",
-      "Vietnam Posts and Telecommunications Group",
     ],
     project: "Vietnam National Public Service Portal",
     projectVi: "Cổng Dịch vụ công Quốc gia",
