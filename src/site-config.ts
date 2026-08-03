@@ -1,9 +1,9 @@
 export const SITE = {
   site: {
     url: "https://vndo.vn",
-    title: "Đỗ Quốc Việt (Do Quoc Viet / vietdoo) — Software Engineer @ VNPT | Founder @ VNDO",
+    title: "Do Quoc Viet (vietdoo) — Software Engineer @ VNPT | Founder @ VNDO",
     description:
-      "Official portfolio of Đỗ Quốc Việt (Do Quoc Viet / vietdoo), Software Engineer @ VNPT & Founder @ VNDO. Specializing in Big Data engineering, distributed systems, high-performance backend, cloud-native microservices, and AI agent architecture.",
+      "Official portfolio of Do Quoc Viet (vietdoo), Software Engineer @ VNPT & Founder @ VNDO. Specializing in Big Data engineering, distributed systems, high-performance backend, cloud-native microservices, and AI agent architecture.",
     locale: "en_US",
     alternateLocales: ["vi_VN"],
   },
@@ -11,7 +11,7 @@ export const SITE = {
     firstName: "Do Quoc",
     lastName: "Viet",
     fullName: "Do Quoc Viet",
-    fullNameVi: "Đỗ Quốc Việt",
+    fullNameVi: "Do Quoc Viet",
     shortName: "vietdoo",
     alternateNames: [
       "Đỗ Quốc Việt",
