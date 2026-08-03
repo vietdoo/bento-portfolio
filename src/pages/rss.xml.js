@@ -2,6 +2,7 @@ import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
 import sanitizeHtml from "sanitize-html";
 import MarkdownIt from "markdown-it";
+import { getBlogPostHref } from "../lib/blog-lang";
 import { SITE } from "../site-config";
 const parser = new MarkdownIt();
 
@@ -16,7 +17,7 @@ export async function GET(context) {
       pubDate: post.data.pubDate,
       description: post.data.description,
       content: sanitizeHtml(parser.render(post.body)),
-      link: `/blog/${post.id}/`,
+      link: getBlogPostHref(post),
     })),
   });
 }

@@ -1,34 +1,32 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../../lib/helpers";
-import type { BlogLang } from "../../lib/blog-lang";
+import { getBlogPostHref } from "../../lib/blog-lang";
 
 interface Props {
-  title: string;
-  date: Date;
-  id: string;
-  lang?: BlogLang;
+  post: CollectionEntry<"blog">;
 }
 
-const { title, date, id, lang } = Astro.props;
+const { post } = Astro.props;
 ---
 
 <li
   class="list-none w-full text-neutral-100 hover:text-neutral-400 ease-in-out transition-colors border-b-neutral-400 border-dashed border-b-1 my-2"
-  data-post-lang={lang}
+  data-post-lang={post.data.lang}
 >
   <a
     class="text-sm md:text-base decoration-none flex justify-between gap-4"
-    href={`/blog/${id}`}
+    href={getBlogPostHref(post)}
   >
     <p class="inline-block">
-      {title}
+      {post.data.title ?? post.id}
     </p>
     <time
       class="text-right tabular-nums whitespace-nowrap"
-      data-date={date.toISOString()}
-      datetime={date.toISOString()}
+      data-date={post.data.pubDate?.toISOString()}
+      datetime={post.data.pubDate?.toISOString()}
     >
-      {formatDate(date)}
+      {post.data.pubDate && formatDate(post.data.pubDate)}
     </time>
   </a>
 </li>

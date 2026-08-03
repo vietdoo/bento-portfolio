@@ -1,4 +1,11 @@
 import { describe, expect, it } from "vitest";
+import {
+  getBlogPostHref,
+  getBlogPostPaths,
+  getCanonicalBlogId,
+  getLocalizedPost,
+  type TranslatableBlogPost,
+} from "../src/lib/blog-lang";
 import { formatDate, formatTimeTo12H, trimText } from "../src/lib/helpers";
 
 describe("Helper Functions", () => {
@@ -30,6 +37,11 @@ describe("Helper Functions", () => {
       const date = new Date(2026, 0, 15); // Jan 15, 2026
       expect(formatDate(date)).toBe("January 15, 2026");
     });
+
+    it("formats publication dates in the selected locale", () => {
+      const date = new Date(2026, 7, 2);
+      expect(formatDate(date, "vi-VN")).toBe("2 tháng 8, 2026");
+    });
   });
 
   describe("formatTimeTo12H", () => {
@@ -37,6 +49,63 @@ describe("Helper Functions", () => {
       const date = new Date(Date.UTC(2026, 0, 1, 14, 30));
       const formatted = formatTimeTo12H(date, "UTC");
       expect(formatted).toMatch(/2:30\s?PM/i);
+    });
+  });
+
+  describe("blog locale helpers", () => {
+    const posts = [
+      {
+        id: "agent-handover-architecture-en",
+        data: {
+          lang: "en",
+          translationKey: "agent-handover-architecture",
+        },
+      },
+      {
+        id: "agent-handover-architecture-vi",
+        data: {
+          lang: "vi",
+          translationKey: "agent-handover-architecture",
+        },
+      },
+    ] satisfies TranslatableBlogPost[];
+
+    const [englishPost, vietnamesePost] = posts;
+
+    it("builds canonical ids and locale-specific blog URLs", () => {
+      expect(getCanonicalBlogId(englishPost)).toBe(
+        "agent-handover-architecture",
+      );
+      expect(getBlogPostHref(englishPost)).toBe(
+        "/blog/agent-handover-architecture",
+      );
+      expect(getBlogPostHref(vietnamesePost)).toBe(
+        "/blog/agent-handover-architecture?lang=vi",
+      );
+    });
+
+    it("selects a requested translation and falls back to English", () => {
+      expect(
+        getLocalizedPost(posts, "agent-handover-architecture", "vi"),
+      ).toBe(vietnamesePost);
+      expect(
+        getLocalizedPost(posts, "agent-handover-architecture", "en"),
+      ).toBe(englishPost);
+
+      const englishOnlyPost = {
+        id: "english-only",
+        data: { lang: "en", translationKey: "english-only" },
+      } satisfies TranslatableBlogPost;
+
+      expect(
+        getLocalizedPost([englishOnlyPost], "english-only", "vi"),
+      ).toBe(englishOnlyPost);
+    });
+
+    it("creates one static path for a translation group", () => {
+      expect(getBlogPostPaths(posts)).toEqual([
+        { params: { id: "agent-handover-architecture" } },
+      ]);
     });
   });
 });
