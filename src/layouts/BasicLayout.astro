@@ -24,24 +24,19 @@ const schema =
     ? {
         "@context": "https://schema.org",
         "@type": "Person",
-        name: SITE.author.fullName,
+        name: SITE.author.fullNameVi,
+        alternateName: SITE.author.alternateNames,
         url: Astro.url.origin,
-        sameAs: [LINKS.linkedin, LINKS.github, LINKS.dribbble, LINKS.medium],
-        image: `${Astro.url.origin}/og-image.png`,
+        sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium],
+        image: "https://github.com/vietdoo.png",
         jobTitle: SITE.author.jobTitle,
-        knowsAbout: [
-          "JavaScript",
-          "React",
-          "Astro",
-          "Solid.js",
-          "Svelte",
-          "Node.js",
-          "User Experience",
-          "Web Development",
-        ],
+        description: description,
+        knowsAbout: SITE.author.keywords,
         worksFor: {
           "@type": "Organization",
-          name: "Self-Employed",
+          name: SITE.author.companyVi,
+          alternateName: [SITE.author.company, "VNPT"],
+          url: "https://vnpt.com.vn",
           address: {
             "@type": "PostalAddress",
             addressLocality: SITE.location.countryName,
@@ -62,19 +57,20 @@ const schema =
         },
         headline: title || title,
         description: description || title,
-        image: `${Astro.url.origin}/og-image.png`, //TODO: dynamic
+        image: `${Astro.url.origin}/og-image.png`,
         author: {
           "@type": "Person",
-          name: SITE.author.shortName,
+          name: SITE.author.fullNameVi,
+          alternateName: SITE.author.alternateNames,
           url: Astro.url.origin,
           sameAs: [LINKS.linkedin, LINKS.github],
         },
         publisher: {
           "@type": "Organization",
-          name: SITE.author.shortName,
+          name: SITE.author.fullNameVi,
           logo: {
             "@type": "ImageObject",
-            url: `${Astro.url.origin}/og-image.png`,
+            url: "https://github.com/vietdoo.png",
           },
         },
         datePublished: pubDate || new Date().toISOString(),
@@ -92,6 +88,7 @@ const schema =
     <meta charset="UTF-8" />
     <ClientRouter />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="canonical" href={Astro.url.href} />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -100,17 +97,17 @@ const schema =
       sizes="180x180"
       href="/apple-touch-icon.png"
     />
-    <meta name="apple-mobile-web-app-title" content={SITE.author.fullName} />
+    <meta name="apple-mobile-web-app-title" content={SITE.author.fullNameVi} />
     <link rel="manifest" href="/site.webmanifest" />
     <meta content={Astro.generator} name="generator" />
     <title>{title}</title>
     <meta content={description} name="description" />
-    <meta content="index, follow" name="robots" />
+    <meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name="robots" />
     <meta name="theme-color" content="#171717" />
-    <meta name="author" content={SITE.author.fullName} />
+    <meta name="author" content={`${SITE.author.fullNameVi} (${SITE.author.shortName})`} />
     <meta
       name="keywords"
-      content={`Do Quoc Viet, DO QUOC VIET, vietdoo, portfolio, Do Quoc Viet portfolio, full stack developer, web developer, React, Astro, Solid.js, Svelte, freelance developer, ${SITE.location.countryName}, UX, animations, micro-interactions`}
+      content={SITE.author.keywords.join(", ")}
     />
     <meta
       content={page === "blog" ? "article" : "website"}
