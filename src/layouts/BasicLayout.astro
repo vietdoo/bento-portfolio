@@ -5,6 +5,8 @@ import { LINKS } from "../lib/constants";
 import { SITE } from "../site-config";
 import GridTransition from "../components/GridTransition.astro";
 import StylePanel from "../components/StylePanel.astro";
+import { Navigation } from "../components/landing/navigation";
+import { SubpageNavigation, type SubpageNavCta } from "../components/site/subpage-navigation";
 
 interface Props {
   title: string;
@@ -14,10 +16,34 @@ interface Props {
   pubDate?: string;
   hideSoundToggle?: boolean;
   hideCal?: boolean;
+  navLabel?: string;
+  navCta?: SubpageNavCta;
+  hideHeader?: boolean;
 }
 
-const { title, description, page, pubDate, hideSoundToggle, hideCal } = Astro.props;
+const { title, description, page, pubDate, hideSoundToggle, hideCal, navLabel, navCta, hideHeader } = Astro.props;
 const image = `${Astro.url.origin}/og-image.png`;
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isHome = currentPath === "/";
+
+const defaultLabelMap: Record<string, string> = {
+  "/blog": "Blog",
+  "/books": "Bookshelf",
+  "/guestbook": "Guestbook",
+  "/engineering-showcase": "Engineering Showcase",
+  "/travel": "Travel",
+  "/visit": "Visited Provinces",
+  "/playground": "Playground",
+};
+
+const pathSegments = currentPath.split("/").filter(Boolean);
+const autoLabel = defaultLabelMap[currentPath] ||
+  (pathSegments.length > 0
+    ? pathSegments[pathSegments.length - 1].replace(/-/g, " ").toUpperCase()
+    : "Subpage");
+
+const resolvedNavLabel = navLabel || autoLabel;
 
 const schema =
   page !== "blog"
@@ -89,14 +115,10 @@ const schema =
     <ClientRouter />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <link rel="canonical" href={Astro.url.href} />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/apple-touch-icon.png"
-    />
+    <link rel="icon" type="image/png" href="/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" href="/icon-light-32x32.png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" href="/vndo.png" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
     <meta name="apple-mobile-web-app-title" content={SITE.author.fullNameVi} />
     <link rel="manifest" href="/site.webmanifest" />
     <meta content={Astro.generator} name="generator" />
@@ -119,11 +141,11 @@ const schema =
     <meta property="og:site_name" content={SITE.author.fullName} />
     <meta property="og:locale" content="en_US" />
     <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
+      content={`${Astro.url.origin}/og.webp`}
       property="og:image"
     />
     <meta property="og:image:alt" content={description} />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:type" content="image/webp" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta content="summary_large_image" name="twitter:card" />
@@ -132,7 +154,7 @@ const schema =
     <meta name="twitter:site" content={`@${SITE.author.twitterHandle}`} />
     <meta name="twitter:creator" content={`@${SITE.author.twitterHandle}`} />
     <meta
-      content={image || `${Astro.url.origin}/og-image.png`}
+      content={`${Astro.url.origin}/og.webp`}
       name="twitter:image"
     />
 
@@ -201,10 +223,17 @@ const schema =
     </script>}
     <!-- Cal element-click embed code ends -->
   </head>
-  <body class="bg-darkslate-700 flex flex-col justify-center items-center">
+  <body class="bg-darkslate-700 flex flex-col justify-start items-center min-h-screen w-full">
     <GridTransition />
     <slot name="loader" />
-    <slot />
+    {
+      !hideHeader && !isHome && (
+        <SubpageNavigation client:load label={resolvedNavLabel} cta={navCta} />
+      )
+    }
+    <div class={!hideHeader && !isHome ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center"}>
+      <slot />
+    </div>
     {
       !hideSoundToggle && (
         <div class="fixed bottom-4 right-4 md:bottom-6 z-50 flex flex-col items-center gap-2">
