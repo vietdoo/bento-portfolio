@@ -143,8 +143,13 @@ const hasTranslation = Boolean(enHref && viHref);
       .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
       .forEach((option) => {
         const isCurrent = option.dataset.langOption === selectedLang;
-        option.setAttribute("aria-current", isCurrent ? "page" : "false");
+        option.dataset.active = isCurrent ? "true" : "false";
         option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
       });
 
     const title = document.querySelector<HTMLElement>(

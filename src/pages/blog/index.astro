@@ -65,10 +65,14 @@ const posts = await getPublishedPosts();
     document
       .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
       .forEach((option) => {
-        option.setAttribute(
-          "aria-pressed",
-          String(option.dataset.langOption === lang),
-        );
+        const isCurrent = option.dataset.langOption === lang;
+        option.dataset.active = isCurrent ? "true" : "false";
+        option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
       });
   }
 
