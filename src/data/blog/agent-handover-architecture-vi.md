@@ -1,5 +1,5 @@
 ---
-title: "Bí kíp chống 'mất trí nhớ' cho AI Agent: Kiến trúc Handover trong Monorepo"
+title: "Kiến trúc Handover: Đổi từ Claude sang Codex trong 1 giây"
 description: "Một pattern ở tầng repo giúp bất kỳ AI agent nào cũng tiếp nhận được công việc dang dở: một bộ hiến pháp, một sổ bàn giao, một bản đồ định tuyến và một cơ chế kiểm tra phi-AI."
 pubDate: 2026-08-02
 category: "architecture"
