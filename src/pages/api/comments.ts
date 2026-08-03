@@ -3,10 +3,14 @@ import type { APIRoute } from "astro";
 import sanitizeHtml from "sanitize-html";
 
 export const GET: APIRoute = async ({ url }) => {
-  try {
-    const slug = url.searchParams.get("slug");
+  const timestamp = new Date().toISOString();
+  const slug = url.searchParams.get("slug");
 
+  console.log(`[${timestamp}] [API GET /api/comments] Requested slug: "${slug}"`);
+
+  try {
     if (!slug) {
+      console.warn(`[${timestamp}] [API GET /api/comments] Missing slug parameter`);
       return new Response(
         JSON.stringify({ error: "Blog post slug parameter is required" }),
         {
@@ -17,19 +21,14 @@ export const GET: APIRoute = async ({ url }) => {
     }
 
     const comments = await db
-      .select({
-        id: BlogCommentTable.id,
-        postSlug: BlogCommentTable.postSlug,
-        name: BlogCommentTable.name,
-        website: BlogCommentTable.website,
-        content: BlogCommentTable.content,
-        ipAddress: BlogCommentTable.ipAddress,
-        parentId: BlogCommentTable.parentId,
-        createdAt: BlogCommentTable.createdAt,
-      })
+      .select()
       .from(BlogCommentTable)
       .where(eq(BlogCommentTable.postSlug, slug))
       .orderBy(desc(BlogCommentTable.createdAt));
+
+    console.log(
+      `[${timestamp}] [API GET /api/comments] Successfully fetched ${comments.length} comments for slug "${slug}"`,
+    );
 
     return new Response(JSON.stringify({ comments }), {
       status: 200,
@@ -39,7 +38,7 @@ export const GET: APIRoute = async ({ url }) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching blog comments:", error);
+    console.error(`[${timestamp}] [API ERROR GET /api/comments]`, error);
     return new Response(
       JSON.stringify({ error: "Failed to fetch comments" }),
       {
@@ -51,11 +50,26 @@ export const GET: APIRoute = async ({ url }) => {
 };
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const timestamp = new Date().toISOString();
+
   try {
     const data = await request.json();
     const { postSlug, name, email, website, content, parentId } = data;
 
+    const clientIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip")?.trim() ||
+      clientAddress ||
+      "127.0.0.1";
+
+    console.log(
+      `[${timestamp}] [API POST /api/comments] Incoming submission from IP "${clientIp}" for slug "${postSlug}" (Parent ID: ${parentId || "None"})`,
+    );
+
     if (!postSlug || !name || !content) {
+      console.warn(
+        `[${timestamp}] [API POST /api/comments] Validation failed: missing required fields`,
+      );
       return new Response(
         JSON.stringify({ error: "postSlug, name, and content are required" }),
         {
@@ -64,12 +78,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         },
       );
     }
-
-    const clientIp =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip")?.trim() ||
-      clientAddress ||
-      "127.0.0.1";
 
     const cleanName = sanitizeHtml(name.trim(), {
       allowedTags: [],
@@ -98,6 +106,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       : undefined;
 
     if (!cleanName || !cleanContent) {
+      console.warn(`[${timestamp}] [API POST /api/comments] Validation failed: empty cleaned content`);
       return new Response(
         JSON.stringify({ error: "Invalid comment content" }),
         {
@@ -123,24 +132,19 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     const created = result[0];
 
+    console.log(
+      `[${timestamp}] [API POST /api/comments] Comment #${created.id} successfully created for "${postSlug}"`,
+    );
+
     return new Response(
-      JSON.stringify({
-        id: created.id,
-        postSlug: created.postSlug,
-        name: created.name,
-        website: created.website,
-        content: created.content,
-        ipAddress: created.ipAddress,
-        parentId: created.parentId,
-        createdAt: created.createdAt,
-      }),
+      JSON.stringify(created),
       {
         status: 201,
         headers: { "Content-Type": "application/json" },
       },
     );
   } catch (error) {
-    console.error("Error posting blog comment:", error);
+    console.error(`[${timestamp}] [API ERROR POST /api/comments]`, error);
     return new Response(
       JSON.stringify({ error: "Failed to post comment" }),
       {
