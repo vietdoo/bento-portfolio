@@ -65,23 +65,59 @@ Two things belong in the constitution and nowhere else:
 
 Keep it short. The constitution is loaded into *every* session; every paragraph you add is context budget you take away from the actual task.
 
-## Pillar 2 — The handover ledger
+## Pillar 2 — The Handover Ledger: Store "Intent", Not Diffs
 
-This is the heart of the pattern: an append-only log where every session writes one entry before it ends. Not a changelog — `git log` already exists — but the thing git cannot store: **intent**.
+This is the heart of the architecture: an append-only log where every AI agent is contractually obliged to write an entry before its session ends.
 
-A good entry has five fields:
+The key distinction: **The Handover Ledger is not a Changelog.** `git log` already tracks *what* lines of code changed (Diffs). But Git is completely blind to **Design Intent** — the answer to: *"Why was this decision made over another?"*
 
-| Field | Why it exists |
-| --- | --- |
-| Timestamp + agent identity | Lets the next reader judge staleness and know which tool's quirks produced the code |
-| Scope | Which modules were touched, so unrelated sessions can skip the entry |
-| What was done | Files, config, docs — the summary git can't give you in one paragraph |
-| Decision + rationale | Stops the next agent from re-litigating a settled trade-off |
-| Unfinished work & warnings | The actual handover: a ranked backlog written by whoever just had the deepest context |
+### The Fatal Difference: Git Log vs. Handover Ledger
 
-The rationale field is what makes the pattern pay for itself. "In-memory repository, chosen deliberately, Postgres is item #1 in the backlog" prevents an agent from either ripping it out unprompted or treating it as good enough forever.
+```text
+❌ Git Commit: "refactor: use in-memory repository for user service"
+👉 Next Agent thinks: "This code is sloppy! Let me rewrite it with Postgres right now!"
 
-Scope discipline matters too: system-wide changes (API contract, schema, architecture) go into the **global** ledger; purely local churn inside one sub-module goes into a **local** one. Otherwise the global log becomes a noise firehose that nobody reads, which is the same as having no log.
+✅ Handover Ledger: "Using In-Memory Repo deliberately for fast UI mocking. Postgres integration deferred because DB schema is pending approval. Task #1 for next session: Connect Postgres."
+👉 Next Agent reads: "Got it! Keep Mock Repo untouched, focus on finalizing Postgres schema per Task #1!"
+```
+
+---
+
+### Anatomy of a Production Handover Entry
+
+A high-quality handover entry contains 5 core fields formatted in clean, human-readable Markdown:
+
+```markdown
+### 📝 [2026-08-03 10:15] Agent: Claude-3.5-Sonnet | Task: #42-auth-jwt
+
+- 🎯 **Scope**: `src/features/auth/`
+- ✅ **Completed**: Migrated JWT verification from HS256 to RS256 asymmetric keys. Added 8 unit tests covering token expiration edge cases.
+- 💡 **Decision & Rationale**: Chose RS256 over HS256 because the external API Gateway requires public key verification without sharing the private secret.
+- ⏳ **Unfinished Work (Backlog for Next Agent)**:
+  1. [ ] [High Priority] Implement Redis blacklist for revoked tokens upon logout.
+  2. [ ] Update Auth DTO contract in `docs/api-contracts.md`.
+- ⚠️ **Warning**: Must set `JWT_PUBLIC_KEY` in `.env.test` before running the test suite.
+```
+
+---
+
+### The 5 Essential Fields Breakdown
+
+| Field | Production Value |
+| :--- | :--- |
+| **1. Timestamp + Agent ID** | Tells the next agent if the entry is fresh and indicates which tool's quirks generated the code (Claude, Cursor, Codex). |
+| **2. Scope** | Identifies touched modules (`src/features/auth`), allowing unrelated sessions to filter out noise instantly. |
+| **3. What Was Done** | High-level summary of code, config, and doc changes — the synthesis git diffs can't provide in one paragraph. |
+| **4. Decision & Rationale** | **The most critical field**: Prevents future agents from re-litigating or blindly undoing settled trade-offs. |
+| **5. Handover Backlog** | The true handover: A ranked priority list written by whichever agent held the deepest context minutes ago. |
+
+---
+
+### Scope Discipline: Global vs. Local Ledgers
+
+To prevent the ledger from becoming an unreadable firehose of trivial logs:
+- 🌐 **Global Ledger (`HANDOVER_LOG.md`)**: Records system-wide architectural shifts, API contract updates, and schema migrations.
+- 📍 **Local Ledger (`src/features/auth/HANDOVER.md`)**: Records localized refactors and internal task progress within a specific feature slice.
 
 ## Pillar 3 — A routing map so agents stop guessing
 

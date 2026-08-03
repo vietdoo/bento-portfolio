@@ -56,21 +56,59 @@ Chỉ 2 thành phần được phép hiện diện trong Hiến pháp:
 
 ---
 
-## Trụ cột 2 — Sổ bàn giao: Lưu trữ "ý định" chứ không lưu diff
+## Trụ cột 2 — Sổ bàn giao: Lưu trữ "Ý định" chứ không lưu Diff
 
-Đây là trái tim của kiến trúc: một file log dạng *append-only* mà agent bắt buộc phải ghi entry trước khi kết thúc phiên. Đây không phải là changelog (vì `git log` đã làm việc đó), mà là thứ Git không bao giờ lưu trữ được: **Ý định thiết kế (Design Intent)**.
+Đây là trái tim của toàn bộ kiến trúc: một nhật ký ghi thêm (*append-only ledger*) mà mọi AI agent bắt buộc phải ghi entry trước khi kết thúc phiên làm việc.
 
-Một entry bàn giao tiêu chuẩn gồm 5 thông tin quan trọng:
+Điểm mấu chốt: **Sổ bàn giao không phải là Changelog.** `git log` đã làm rất tốt việc theo dõi dòng code nào vừa bị thay đổi (Diff). Nhưng thứ Git hoàn toàn "mù tịt" chính là **Ý định thiết kế (Design Intent)** — câu trả lời cho câu hỏi: *"Vì sao lại chọn cách làm này mà không chọn cách khác?"*
 
-| Trường thông tin | Ý nghĩa & Giá trị |
+### Sự khác biệt sinh tử: Git Log vs. Sổ Bàn Giao
+
+```text
+❌ Git Commit: "refactor: use in-memory repository for user service"
+👉 Agent tiếp theo thấy vậy liền nghĩ: "Code thiếu chỉn chu quá, đập đi viết lại Postgres thôi!"
+
+✅ Sổ Bàn Giao: "Tạm thời dùng In-Memory Repo để mock data cho Frontend test nhanh UI. Chưa nối Postgres vì Schema DB chưa final. Task #1 phiên sau: Nối Postgres."
+👉 Agent tiếp theo đọc xong: "Hiểu rồi, giữ nguyên Mock Repo, tập trung hoàn thiện Postgres Schema theo Task #1!"
+```
+
+---
+
+### Cấu trúc chuẩn 1 Entry bàn giao thực tế
+
+Một entry bàn giao chất lượng cao phải chứa đúng 5 trường thông tin cốt lõi, trình bày theo định dạng Markdown trực quan:
+
+```markdown
+### 📝 [2026-08-03 10:15] Agent: Claude-3.5-Sonnet | Task: #42-auth-jwt
+
+- 🎯 **Phạm vi (Scope)**: `src/features/auth/`
+- ✅ **Đã hoàn thành**: Chuyển đổi mã hóa JWT từ HS256 sang RS256 asymmetric key. Viết 8 unit tests phủ hết edge cases token hết hạn.
+- 💡 **Quyết định & Lý do**: Dùng RS256 thay vì HS256 vì API Gateway bên ngoài cần verify public key mà không được giữ private key.
+- ⏳ **Việc dang dở (Backlog cho Agent sau)**:
+  1. [ ] [Ưu tiên cao] Thêm Redis blacklist cho token đã logout.
+  2. [ ] Cập nhật Auth DTO contract trong file `docs/api-contracts.md`.
+- ⚠️ **Lưu ý đặc biệt**: Cần set biến môi trường `JWT_PUBLIC_KEY` trong `.env.test` trước khi run test suite.
+```
+
+---
+
+### Bảng giải mã 5 thành phần sống còn
+
+| Trường thông tin | Ý nghĩa & Giá trị thực chiến |
 | :--- | :--- |
-| **Thời gian & Agent ID** | Xác định log còn mới không và thói quen sinh code của công cụ đó. |
-| **Phạm vi (Scope)** | Đụng tới module nào, giúp các agent phiên sau dễ dàng lọc bỏ thông tin nhiễu. |
-| **Công việc đã hoàn thành** | Tóm tắt ngắn gọn các thay đổi về code, config hay tài liệu. |
-| **Quyết định & Lý do** | Chặn agent sau tự ý lật lại các trade-off đã được thống nhất. |
-| **Việc dang dở & Lưu ý** | Bàn giao thực sự: danh sách backlog được sắp xếp ưu tiên bởi chính agent vừa làm. |
+| **1. Thời gian & Agent ID** | Giúp agent sau đánh giá log còn "tươi" không, và đoán trước thói quen sinh code của công cụ trước (Claude, Cursor, Codex). |
+| **2. Phạm vi (Scope)** | Giới hạn module đụng tới (frontend, backend, schema), giúp phiên sau nhanh chóng bỏ qua các log không liên quan. |
+| **3. Việc đã làm** | Tóm tắt súc tích các thay đổi chính về code, config và docs — thứ mà diff của Git không thể diễn đạt trong 1 đoạn ngắn. |
+| **4. Quyết định & Lý do** | **Chốt chặn quan trọng nhất**: Ngăn agent sau tự ý đập bỏ hoặc lật lại các trade-off đã được thống nhất từ trước. |
+| **5. Backlog bàn giao** | Bàn giao thực sự: Danh sách việc cần làm tiếp theo được sắp xếp thứ tự ưu tiên bởi chính agent vừa có context sâu nhất. |
 
-Ví dụ: Việc ghi rõ *"Dùng in-memory repository là cố ý để test nhanh, chuyển sang Postgres là task #1 trong backlog"* sẽ giúp agent tiếp theo không tự ý đập bỏ code, cũng không lầm tưởng đó là giải pháp lâu dài.
+---
+
+### Kỷ luật phân tầng Sổ bàn giao (Global vs. Local Ledger)
+
+Để tránh tình trạng sổ bàn giao biến thành "vòi nước nhiễu" chứa hàng trăm dòng log vụn vặt:
+- 🌐 **Sổ bàn giao toàn cục (`HANDOVER_LOG.md`)**: Chỉ ghi các thay đổi ảnh hưởng toàn hệ thống (API Contract, Database Schema, thay đổi Kiến trúc lớn).
+- 📍 **Sổ bàn giao cục bộ (`src/features/auth/HANDOVER.md`)**: Ghi chi tiết các refactor nội bộ bên trong từng feature slice riêng biệt.
 
 ---
 
