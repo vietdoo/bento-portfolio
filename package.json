@@ -6,6 +6,7 @@
     "dev": "astro dev --remote",
     "start": "astro dev --remote",
     "build": "astro build --remote",
+    "db:push": "node --input-type=module -e \"import { resolveDbConfig } from './node_modules/@astrojs/db/dist/core/load-file.js'; import { cmd } from './node_modules/@astrojs/db/dist/core/cli/commands/push/index.js'; const root = new URL('./', import.meta.url); const { dbConfig } = await resolveDbConfig({ root, integrations: [] }); await cmd({ dbConfig, flags: {} });\"",
     "preview": "astro preview",
     "astro": "astro",
     "site-setup": "node scripts/setup.mjs",

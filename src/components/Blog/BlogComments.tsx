@@ -373,7 +373,7 @@ export default function BlogComments(props: BlogCommentsProps) {
                         {formatDate(comment.createdAt)}
                       </time>
 
-                      {/* Reply Button */}
+                      {/* Reply Button (Icon only) */}
                       <button
                         type="button"
                         onClick={() => {
@@ -384,13 +384,14 @@ export default function BlogComments(props: BlogCommentsProps) {
                             if (!replyName()) setReplyName(mainName());
                           }
                         }}
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-neutral-700 bg-neutral-900/80 text-xs font-medium text-neutral-300 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
+                        class="inline-flex items-center justify-center p-1.5 rounded-md border border-neutral-700 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
+                        title={isVi() ? "Trả lời bình luận này" : "Reply to this comment"}
+                        aria-label={isVi() ? "Trả lời bình luận này" : "Reply to this comment"}
                         style={fontStyle}
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                         </svg>
-                        <span>{isVi() ? "Trả lời" : "Reply"}</span>
                       </button>
                     </div>
                   </div>
@@ -530,13 +531,14 @@ export default function BlogComments(props: BlogCommentsProps) {
                                         if (!replyName()) setReplyName(mainName());
                                       }
                                     }}
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-800 bg-neutral-950/60 text-[11px] font-medium text-neutral-400 hover:text-white hover:border-neutral-600 transition-all cursor-pointer"
+                                    class="inline-flex items-center justify-center p-1 rounded-md border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-white hover:border-neutral-600 transition-all cursor-pointer"
+                                    title={isVi() ? "Trả lời bình luận này" : "Reply to this comment"}
+                                    aria-label={isVi() ? "Trả lời bình luận này" : "Reply to this comment"}
                                     style={fontStyle}
                                   >
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                     </svg>
-                                    <span>{isVi() ? "Trả lời" : "Reply"}</span>
                                   </button>
                                 </div>
                               </div>
