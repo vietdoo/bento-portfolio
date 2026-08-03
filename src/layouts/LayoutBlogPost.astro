@@ -2,6 +2,7 @@
 import { formatDate } from "../lib/helpers";
 import BackLink from "../components/BackLink.astro";
 import LangToggle from "../components/Blog/LangToggle.astro";
+import ShareSection from "../components/Blog/ShareSection.astro";
 import BasicLayout from "./BasicLayout.astro";
 import type { BlogLang } from "../lib/blog-lang";
 import { SITE } from "../site-config";
@@ -52,6 +53,11 @@ const hasTranslation = Boolean(enHref && viHref);
         const authorLabel = isVietnamese ? "Viết bởi" : "Written by";
         const publishedLabel = isVietnamese ? "Xuất bản" : "Published";
         const readingLabel = isVietnamese ? "Thời gian đọc" : "Reading time";
+        const displayReadingTime = isVietnamese
+          ? translation.minutesRead
+              ? translation.minutesRead.replace(/(\d+)\s*min(?:s)?\s*read/i, "~$1 phút đọc")
+              : "5 phút đọc"
+          : translation.minutesRead;
 
         return (
           <div
@@ -60,14 +66,14 @@ const hasTranslation = Boolean(enHref && viHref);
             hidden={index > 0}
           >
             <h1
-              class="text-5xl font-semibold"
+              class="text-4xl sm:text-5xl font-bold tracking-tight"
               data-blog-title
               data-document-title={translation.title}
             >
               {translation.title}
             </h1>
             <div
-              class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border-1 border-solid border-neutral-700 bg-neutral-900/70 px-4 py-4 text-sm"
+              class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 px-4 py-4 text-sm"
             >
               <div class="flex items-center gap-3">
                 <img
@@ -96,7 +102,7 @@ const hasTranslation = Boolean(enHref && viHref);
                 </div>
                 <div>
                   <dt class="text-xs text-neutral-500">{readingLabel}</dt>
-                  <dd class="m-0 mt-1">{translation.minutesRead}</dd>
+                  <dd class="m-0 mt-1">{displayReadingTime}</dd>
                 </div>
               </dl>
             </div>
@@ -107,11 +113,12 @@ const hasTranslation = Boolean(enHref && viHref);
     {
       translations.map((translation, index) => (
         <article
-          class="prose prose-p:text-red-500 prose-slate prose-invert pb-16"
+          class="prose prose-slate prose-invert pb-8"
           data-blog-language={translation.lang}
           hidden={index > 0}
         >
           <slot name={translation.lang} />
+          <ShareSection title={translation.title} lang={translation.lang} />
         </article>
       ))
     }
@@ -138,8 +145,13 @@ const hasTranslation = Boolean(enHref && viHref);
       .querySelectorAll<HTMLElement>("[data-lang-toggle] [data-lang-option]")
       .forEach((option) => {
         const isCurrent = option.dataset.langOption === selectedLang;
-        option.setAttribute("aria-current", isCurrent ? "page" : "false");
+        option.dataset.active = isCurrent ? "true" : "false";
         option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
       });
 
     const title = document.querySelector<HTMLElement>(
@@ -151,3 +163,101 @@ const hasTranslation = Boolean(enHref && viHref);
 
   document.addEventListener("astro:page-load", applyBlogLanguage);
 </script>
+
+<style is:global>
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  h5 {
+    font-size: 18px;
+  }
+
+  h6 {
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+  }
+
+  article a {
+    color: var(--primary-400);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  ul,
+  ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+
+  blockquote {
+    margin: 20px 0;
+    padding-left: 15px;
+    border-left: 5px solid #ccc;
+  }
+
+  article pre,
+  article code {
+    font-family: "Courier New", monospace;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
+  }
+
+  pre {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  article code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: var(--primary-300);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+</style>

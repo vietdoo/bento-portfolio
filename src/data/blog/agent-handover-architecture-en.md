@@ -1,12 +1,15 @@
 ---
-title: "The Handover Architecture: making AI agents interchangeable"
+title: "Stop AI Agent Amnesia: The Handover Architecture Pattern"
 description: "A repo-level pattern that lets any AI agent pick up work where another one dropped it: one constitution, a handover ledger, a routing map, and a non-AI forcing function."
 pubDate: 2026-08-02
 category: "architecture"
+image: "/blog/agent-handover-architecture.jpg"
 lang: "en"
 translationKey: "agent-handover-architecture"
 draft: false
 ---
+
+![AI Agent Handover Architecture](/blog/agent-handover-architecture.jpg)
 
 Every AI coding agent is brilliant for exactly one session and then gets amnesia. You spend forty minutes explaining why the repository is feature-sliced instead of layered, the agent does great work, the window closes — and tomorrow a different agent (or the same one, fresh) walks in and proposes a `services/` folder again.
 
@@ -20,22 +23,7 @@ Agents are stateless. The repository is not. So every piece of context that matt
 
 Four planes, each with a distinct job:
 
-<svg viewBox="0 0 720 300" width="100%" role="img" aria-label="Four planes of the handover architecture" style="max-width:100%;height:auto;margin:24px 0">
- <g font-family="inherit" font-size="13" fill="#e5e7eb">
- <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. CONSTITUTION — one rule file, many adapters</text>
- <text x="30" y="55">Architecture invariants, DoD checklist, hard limits. Read before any task.</text>
- <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. LEDGER — append-only handover log</text>
- <text x="30" y="127">What happened last session, why, and what is still unfinished.</text>
- <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. MAP — decision tree, module mapping, API contract, glossary</text>
- <text x="30" y="199">Deterministic answer to "where does this change belong?"</text>
- <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — a dumb script that grades the agent</text>
- <text x="30" y="271">No LLM involved. Fails the task if docs and log are out of sync.</text>
- </g>
-</svg>
+![Four Pillars of Handover Architecture](/blog/handover-four-pillars.jpg)
 
 Miss any one of them and the system leaks: rules without a ledger means agents repeat decisions; a ledger without a forcing function means nobody writes to it.
 
@@ -77,23 +65,59 @@ Two things belong in the constitution and nowhere else:
 
 Keep it short. The constitution is loaded into *every* session; every paragraph you add is context budget you take away from the actual task.
 
-## Pillar 2 — The handover ledger
+## Pillar 2 — The Handover Ledger: Store "Intent", Not Diffs
 
-This is the heart of the pattern: an append-only log where every session writes one entry before it ends. Not a changelog — `git log` already exists — but the thing git cannot store: **intent**.
+This is the heart of the architecture: an append-only log where every AI agent is contractually obliged to write an entry before its session ends.
 
-A good entry has five fields:
+The key distinction: **The Handover Ledger is not a Changelog.** `git log` already tracks *what* lines of code changed (Diffs). But Git is completely blind to **Design Intent** — the answer to: *"Why was this decision made over another?"*
 
-| Field | Why it exists |
-| --- | --- |
-| Timestamp + agent identity | Lets the next reader judge staleness and know which tool's quirks produced the code |
-| Scope | Which modules were touched, so unrelated sessions can skip the entry |
-| What was done | Files, config, docs — the summary git can't give you in one paragraph |
-| Decision + rationale | Stops the next agent from re-litigating a settled trade-off |
-| Unfinished work & warnings | The actual handover: a ranked backlog written by whoever just had the deepest context |
+### The Fatal Difference: Git Log vs. Handover Ledger
 
-The rationale field is what makes the pattern pay for itself. "In-memory repository, chosen deliberately, Postgres is item #1 in the backlog" prevents an agent from either ripping it out unprompted or treating it as good enough forever.
+```text
+❌ Git Commit: "refactor: use in-memory repository for user service"
+👉 Next Agent thinks: "This code is sloppy! Let me rewrite it with Postgres right now!"
 
-Scope discipline matters too: system-wide changes (API contract, schema, architecture) go into the **global** ledger; purely local churn inside one sub-module goes into a **local** one. Otherwise the global log becomes a noise firehose that nobody reads, which is the same as having no log.
+✅ Handover Ledger: "Using In-Memory Repo deliberately for fast UI mocking. Postgres integration deferred because DB schema is pending approval. Task #1 for next session: Connect Postgres."
+👉 Next Agent reads: "Got it! Keep Mock Repo untouched, focus on finalizing Postgres schema per Task #1!"
+```
+
+---
+
+### Anatomy of a Production Handover Entry
+
+A high-quality handover entry contains 5 core fields formatted in clean, human-readable Markdown:
+
+```markdown
+### 📝 [2026-08-03 10:15] Agent: Claude-3.5-Sonnet | Task: #42-auth-jwt
+
+- 🎯 **Scope**: `src/features/auth/`
+- ✅ **Completed**: Migrated JWT verification from HS256 to RS256 asymmetric keys. Added 8 unit tests covering token expiration edge cases.
+- 💡 **Decision & Rationale**: Chose RS256 over HS256 because the external API Gateway requires public key verification without sharing the private secret.
+- ⏳ **Unfinished Work (Backlog for Next Agent)**:
+  1. [ ] [High Priority] Implement Redis blacklist for revoked tokens upon logout.
+  2. [ ] Update Auth DTO contract in `docs/api-contracts.md`.
+- ⚠️ **Warning**: Must set `JWT_PUBLIC_KEY` in `.env.test` before running the test suite.
+```
+
+---
+
+### The 5 Essential Fields Breakdown
+
+| Field | Production Value |
+| :--- | :--- |
+| **1. Timestamp + Agent ID** | Tells the next agent if the entry is fresh and indicates which tool's quirks generated the code (Claude, Cursor, Codex). |
+| **2. Scope** | Identifies touched modules (`src/features/auth`), allowing unrelated sessions to filter out noise instantly. |
+| **3. What Was Done** | High-level summary of code, config, and doc changes — the synthesis git diffs can't provide in one paragraph. |
+| **4. Decision & Rationale** | **The most critical field**: Prevents future agents from re-litigating or blindly undoing settled trade-offs. |
+| **5. Handover Backlog** | The true handover: A ranked priority list written by whichever agent held the deepest context minutes ago. |
+
+---
+
+### Scope Discipline: Global vs. Local Ledgers
+
+To prevent the ledger from becoming an unreadable firehose of trivial logs:
+- 🌐 **Global Ledger (`HANDOVER_LOG.md`)**: Records system-wide architectural shifts, API contract updates, and schema migrations.
+- 📍 **Local Ledger (`src/features/auth/HANDOVER.md`)**: Records localized refactors and internal task progress within a specific feature slice.
 
 ## Pillar 3 — A routing map so agents stop guessing
 
@@ -130,40 +154,7 @@ That's it — a `git status` parser with a regex list. It cannot be sweet-talked
 
 Put the four planes together and every agent, regardless of vendor, runs the same cycle:
 
-<svg viewBox="0 0 720 220" width="100%" role="img" aria-label="The agent session loop" style="max-width:100%;height:auto;margin:24px 0">
- <g font-family="inherit" font-size="12" fill="#e5e7eb">
- <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
- <rect x="12" y="60" width="120" height="56" rx="10"/>
- <rect x="162" y="60" width="120" height="56" rx="10"/>
- <rect x="312" y="60" width="120" height="56" rx="10"/>
- <rect x="462" y="60" width="120" height="56" rx="10"/>
- <rect x="600" y="60" width="108" height="56" rx="10"/>
- </g>
- <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
- <text x="72" y="102" text-anchor="middle" font-size="11">pull latest docs</text>
- <text x="222" y="84" text-anchor="middle" font-weight="700">READ LEDGER</text>
- <text x="222" y="102" text-anchor="middle" font-size="11">last session's intent</text>
- <text x="372" y="84" text-anchor="middle" font-weight="700">ROUTE</text>
- <text x="372" y="102" text-anchor="middle" font-size="11">decision tree</text>
- <text x="522" y="84" text-anchor="middle" font-weight="700">WORK + SYNC DOCS</text>
- <text x="522" y="102" text-anchor="middle" font-size="11">code, tests, contract</text>
- <text x="654" y="84" text-anchor="middle" font-weight="700">VERIFY</text>
- <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 errors</text>
- <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
- <path d="M132 88 H160" marker-end="url(#a)"/>
- <path d="M282 88 H310" marker-end="url(#a)"/>
- <path d="M432 88 H460" marker-end="url(#a)"/>
- <path d="M582 88 H598" marker-end="url(#a)"/>
- <path d="M654 116 V170 H72 V118" marker-end="url(#a)" stroke-dasharray="5 4" opacity="0.75"/>
- </g>
- <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">write the handover entry — the next agent starts here</text>
- <defs>
- <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
- <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
- </marker>
- </defs>
- </g>
-</svg>
+![Session Loop Workflow](/blog/handover-session-loop.jpg)
 
 Read context → route → change code **and** docs together → append the ledger entry → let a non-AI script certify it. The loop closes: the output of one session is precisely the input format of the next.
 
