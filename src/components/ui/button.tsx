@@ -64,7 +64,7 @@ export function Button(props: ButtonProps) {
   }
 
   return (
-    <button type={type} class={combinedClass} className={combinedClass} {...rest}>
+    <button type={type} class={combinedClass} {...rest}>
       {children}
     </button>
   );
