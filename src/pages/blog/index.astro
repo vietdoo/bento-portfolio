@@ -36,7 +36,7 @@ const posts = await getPublishedPosts();
       ) : (
         <ul class="w-full p-0 m-0 space-y-2.5" data-post-list>
           {posts.map((post) => (
-            <PostRow post={post} />
+            <PostRow post={post} hidden={post.data.lang !== "en"} />
           ))}
         </ul>
       )
@@ -46,6 +46,45 @@ const posts = await getPublishedPosts();
     </p>
   </main>
 </Layout>
+
+<script is:inline>
+  (function () {
+    try {
+      var stored = localStorage.getItem("portfolio:blog-lang");
+      var lang = stored === "vi" ? "vi" : "en";
+      var rows = document.querySelectorAll("[data-post-lang]");
+      var visible = 0;
+      rows.forEach(function (row) {
+        var matches = row.getAttribute("data-post-lang") === lang;
+        if (matches) {
+          row.removeAttribute("hidden");
+          visible++;
+        } else {
+          row.setAttribute("hidden", "");
+        }
+      });
+      var empty = document.querySelector("[data-empty-lang]");
+      if (empty) {
+        if (visible > 0 || rows.length === 0) {
+          empty.setAttribute("hidden", "");
+        } else {
+          empty.removeAttribute("hidden");
+        }
+      }
+      var options = document.querySelectorAll("[data-lang-toggle] [data-lang-option]");
+      options.forEach(function (option) {
+        var isCurrent = option.getAttribute("data-lang-option") === lang;
+        option.setAttribute("data-active", isCurrent ? "true" : "false");
+        option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
+      });
+    } catch (e) {}
+  })();
+</script>
 
 <script>
   import { BLOG_LANG_KEY } from "../../lib/blog-lang";

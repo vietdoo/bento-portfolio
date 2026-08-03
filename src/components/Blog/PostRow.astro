@@ -5,9 +5,10 @@ import { getBlogPostHref } from "../../lib/blog-lang";
 
 interface Props {
   post: CollectionEntry<"blog">;
+  hidden?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, hidden } = Astro.props;
 
 // Extract image from frontmatter or content body
 let thumbnail = post.data.image;
@@ -25,6 +26,7 @@ const dateLocale = isVi ? "vi-VN" : "en-US";
 <li
   class="list-none w-full my-2.5"
   data-post-lang={post.data.lang}
+  hidden={hidden}
 >
   <a
     class="group relative flex flex-row items-center justify-between gap-3 sm:gap-5 w-full rounded-xl border border-white/15 bg-neutral-900/40 hover:bg-neutral-800/60 p-3 sm:p-4 transition-all duration-200 hover:border-white/30 hover:shadow-md decoration-none overflow-hidden"
