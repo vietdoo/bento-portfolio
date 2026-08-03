@@ -27,7 +27,7 @@ const schema =
         name: SITE.author.fullNameVi,
         alternateName: SITE.author.alternateNames,
         url: Astro.url.origin,
-        sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium],
+        sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium, LINKS.goodreads],
         image: "https://github.com/vietdoo.png",
         jobTitle: SITE.author.jobTitle,
         description: description,
@@ -63,7 +63,7 @@ const schema =
           name: SITE.author.fullNameVi,
           alternateName: SITE.author.alternateNames,
           url: Astro.url.origin,
-          sameAs: [LINKS.linkedin, LINKS.github],
+          sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium, LINKS.goodreads],
         },
         publisher: {
           "@type": "Organization",
@@ -136,7 +136,6 @@ const schema =
       name="twitter:image"
     />
 
-    <link href={Astro.url.href} rel="canonical" />
     <script
       is:inline
       set:html={JSON.stringify(schema)}

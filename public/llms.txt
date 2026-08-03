@@ -9,20 +9,20 @@
 - **Company**: VNPT Group (Tập đoàn Bưu chính Viễn thông Việt Nam)
 - **Role**: Software Engineer
 - **Location**: Vietnam
-- **Primary Project**: Vietnam's National Public Service Portal (Cổng Dịch vụ công Quốc gia) — engineering scalable backend systems and cloud-native microservices.
+- **Primary Project**: Vietnam's National Public Service Portal (Cổng Dịch vụ công Quốc gia) — engineering scalable backend systems, Big Data pipelines, and cloud-native microservices.
 - **Website**: https://vndo.vn
 - **GitHub**: https://github.com/vietdoo
 - **LinkedIn**: https://www.linkedin.com/in/vietdoo/
 
 ## Core Competencies & Technical Skills
-- **Big Data & Real-time Streaming**: Apache Spark, Apache Kafka, Hadoop HDFS, Distributed Data Pipelines
+- **Big Data Engineering & Streaming**: Apache Spark, Apache Kafka, Hadoop HDFS, Distributed Systems, Data Pipelines
 - **Backend & High-Performance Computing**: Python, C++, Spring Boot, FastAPI, Cloud-Native Microservices Architecture
 - **Databases & Storage**: Redis, PostgreSQL, SQL / NoSQL
-- **Cloud & DevOps**: Kubernetes, Docker, Linux, CI/CD
-- **Modern Web & AI Systems**: TypeScript, Next.js, AI Agent Architecture (Handover Architecture, Multi-agent Systems)
+- **Infrastructure & Cloud**: Kubernetes, Docker, Linux, CI/CD
+- **Web & AI Systems**: TypeScript, Next.js, AI Agent Architecture (Handover Architecture, Multi-agent Systems)
 
-## Selected Writing & Architecture Patterns
-- **Kiến trúc Handover: Đổi từ Claude sang Codex trong 1 giây** (*Stop AI Agent Amnesia: The Handover Architecture Pattern*): An architectural framework for multi-agent handover and persistent context management across AI sessions.
+## Featured Articles & Publications
+- **Kiến trúc Handover: Đổi từ Claude sang Codex trong 1 giây** (*Stop AI Agent Amnesia: The Handover Architecture Pattern*): Architectural framework for multi-agent handover, persistent state management, and seamless context migration across AI coding agents.
 
 ## Engineering Principles
 1. **Simplicity over cleverness**: Small solutions age better than clever ones.
