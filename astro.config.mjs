@@ -3,6 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import robotsTxt from "astro-robots-txt";
 import UnoCSS from "@unocss/astro";
 import icon from "astro-icon";
+import vercel from "@astrojs/vercel";
 
 import solidJs from "@astrojs/solid-js";
 import { remarkReadingTime } from "./src/lib/remark-reading-time.mjs";
@@ -18,6 +19,10 @@ const siteNoTrailingSlash = site.endsWith("/") ? site.slice(0, -1) : site;
 
 // https://astro.build/config
 export default defineConfig({
+  output: "server",
+  adapter: vercel({
+    webAnalytics: { enabled: true },
+  }),
   redirects: {
     "/design-works": "/engineering-showcase",
   },

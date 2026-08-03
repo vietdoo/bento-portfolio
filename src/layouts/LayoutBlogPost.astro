@@ -3,6 +3,7 @@ import { formatDate } from "../lib/helpers";
 import BackLink from "../components/BackLink.astro";
 import LangToggle from "../components/Blog/LangToggle.astro";
 import ShareSection from "../components/Blog/ShareSection.astro";
+import BlogComments from "../components/Blog/BlogComments";
 import BasicLayout from "./BasicLayout.astro";
 import type { BlogLang } from "../lib/blog-lang";
 import { SITE } from "../site-config";
@@ -118,6 +119,7 @@ const hasTranslation = Boolean(enHref && viHref);
         >
           <slot name={translation.lang} />
           <ShareSection title={translation.title} lang={translation.lang} />
+          <BlogComments postSlug={url} lang={translation.lang} client:visible />
         </article>
       ))
     }

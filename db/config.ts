@@ -12,9 +12,23 @@ const Guestbook = defineTable({
   },
 });
 
+const BlogComment = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true, autoIncrement: true }),
+    postSlug: column.text(),
+    name: column.text(),
+    email: column.text({ optional: true }),
+    website: column.text({ optional: true }),
+    content: column.text(),
+    createdAt: column.date(),
+  },
+});
+
 // https://astro.build/db/config
 export default defineDb({
   tables: {
     Guestbook,
+    BlogComment,
   },
 });
+
