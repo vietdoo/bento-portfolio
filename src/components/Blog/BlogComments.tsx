@@ -173,7 +173,7 @@ export default function BlogComments(props: BlogCommentsProps) {
       }
 
       const newComment = await res.json();
-      setComments([newComment, ...comments()]);
+      setComments([...comments(), newComment]);
       setReplyContent("");
       setReplyingToId(null);
       setSuccess(
@@ -203,9 +203,19 @@ export default function BlogComments(props: BlogCommentsProps) {
     }
   };
 
-  const rootComments = () => comments().filter((c) => !c.parentId);
+  // Root comments (no parentId) ordered by createdAt DESC
+  const rootComments = () =>
+    comments()
+      .filter((c) => !c.parentId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  // Replies for a given parentId ordered by createdAt ASC (chronological order)
   const getReplies = (parentId: number) =>
-    comments().filter((c) => c.parentId === parentId);
+    comments()
+      .filter((c) => c.parentId === parentId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+  const getCommentById = (id: number) => comments().find((c) => c.id === id);
 
   const inputClasses =
     "w-full px-3.5 py-2.5 bg-neutral-950/80 border border-neutral-800 rounded-lg text-neutral-100 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all font-sans";
@@ -333,7 +343,8 @@ export default function BlogComments(props: BlogCommentsProps) {
         </div>
       </Show>
 
-      <div class="space-y-4" style={fontStyle}>
+      {/* Comment Tree List */}
+      <div class="space-y-6" style={fontStyle}>
         <For each={rootComments()}>
           {(comment) => {
             const avatarBg = () => getAvatarBgColor(comment.ipAddress || comment.name);
@@ -342,8 +353,8 @@ export default function BlogComments(props: BlogCommentsProps) {
 
             return (
               <div class="flex flex-col gap-3 font-sans">
-                {/* Main Comment Card */}
-                <div class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/50 p-4 transition-colors" style={fontStyle}>
+                {/* Root Comment Card */}
+                <div class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/50 p-4 transition-colors shadow-sm" style={fontStyle}>
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2.5">
                       <div
@@ -362,7 +373,7 @@ export default function BlogComments(props: BlogCommentsProps) {
                         {formatDate(comment.createdAt)}
                       </time>
 
-                      {/* Refined Reply Button */}
+                      {/* Reply Button */}
                       <button
                         type="button"
                         onClick={() => {
@@ -389,7 +400,7 @@ export default function BlogComments(props: BlogCommentsProps) {
                   </p>
                 </div>
 
-                {/* Inline Reply Form (nested directly below this comment) */}
+                {/* Inline Reply Form for Root Comment */}
                 <Show when={isReplyingThis()}>
                   <form
                     onSubmit={(e) => handlePostInlineReply(e, comment.id)}
@@ -468,33 +479,151 @@ export default function BlogComments(props: BlogCommentsProps) {
                   </form>
                 </Show>
 
-                {/* Nested Replies List */}
+                {/* Reddit-Style Nested Replies Tree Container */}
                 <Show when={replies().length > 0}>
-                  <div class="pl-6 sm:pl-8 space-y-3 border-l-2 border-solid border-neutral-800/80 ml-4">
+                  <div class="relative pl-6 sm:pl-8 space-y-3 border-l-2 border-solid border-neutral-700/60 ml-4 mt-1">
                     <For each={replies()}>
                       {(reply) => {
                         const replyAvatarBg = () => getAvatarBgColor(reply.ipAddress || reply.name);
+                        const parentComment = () => getCommentById(reply.parentId || 0);
+                        const isReplyingSub = () => replyingToId() === reply.id;
+
                         return (
-                          <div class="rounded-xl border border-solid border-neutral-800/70 bg-neutral-900/40 p-3.5 transition-colors" style={fontStyle}>
-                            <div class="flex items-center justify-between mb-2">
-                              <div class="flex items-center gap-2">
-                                <div
-                                  class="flex-shrink-0 w-7 h-7 rounded-full text-white font-bold text-xs flex items-center justify-center select-none shadow-sm"
-                                  style={{ "background-color": replyAvatarBg(), ...fontStyle }}
-                                >
-                                  {getInitials(reply.name)}
+                          <div class="relative flex flex-col gap-2 font-sans">
+                            {/* Branch connector line connecting to parent tree */}
+                            <div class="absolute -left-[24px] sm:-left-[32px] top-5 w-4 h-[2px] bg-neutral-700/60" />
+
+                            {/* Reply Card */}
+                            <div class="rounded-xl border border-solid border-neutral-800/80 bg-neutral-900/40 p-3.5 transition-colors shadow-xs" style={fontStyle}>
+                              <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                  <div
+                                    class="flex-shrink-0 w-7 h-7 rounded-full text-white font-bold text-xs flex items-center justify-center select-none shadow-sm"
+                                    style={{ "background-color": replyAvatarBg(), ...fontStyle }}
+                                  >
+                                    {getInitials(reply.name)}
+                                  </div>
+                                  <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="font-semibold text-sm text-neutral-100" style={fontStyle}>
+                                      {reply.name}
+                                    </span>
+                                    <Show when={parentComment()}>
+                                      <span class="text-xs text-neutral-500 font-normal">
+                                        ► <span class="text-primary-400 font-medium">@{parentComment()?.name}</span>
+                                      </span>
+                                    </Show>
+                                  </div>
                                 </div>
-                                <span class="font-semibold text-sm text-neutral-100" style={fontStyle}>
-                                  {reply.name}
-                                </span>
+
+                                <div class="flex items-center gap-2.5">
+                                  <time class="text-xs text-neutral-400" style={fontStyle}>
+                                    {formatDate(reply.createdAt)}
+                                  </time>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (isReplyingSub()) {
+                                        setReplyingToId(null);
+                                      } else {
+                                        setReplyingToId(reply.id);
+                                        if (!replyName()) setReplyName(mainName());
+                                      }
+                                    }}
+                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-800 bg-neutral-950/60 text-[11px] font-medium text-neutral-400 hover:text-white hover:border-neutral-600 transition-all cursor-pointer"
+                                    style={fontStyle}
+                                  >
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                    </svg>
+                                    <span>{isVi() ? "Trả lời" : "Reply"}</span>
+                                  </button>
+                                </div>
                               </div>
-                              <time class="text-xs text-neutral-400" style={fontStyle}>
-                                {formatDate(reply.createdAt)}
-                              </time>
+
+                              <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-9" style={fontStyle}>
+                                {reply.content}
+                              </p>
                             </div>
-                            <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-9" style={fontStyle}>
-                              {reply.content}
-                            </p>
+
+                            {/* Inline Reply Form for Sub-reply */}
+                            <Show when={isReplyingSub()}>
+                              <form
+                                onSubmit={(e) => handlePostInlineReply(e, reply.id)}
+                                class="ml-4 rounded-xl border border-solid border-neutral-800 bg-neutral-900/80 p-3.5 flex flex-col gap-3 font-sans transition-all"
+                                style={fontStyle}
+                              >
+                                <div class="flex items-center justify-between text-xs text-primary-400 font-medium">
+                                  <span>
+                                    {isVi() ? "Trả lời bình luận của" : "Replying to"} <strong>@{reply.name}</strong>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setReplyingToId(null)}
+                                    class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                                  >
+                                    ✕ {isVi() ? "Đóng" : "Close"}
+                                  </button>
+                                </div>
+
+                                <div>
+                                  <label class="block text-xs font-medium text-neutral-300 mb-1" style={fontStyle}>
+                                    {isVi() ? "Họ tên" : "Name"} <span class="text-primary-400">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    required
+                                    maxLength={100}
+                                    placeholder={isVi() ? "Nguyễn Văn A" : "John Doe"}
+                                    value={replyName()}
+                                    onInput={(e) => setReplyName(e.currentTarget.value)}
+                                    class={inputClasses}
+                                    style={fontStyle}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label class="block text-xs font-medium text-neutral-300 mb-1" style={fontStyle}>
+                                    {isVi() ? "Nội dung phản hồi" : "Reply"} <span class="text-primary-400">*</span>
+                                  </label>
+                                  <textarea
+                                    required
+                                    rows={3}
+                                    maxLength={2000}
+                                    placeholder={
+                                      isVi()
+                                        ? `Trả lời @${reply.name}...`
+                                        : `Replying to @${reply.name}...`
+                                    }
+                                    value={replyContent()}
+                                    onInput={(e) => setReplyContent(e.currentTarget.value)}
+                                    class={`${inputClasses} resize-y min-h-[80px]`}
+                                    style={fontStyle}
+                                  />
+                                </div>
+
+                                <div class="flex justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setReplyingToId(null)}
+                                    class="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                                    style={fontStyle}
+                                  >
+                                    {isVi() ? "Hủy" : "Cancel"}
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    disabled={submitting()}
+                                    class="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50"
+                                    style={fontStyle}
+                                  >
+                                    <Show when={submitting()} fallback={isVi() ? "Gửi phản hồi" : "Submit Reply"}>
+                                      {isVi() ? "Đang gửi..." : "Submitting..."}
+                                    </Show>
+                                  </button>
+                                </div>
+                              </form>
+                            </Show>
                           </div>
                         );
                       }}
