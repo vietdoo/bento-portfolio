@@ -23,6 +23,8 @@ export const GET: APIRoute = async ({ url }) => {
         name: BlogCommentTable.name,
         website: BlogCommentTable.website,
         content: BlogCommentTable.content,
+        ipAddress: BlogCommentTable.ipAddress,
+        parentId: BlogCommentTable.parentId,
         createdAt: BlogCommentTable.createdAt,
       })
       .from(BlogCommentTable)
@@ -48,10 +50,10 @@ export const GET: APIRoute = async ({ url }) => {
   }
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
     const data = await request.json();
-    const { postSlug, name, email, website, content } = data;
+    const { postSlug, name, email, website, content, parentId } = data;
 
     if (!postSlug || !name || !content) {
       return new Response(
@@ -62,6 +64,12 @@ export const POST: APIRoute = async ({ request }) => {
         },
       );
     }
+
+    const clientIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip")?.trim() ||
+      clientAddress ||
+      "127.0.0.1";
 
     const cleanName = sanitizeHtml(name.trim(), {
       allowedTags: [],
@@ -107,6 +115,8 @@ export const POST: APIRoute = async ({ request }) => {
         email: cleanEmail,
         website: cleanWebsite,
         content: cleanContent,
+        ipAddress: clientIp,
+        parentId: parentId ? Number(parentId) : undefined,
         createdAt: new Date(),
       })
       .returning();
@@ -120,6 +130,8 @@ export const POST: APIRoute = async ({ request }) => {
         name: created.name,
         website: created.website,
         content: created.content,
+        ipAddress: created.ipAddress,
+        parentId: created.parentId,
         createdAt: created.createdAt,
       }),
       {

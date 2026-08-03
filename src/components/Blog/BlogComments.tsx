@@ -5,12 +5,51 @@ interface CommentItem {
   postSlug: string;
   name: string;
   content: string;
+  ipAddress?: string;
+  parentId?: number | null;
   createdAt: string;
 }
 
 interface BlogCommentsProps {
   postSlug: string;
   lang?: "en" | "vi";
+}
+
+const AVATAR_PALETTE = [
+  "#2563eb", // blue
+  "#059669", // emerald
+  "#7c3aed", // violet
+  "#d97706", // amber
+  "#e11d48", // rose
+  "#0891b2", // cyan
+  "#db2777", // pink
+  "#4f46e5", // indigo
+  "#0d9488", // teal
+  "#ea580c", // orange
+];
+
+function hashStringToSeed(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function getAvatarBgColor(seed?: string): string {
+  if (!seed) return AVATAR_PALETTE[0];
+  const idx = hashStringToSeed(seed) % AVATAR_PALETTE.length;
+  return AVATAR_PALETTE[idx];
+}
+
+function getInitials(fullName: string): string {
+  if (!fullName) return "?";
+  const words = fullName.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].slice(0, 1).toUpperCase();
+  }
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 
 export default function BlogComments(props: BlogCommentsProps) {
@@ -24,6 +63,10 @@ export default function BlogComments(props: BlogCommentsProps) {
 
   const [name, setName] = createSignal("");
   const [content, setContent] = createSignal("");
+  const [replyTo, setReplyTo] = createSignal<{ id: number; name: string } | null>(null);
+
+  let formRef: HTMLFormElement | undefined;
+  let nameInputRef: HTMLInputElement | undefined;
 
   const fontStyle = {
     "font-family": "var(--font-satoshi), system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
@@ -46,6 +89,18 @@ export default function BlogComments(props: BlogCommentsProps) {
   onMount(() => {
     fetchComments();
   });
+
+  const handleStartReply = (comment: CommentItem) => {
+    setReplyTo({ id: comment.id, name: comment.name });
+    formRef?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => {
+      nameInputRef?.focus();
+    }, 300);
+  };
+
+  const cancelReply = () => {
+    setReplyTo(null);
+  };
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -70,6 +125,7 @@ export default function BlogComments(props: BlogCommentsProps) {
           postSlug: props.postSlug,
           name: name().trim(),
           content: content().trim(),
+          parentId: replyTo()?.id,
         }),
       });
 
@@ -81,6 +137,7 @@ export default function BlogComments(props: BlogCommentsProps) {
       const newComment = await res.json();
       setComments([newComment, ...comments()]);
       setContent("");
+      setReplyTo(null);
       setSuccess(
         isVi()
           ? "Bình luận của bạn đã được gửi thành công!"
@@ -108,11 +165,16 @@ export default function BlogComments(props: BlogCommentsProps) {
     }
   };
 
+  // Group comments into root comments and child replies
+  const rootComments = () => comments().filter((c) => !c.parentId);
+  const getReplies = (parentId: number) =>
+    comments().filter((c) => c.parentId === parentId);
+
   const inputClasses =
-    "w-full px-3.5 py-2.5 bg-neutral-950/80 border border-neutral-800 rounded-lg text-neutral-100 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all";
+    "w-full px-3.5 py-2.5 bg-neutral-950/80 border border-neutral-800 rounded-lg text-neutral-100 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all font-sans";
 
   return (
-    <section class="mt-10 pt-8 border-t border-solid border-neutral-800 text-neutral-100" style={fontStyle}>
+    <section class="mt-10 pt-8 border-t border-solid border-neutral-800 text-neutral-100 font-sans" style={fontStyle}>
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-bold tracking-tight text-neutral-100 m-0" style={fontStyle}>
           {isVi() ? "Bình luận" : "Comments"}{" "}
@@ -124,15 +186,32 @@ export default function BlogComments(props: BlogCommentsProps) {
 
       {/* Form Comment */}
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
-        class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 p-5 mb-8 shadow-sm flex flex-col gap-4"
+        class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/70 p-5 mb-8 shadow-sm flex flex-col gap-4 font-sans"
         style={fontStyle}
       >
+        <Show when={replyTo()}>
+          <div class="flex items-center justify-between bg-primary-500/10 border border-primary-500/30 rounded-lg px-3 py-2 text-xs text-primary-400 font-sans">
+            <span>
+              {isVi() ? "Đang trả lời bình luận của" : "Replying to"} <strong>@{replyTo()?.name}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={cancelReply}
+              class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            >
+              ✕ {isVi() ? "Hủy" : "Cancel"}
+            </button>
+          </div>
+        </Show>
+
         <div>
           <label class="block text-xs font-medium text-neutral-300 mb-1.5" style={fontStyle}>
             {isVi() ? "Họ tên" : "Name"} <span class="text-primary-400">*</span>
           </label>
           <input
+            ref={nameInputRef}
             type="text"
             required
             maxLength={100}
@@ -153,7 +232,11 @@ export default function BlogComments(props: BlogCommentsProps) {
             rows={4}
             maxLength={2000}
             placeholder={
-              isVi()
+              replyTo()
+                ? isVi()
+                  ? `Trả lời @${replyTo()?.name}...`
+                  : `Replying to @${replyTo()?.name}...`
+                : isVi()
                 ? "Chia sẻ suy nghĩ của bạn về bài viết này..."
                 : "Share your thoughts on this post..."
             }
@@ -180,7 +263,7 @@ export default function BlogComments(props: BlogCommentsProps) {
           <button
             type="submit"
             disabled={submitting()}
-            class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50"
+            class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-900/90 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer disabled:opacity-50 font-sans"
             style={fontStyle}
           >
             <Show when={submitting()} fallback={isVi() ? "Gửi bình luận" : "Post Comment"}>
@@ -206,27 +289,82 @@ export default function BlogComments(props: BlogCommentsProps) {
       </Show>
 
       <div class="space-y-4" style={fontStyle}>
-        <For each={comments()}>
-          {(comment) => (
-            <div class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/50 p-4 transition-colors" style={fontStyle}>
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2.5">
-                  <div class="flex-shrink-0 w-7 h-7 rounded-full bg-primary-500/20 text-primary-400 font-bold text-xs flex items-center justify-center border border-primary-500/30 select-none" style={fontStyle}>
-                    {comment.name.slice(0, 1).toUpperCase()}
+        <For each={rootComments()}>
+          {(comment) => {
+            const avatarBg = () => getAvatarBgColor(comment.ipAddress || comment.name);
+            const replies = () => getReplies(comment.id);
+
+            return (
+              <div class="flex flex-col gap-3 font-sans">
+                {/* Main Comment */}
+                <div class="rounded-xl border border-solid border-neutral-800 bg-neutral-900/50 p-4 transition-colors" style={fontStyle}>
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2.5">
+                      <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full text-white font-bold text-xs flex items-center justify-center select-none shadow-sm"
+                        style={{ "background-color": avatarBg(), ...fontStyle }}
+                      >
+                        {getInitials(comment.name)}
+                      </div>
+                      <span class="font-semibold text-sm text-neutral-100" style={fontStyle}>
+                        {comment.name}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <time class="text-xs text-neutral-400" style={fontStyle}>
+                        {formatDate(comment.createdAt)}
+                      </time>
+                      <button
+                        type="button"
+                        onClick={() => handleStartReply(comment)}
+                        class="text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium cursor-pointer"
+                        style={fontStyle}
+                      >
+                        {isVi() ? "Trả lời" : "Reply"}
+                      </button>
+                    </div>
                   </div>
-                  <span class="font-semibold text-sm text-neutral-100" style={fontStyle}>
-                    {comment.name}
-                  </span>
+                  <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-10.5" style={fontStyle}>
+                    {comment.content}
+                  </p>
                 </div>
-                <time class="text-xs text-neutral-400" style={fontStyle}>
-                  {formatDate(comment.createdAt)}
-                </time>
+
+                {/* Nested Replies */}
+                <Show when={replies().length > 0}>
+                  <div class="pl-6 sm:pl-8 space-y-3 border-l-2 border-solid border-neutral-800/80 ml-4">
+                    <For each={replies()}>
+                      {(reply) => {
+                        const replyAvatarBg = () => getAvatarBgColor(reply.ipAddress || reply.name);
+                        return (
+                          <div class="rounded-xl border border-solid border-neutral-800/70 bg-neutral-900/40 p-3.5 transition-colors" style={fontStyle}>
+                            <div class="flex items-center justify-between mb-2">
+                              <div class="flex items-center gap-2">
+                                <div
+                                  class="flex-shrink-0 w-7 h-7 rounded-full text-white font-bold text-xs flex items-center justify-center select-none shadow-sm"
+                                  style={{ "background-color": replyAvatarBg(), ...fontStyle }}
+                                >
+                                  {getInitials(reply.name)}
+                                </div>
+                                <span class="font-semibold text-sm text-neutral-100" style={fontStyle}>
+                                  {reply.name}
+                                </span>
+                              </div>
+                              <time class="text-xs text-neutral-400" style={fontStyle}>
+                                {formatDate(reply.createdAt)}
+                              </time>
+                            </div>
+                            <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-9" style={fontStyle}>
+                              {reply.content}
+                            </p>
+                          </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
               </div>
-              <p class="text-sm text-neutral-300 m-0 whitespace-pre-line leading-relaxed pl-9" style={fontStyle}>
-                {comment.content}
-              </p>
-            </div>
-          )}
+            );
+          }}
         </For>
       </div>
     </section>

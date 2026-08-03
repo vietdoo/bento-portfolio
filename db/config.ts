@@ -20,6 +20,8 @@ const BlogComment = defineTable({
     email: column.text({ optional: true }),
     website: column.text({ optional: true }),
     content: column.text(),
+    ipAddress: column.text({ optional: true }),
+    parentId: column.number({ optional: true }),
     createdAt: column.date(),
   },
 });
