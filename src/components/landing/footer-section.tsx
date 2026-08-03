@@ -4,14 +4,14 @@ export function FooterSection() {
       <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="flex items-center gap-3">
           <img
-            src="/favicon.svg"
-            alt="Logo"
+            src="/vndo.png"
+            alt="VNDO"
             width="28"
             height="28"
-            class="w-7 h-7 rounded-sm object-cover"
+            class="w-7 h-7 rounded-md object-cover"
           />
           <span class="font-display tracking-tight text-lg font-bold text-white">
-            BRAND<span class="text-xs font-mono text-darkslate-300 ml-0.5">™</span>
+            VNDO<span class="text-xs font-mono text-darkslate-300 ml-0.5">™</span>
           </span>
           <span class="text-xs text-darkslate-300 ml-2 border-l border-darkslate-500 pl-3">
             Crafted with precision

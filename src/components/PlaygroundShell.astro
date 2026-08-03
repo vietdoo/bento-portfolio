@@ -31,13 +31,6 @@ const heightClass = scrollable ? "min-h-screen" : "h-screen";
       heightClass,
     ]}
   >
-    {
-      floatingBack ? (
-        <BackLink class="absolute left-4 top-4 z-20" />
-      ) : (
-        <BackLink />
-      )
-    }
     <div class="flex-1 w-full flex justify-center items-center overflow-hidden">
       <slot />
     </div>

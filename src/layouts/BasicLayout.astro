@@ -5,6 +5,8 @@ import { LINKS } from "../lib/constants";
 import { SITE } from "../site-config";
 import GridTransition from "../components/GridTransition.astro";
 import StylePanel from "../components/StylePanel.astro";
+import { Navigation } from "../components/landing/navigation";
+import { SubpageNavigation, type SubpageNavCta } from "../components/site/subpage-navigation";
 
 interface Props {
   title: string;
@@ -14,13 +16,36 @@ interface Props {
   pubDate?: string;
   hideSoundToggle?: boolean;
   hideCal?: boolean;
+  navLabel?: string;
+  navCta?: SubpageNavCta;
+  hideHeader?: boolean;
 }
 
-const { title, description, page, pubDate, hideSoundToggle, hideCal } = Astro.props;
+const { title, description, page, pubDate, hideSoundToggle, hideCal, navLabel, navCta, hideHeader } = Astro.props;
 const canonicalUrl = Astro.url.href.split("?")[0];
-const image = `${Astro.url.origin}/og-image.png`;
+const image = `${Astro.url.origin}/og.webp`;
 
-const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isHome = currentPath === "/";
+
+const defaultLabelMap: Record<string, string> = {
+  "/blog": "Blog",
+  "/books": "Bookshelf",
+  "/guestbook": "Guestbook",
+  "/engineering-showcase": "Engineering Showcase",
+  "/travel": "Travel",
+  "/visit": "Visited Provinces",
+  "/playground": "Playground",
+};
+
+const pathSegments = currentPath.split("/").filter(Boolean);
+const autoLabel = defaultLabelMap[currentPath] ||
+  (pathSegments.length > 0
+    ? pathSegments[pathSegments.length - 1].replace(/-/g, " ").toUpperCase()
+    : "Subpage");
+
+const resolvedNavLabel = navLabel || autoLabel;
+
 const breadcrumbItems = [
   {
     "@type": "ListItem",
@@ -30,7 +55,7 @@ const breadcrumbItems = [
   },
 ];
 
-if (!isHomePage) {
+if (!isHome) {
   breadcrumbItems.push({
     "@type": "ListItem",
     position: 2,
@@ -48,31 +73,29 @@ const personEntity = {
   familyName: "Đỗ",
   additionalName: SITE.author.shortName,
   url: Astro.url.origin,
-  sameAs: [SITE.links.linkedin, SITE.links.github, SITE.links.medium, SITE.links.goodreads],
+  sameAs: [LINKS.linkedin, LINKS.github, LINKS.medium, LINKS.goodreads],
   image: "https://github.com/vietdoo.png",
-  jobTitle: SITE.author.jobTitleFull,
-  description: SITE.site.description,
-  knowsAbout: [
+  jobTitle: SITE.author.jobTitleFull || SITE.author.jobTitle,
+  description: SITE.site.description || description,
+  knowsAbout: SITE.author.keywords || [
     ...SITE.author.domains,
     ...SITE.author.coreTechnologies,
-    SITE.author.project,
-    SITE.author.projectVi,
   ],
   worksFor: {
     "@type": "Organization",
     "@id": "https://vnpt.com.vn/#organization",
     name: SITE.author.companyVi,
-    alternateName: SITE.author.companyAliases,
+    alternateName: SITE.author.companyAliases || [SITE.author.company, "VNPT"],
     url: "https://vnpt.com.vn",
     address: {
       "@type": "PostalAddress",
-      addressLocality: SITE.location.locality,
+      addressLocality: SITE.location.locality || SITE.location.countryName,
       addressCountry: SITE.location.countryCode,
     },
   },
   address: {
     "@type": "PostalAddress",
-    addressLocality: SITE.location.locality,
+    addressLocality: SITE.location.locality || SITE.location.countryName,
     addressCountry: SITE.location.countryCode,
   },
   nationality: {
@@ -145,14 +168,10 @@ const jsonLdGraph = {
     <ClientRouter />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/apple-touch-icon.png"
-    />
+    <link rel="icon" type="image/png" href="/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" href="/icon-light-32x32.png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" type="image/png" href="/vndo.png" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
     <meta name="apple-mobile-web-app-title" content={SITE.author.fullNameVi} />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.author.fullNameVi} RSS Feed`} href="/rss.xml" />
@@ -164,7 +183,7 @@ const jsonLdGraph = {
     <meta name="author" content={`${SITE.author.fullNameVi} (${SITE.author.shortName})`} />
     <meta
       name="keywords"
-      content={SITE.author.keywords.join(", ")}
+      content={SITE.author.keywords ? SITE.author.keywords.join(", ") : ""}
     />
     <meta
       content={page === "blog" ? "article" : "website"}
@@ -177,11 +196,11 @@ const jsonLdGraph = {
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="vi_VN" />
     <meta
-      content={image}
+      content={`${Astro.url.origin}/og.webp`}
       property="og:image"
     />
     <meta property="og:image:alt" content={description} />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:type" content="image/webp" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta content="summary_large_image" name="twitter:card" />
@@ -190,7 +209,7 @@ const jsonLdGraph = {
     <meta name="twitter:site" content={`@${SITE.author.twitterHandle}`} />
     <meta name="twitter:creator" content={`@${SITE.author.twitterHandle}`} />
     <meta
-      content={image}
+      content={`${Astro.url.origin}/og.webp`}
       name="twitter:image"
     />
 
@@ -259,10 +278,17 @@ const jsonLdGraph = {
     </script>}
     <!-- Cal element-click embed code ends -->
   </head>
-  <body class="bg-darkslate-700 flex flex-col justify-center items-center">
+  <body class="bg-darkslate-700 flex flex-col justify-start items-center min-h-screen w-full">
     <GridTransition />
     <slot name="loader" />
-    <slot />
+    {
+      !hideHeader && !isHome && (
+        <SubpageNavigation client:load label={resolvedNavLabel} cta={navCta} />
+      )
+    }
+    <div class={!hideHeader && !isHome ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center"}>
+      <slot />
+    </div>
     {
       !hideSoundToggle && (
         <div class="fixed bottom-4 right-4 md:bottom-6 z-50 flex flex-col items-center gap-2">
