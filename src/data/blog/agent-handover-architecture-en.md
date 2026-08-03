@@ -8,6 +8,8 @@ translationKey: "agent-handover-architecture"
 draft: false
 ---
 
+![AI Agent Handover Architecture](/blog/agent-handover-architecture.jpg)
+
 Every AI coding agent is brilliant for exactly one session and then gets amnesia. You spend forty minutes explaining why the repository is feature-sliced instead of layered, the agent does great work, the window closes — and tomorrow a different agent (or the same one, fresh) walks in and proposes a `services/` folder again.
 
 The usual reaction is to pick a "main" agent and stick with it. That's the wrong axis. The interesting question isn't *which* agent — it's **how work is handed over between them**. Get that right and the agent becomes a runtime detail, swappable like a database driver.

@@ -8,6 +8,8 @@ translationKey: "agent-handover-architecture"
 draft: false
 ---
 
+![Kiến trúc Handover cho AI Agent](/blog/agent-handover-architecture.jpg)
+
 Mọi AI coding agent đều xuất sắc trong đúng một phiên làm việc, rồi mất trí nhớ. Bạn mất bốn mươi phút giải thích vì sao repo chia theo feature slice chứ không theo layer, agent làm việc rất tốt, cửa sổ chat đóng lại — và hôm sau một agent khác (hoặc chính nó, phiên mới) bước vào và lại đề xuất tạo thư mục `services/`.
 
 Phản xạ thường thấy là chọn một agent "chính" rồi dùng mãi. Nhưng đó là sai trục. Câu hỏi đáng giá không phải *dùng agent nào*, mà là **công việc được bàn giao giữa chúng như thế nào**. Làm đúng chỗ này, agent chỉ còn là chi tiết lúc chạy — thay được như đổi database driver.
