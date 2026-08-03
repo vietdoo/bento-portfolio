@@ -8,6 +8,7 @@ const blog = defineCollection({
     lang: z.enum(["en", "vi"]).default("en"),
     translationKey: z.string().optional(),
     category: z.string().optional(),
+    image: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

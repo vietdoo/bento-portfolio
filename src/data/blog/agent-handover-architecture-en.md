@@ -3,6 +3,7 @@ title: "The Handover Architecture: making AI agents interchangeable"
 description: "A repo-level pattern that lets any AI agent pick up work where another one dropped it: one constitution, a handover ledger, a routing map, and a non-AI forcing function."
 pubDate: 2026-08-02
 category: "architecture"
+image: "/blog/agent-handover-architecture.jpg"
 lang: "en"
 translationKey: "agent-handover-architecture"
 draft: false

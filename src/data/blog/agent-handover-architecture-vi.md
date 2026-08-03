@@ -3,6 +3,7 @@ title: "Kiến trúc Handover: khiến các AI agent trở nên thay thế đư�
 description: "Một pattern ở tầng repo giúp bất kỳ AI agent nào cũng tiếp nhận được công việc dang dở: một bộ hiến pháp, một sổ bàn giao, một bản đồ định tuyến và một cơ chế kiểm tra phi-AI."
 pubDate: 2026-08-02
 category: "architecture"
+image: "/blog/agent-handover-architecture.jpg"
 lang: "vi"
 translationKey: "agent-handover-architecture"
 draft: false
