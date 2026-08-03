@@ -59,7 +59,6 @@ export default function BlogComments(props: BlogCommentsProps) {
   const [loading, setLoading] = createSignal(true);
   const [submitting, setSubmitting] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
-  const [success, setSuccess] = createSignal<string | null>(null);
 
   // Top-level form state
   const [isMainFormOpen, setIsMainFormOpen] = createSignal(false);
@@ -96,7 +95,6 @@ export default function BlogComments(props: BlogCommentsProps) {
   const handlePostMainComment = async (e: Event) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
     if (!mainName().trim() || !mainContent().trim()) {
       setError(
@@ -128,11 +126,6 @@ export default function BlogComments(props: BlogCommentsProps) {
       setComments([newComment, ...comments()]);
       setMainContent("");
       setIsMainFormOpen(false);
-      setSuccess(
-        isVi()
-          ? "Bình luận của bạn đã được gửi thành công!"
-          : "Your comment has been posted successfully!",
-      );
     } catch (err: any) {
       setError(err.message || (isVi() ? "Đã có lỗi xảy ra." : "An error occurred."));
     } finally {
@@ -143,7 +136,6 @@ export default function BlogComments(props: BlogCommentsProps) {
   const handlePostInlineReply = async (e: Event, parentId: number) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
     if (!replyName().trim() || !replyContent().trim()) {
       setError(
@@ -176,11 +168,6 @@ export default function BlogComments(props: BlogCommentsProps) {
       setComments([...comments(), newComment]);
       setReplyContent("");
       setReplyingToId(null);
-      setSuccess(
-        isVi()
-          ? "Câu phản hồi của bạn đã được đăng thành công!"
-          : "Your reply has been posted successfully!",
-      );
     } catch (err: any) {
       setError(err.message || (isVi() ? "Đã có lỗi xảy ra." : "An error occurred."));
     } finally {
@@ -231,34 +218,44 @@ export default function BlogComments(props: BlogCommentsProps) {
           </span>
         </h3>
 
-        <button
-          type="button"
-          onClick={() => {
-            setIsMainFormOpen(!isMainFormOpen());
-            setError(null);
-            setSuccess(null);
-          }}
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-neutral-700 bg-neutral-900/80 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
-          style={fontStyle}
+        <Show
+          when={isMainFormOpen()}
+          fallback={
+            <button
+              type="button"
+              onClick={() => {
+                setIsMainFormOpen(true);
+                setError(null);
+              }}
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-neutral-700 bg-neutral-900/80 text-xs font-medium text-neutral-200 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer"
+              style={fontStyle}
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14" />
+              </svg>
+              <span>{isVi() ? "Thêm bình luận" : "Add Comment"}</span>
+            </button>
+          }
         >
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <Show when={isMainFormOpen()} fallback={<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14" />}>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-            </Show>
-          </svg>
-          <span>{isVi() ? (isMainFormOpen() ? "Đóng form" : "Thêm bình luận") : (isMainFormOpen() ? "Close form" : "Add Comment")}</span>
-        </button>
+          {/* Icon button thu gọn form */}
+          <button
+            type="button"
+            onClick={() => setIsMainFormOpen(false)}
+            class="p-2 rounded-lg border border-neutral-700 bg-neutral-900/80 text-neutral-400 hover:text-white hover:border-neutral-500 hover:bg-neutral-800 transition-all cursor-pointer flex items-center justify-center"
+            title={isVi() ? "Thu gọn form" : "Collapse form"}
+            aria-label={isVi() ? "Thu gọn form" : "Collapse form"}
+            style={fontStyle}
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </Show>
       </div>
 
       <Show when={error()}>
         <div class="mb-4 text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded-lg p-3" style={fontStyle}>
           {error()}
-        </div>
-      </Show>
-
-      <Show when={success()}>
-        <div class="mb-4 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 rounded-lg p-3" style={fontStyle}>
-          {success()}
         </div>
       </Show>
 
@@ -305,14 +302,19 @@ export default function BlogComments(props: BlogCommentsProps) {
             />
           </div>
 
-          <div class="flex justify-end gap-2">
+          <div class="flex justify-end gap-2 items-center">
+            {/* Icon-only collapse button */}
             <button
               type="button"
               onClick={() => setIsMainFormOpen(false)}
-              class="px-3.5 py-2 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+              class="p-2 rounded-lg border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center"
+              title={isVi() ? "Thu gọn form" : "Collapse form"}
+              aria-label={isVi() ? "Thu gọn form" : "Collapse form"}
               style={fontStyle}
             >
-              {isVi() ? "Hủy" : "Cancel"}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
             <button
               type="submit"
@@ -412,12 +414,17 @@ export default function BlogComments(props: BlogCommentsProps) {
                       <span>
                         {isVi() ? "Trả lời bình luận của" : "Replying to"} <strong>@{comment.name}</strong>
                       </span>
+                      {/* Icon close button */}
                       <button
                         type="button"
                         onClick={() => setReplyingToId(null)}
-                        class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                        class="p-1 text-neutral-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                        title={isVi() ? "Thu gọn" : "Collapse"}
+                        aria-label={isVi() ? "Thu gọn" : "Collapse"}
                       >
-                        ✕ {isVi() ? "Đóng" : "Close"}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
                     </div>
 
@@ -457,14 +464,19 @@ export default function BlogComments(props: BlogCommentsProps) {
                       />
                     </div>
 
-                    <div class="flex justify-end gap-2">
+                    <div class="flex justify-end gap-2 items-center">
+                      {/* Icon-only collapse button */}
                       <button
                         type="button"
                         onClick={() => setReplyingToId(null)}
-                        class="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                        class="p-2 rounded-lg border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center"
+                        title={isVi() ? "Thu gọn form" : "Collapse form"}
+                        aria-label={isVi() ? "Thu gọn form" : "Collapse form"}
                         style={fontStyle}
                       >
-                        {isVi() ? "Hủy" : "Cancel"}
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
                       <button
                         type="submit"
@@ -559,12 +571,17 @@ export default function BlogComments(props: BlogCommentsProps) {
                                   <span>
                                     {isVi() ? "Trả lời bình luận của" : "Replying to"} <strong>@{reply.name}</strong>
                                   </span>
+                                  {/* Icon close button */}
                                   <button
                                     type="button"
                                     onClick={() => setReplyingToId(null)}
-                                    class="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                                    class="p-1 text-neutral-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                                    title={isVi() ? "Thu gọn" : "Collapse"}
+                                    aria-label={isVi() ? "Thu gọn" : "Collapse"}
                                   >
-                                    ✕ {isVi() ? "Đóng" : "Close"}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                   </button>
                                 </div>
 
@@ -604,14 +621,19 @@ export default function BlogComments(props: BlogCommentsProps) {
                                   />
                                 </div>
 
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-end gap-2 items-center">
+                                  {/* Icon-only collapse button */}
                                   <button
                                     type="button"
                                     onClick={() => setReplyingToId(null)}
-                                    class="px-3 py-1.5 rounded-lg border border-neutral-800 bg-neutral-950/60 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                                    class="p-2 rounded-lg border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center"
+                                    title={isVi() ? "Thu gọn form" : "Collapse form"}
+                                    aria-label={isVi() ? "Thu gọn form" : "Collapse form"}
                                     style={fontStyle}
                                   >
-                                    {isVi() ? "Hủy" : "Cancel"}
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                   </button>
                                   <button
                                     type="submit"
