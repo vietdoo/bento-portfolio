@@ -1,5 +1,5 @@
 ---
-title: "The Handover Architecture: making AI agents interchangeable"
+title: "Stop AI Agent Amnesia: The Handover Architecture Pattern"
 description: "A repo-level pattern that lets any AI agent pick up work where another one dropped it: one constitution, a handover ledger, a routing map, and a non-AI forcing function."
 pubDate: 2026-08-02
 category: "architecture"
@@ -23,22 +23,7 @@ Agents are stateless. The repository is not. So every piece of context that matt
 
 Four planes, each with a distinct job:
 
-<svg viewBox="0 0 720 300" width="100%" role="img" aria-label="Four planes of the handover architecture" style="max-width:100%;height:auto;margin:24px 0">
- <g font-family="inherit" font-size="13" fill="#e5e7eb">
- <rect x="10" y="10" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="34" font-size="14" font-weight="700" fill="var(--primary-300)">1. CONSTITUTION — one rule file, many adapters</text>
- <text x="30" y="55">Architecture invariants, DoD checklist, hard limits. Read before any task.</text>
- <rect x="10" y="82" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="106" font-size="14" font-weight="700" fill="var(--primary-300)">2. LEDGER — append-only handover log</text>
- <text x="30" y="127">What happened last session, why, and what is still unfinished.</text>
- <rect x="10" y="154" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="178" font-size="14" font-weight="700" fill="var(--primary-300)">3. MAP — decision tree, module mapping, API contract, glossary</text>
- <text x="30" y="199">Deterministic answer to "where does this change belong?"</text>
- <rect x="10" y="226" width="700" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--primary-500)" stroke-width="1.5"/>
- <text x="30" y="250" font-size="14" font-weight="700" fill="var(--primary-300)">4. FORCING FUNCTION — a dumb script that grades the agent</text>
- <text x="30" y="271">No LLM involved. Fails the task if docs and log are out of sync.</text>
- </g>
-</svg>
+![Four Pillars of Handover Architecture](/blog/handover-four-pillars.jpg)
 
 Miss any one of them and the system leaks: rules without a ledger means agents repeat decisions; a ledger without a forcing function means nobody writes to it.
 
@@ -133,40 +118,7 @@ That's it — a `git status` parser with a regex list. It cannot be sweet-talked
 
 Put the four planes together and every agent, regardless of vendor, runs the same cycle:
 
-<svg viewBox="0 0 720 220" width="100%" role="img" aria-label="The agent session loop" style="max-width:100%;height:auto;margin:24px 0">
- <g font-family="inherit" font-size="12" fill="#e5e7eb">
- <g stroke="var(--primary-500)" stroke-width="1.5" fill="rgba(255,255,255,0.04)">
- <rect x="12" y="60" width="120" height="56" rx="10"/>
- <rect x="162" y="60" width="120" height="56" rx="10"/>
- <rect x="312" y="60" width="120" height="56" rx="10"/>
- <rect x="462" y="60" width="120" height="56" rx="10"/>
- <rect x="600" y="60" width="108" height="56" rx="10"/>
- </g>
- <text x="72" y="84" text-anchor="middle" font-weight="700">SYNC</text>
- <text x="72" y="102" text-anchor="middle" font-size="11">pull latest docs</text>
- <text x="222" y="84" text-anchor="middle" font-weight="700">READ LEDGER</text>
- <text x="222" y="102" text-anchor="middle" font-size="11">last session's intent</text>
- <text x="372" y="84" text-anchor="middle" font-weight="700">ROUTE</text>
- <text x="372" y="102" text-anchor="middle" font-size="11">decision tree</text>
- <text x="522" y="84" text-anchor="middle" font-weight="700">WORK + SYNC DOCS</text>
- <text x="522" y="102" text-anchor="middle" font-size="11">code, tests, contract</text>
- <text x="654" y="84" text-anchor="middle" font-weight="700">VERIFY</text>
- <text x="654" y="102" text-anchor="middle" font-size="11">script, 0 errors</text>
- <g stroke="var(--primary-500)" stroke-width="1.5" fill="none">
- <path d="M132 88 H160" marker-end="url(#a)"/>
- <path d="M282 88 H310" marker-end="url(#a)"/>
- <path d="M432 88 H460" marker-end="url(#a)"/>
- <path d="M582 88 H598" marker-end="url(#a)"/>
- <path d="M654 116 V170 H72 V118" marker-end="url(#a)" stroke-dasharray="5 4" opacity="0.75"/>
- </g>
- <text x="360" y="190" text-anchor="middle" font-size="12" fill="rgba(229,231,235,0.65)">write the handover entry — the next agent starts here</text>
- <defs>
- <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
- <path d="M0 0 L6 3 L0 6 z" fill="var(--primary-500)"/>
- </marker>
- </defs>
- </g>
-</svg>
+![Session Loop Workflow](/blog/handover-session-loop.jpg)
 
 Read context → route → change code **and** docs together → append the ledger entry → let a non-AI script certify it. The loop closes: the output of one session is precisely the input format of the next.
 

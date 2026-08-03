@@ -52,6 +52,11 @@ const hasTranslation = Boolean(enHref && viHref);
         const authorLabel = isVietnamese ? "Viết bởi" : "Written by";
         const publishedLabel = isVietnamese ? "Xuất bản" : "Published";
         const readingLabel = isVietnamese ? "Thời gian đọc" : "Reading time";
+        const displayReadingTime = isVietnamese
+          ? translation.minutesRead
+              ? translation.minutesRead.replace(/(\d+)\s*min(?:s)?\s*read/i, "~$1 phút đọc")
+              : "5 phút đọc"
+          : translation.minutesRead;
 
         return (
           <div
@@ -96,7 +101,7 @@ const hasTranslation = Boolean(enHref && viHref);
                 </div>
                 <div>
                   <dt class="text-xs text-neutral-500">{readingLabel}</dt>
-                  <dd class="m-0 mt-1">{translation.minutesRead}</dd>
+                  <dd class="m-0 mt-1">{displayReadingTime}</dd>
                 </div>
               </dl>
             </div>

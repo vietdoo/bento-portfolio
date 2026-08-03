@@ -49,7 +49,7 @@ const {
       lang: "en",
       minutesRead: englishFrontmatter.minutesRead,
       pubDate: englishEntry.data.pubDate!,
-      title: `${englishEntry.data.title} | ${SITE.author.fullName}`,
+      title: englishEntry.data.title,
     },
     ...(hasVietnameseTranslation && vietnameseFrontmatter
       ? [
@@ -57,7 +57,7 @@ const {
             lang: "vi" as const,
             minutesRead: vietnameseFrontmatter.minutesRead,
             pubDate: vietnameseVersion.data.pubDate!,
-            title: `${vietnameseVersion.data.title} | ${SITE.author.fullName}`,
+            title: vietnameseVersion.data.title,
           },
         ]
       : []),
