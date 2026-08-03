@@ -44,24 +44,31 @@ const socials = [
       <div class="flex items-center gap-3">
         <img
           src="https://github.com/vietdoo.png"
-          class="h-14 w-14 shrink-0 rounded-full object-cover bg-darkslate-700 border border-darkslate-400 select-none"
+          class="h-12 w-12 shrink-0 rounded-full object-cover bg-darkslate-700 border border-darkslate-400 select-none"
           alt={`Avatar of ${SITE.author.fullName}`}
           loading="eager"
-          width="56"
-          height="56"
+          width="48"
+          height="48"
         />
         <div class="flex flex-col min-w-0">
-          <span class="text-[11px] uppercase tracking-widest text-darkslate-300">welcome</span>
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-widest font-bold bg-primary-500/15 border border-primary-500/30 text-primary-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse"></span>
+              Currently Building
+            </span>
+          </div>
           <span class="text-base font-bold leading-tight truncate">{SITE.author.fullName}</span>
           <span class="text-xs text-primary-400 leading-tight truncate">{SITE.author.jobTitle}</span>
         </div>
       </div>
 
-      <p class="sr-only">
-        Hi, I'm {SITE.author.fullName} ({SITE.author.shortName}), a Software Engineer @ VNPT Group specializing in Big Data, Data Engineering, and scalable microservices. Feel free to reach out to me if you have any project in mind, want to collaborate, or just want to say hello.
-      </p>
+      <h2 class="text-sm font-bold leading-snug text-white m-0">
+        AI-powered products <span class="font-normal text-white/80">that help people learn faster, work smarter, and ship better.</span>
+      </h2>
+
       <p aria-hidden="true" class="m-0 text-[13px] font-light leading-relaxed text-white/80">
-        <span class="font-medium text-white">Part programmer, part prompt whisperer, full-time builder.</span> Feel free to reach out if you have a project in mind or want to connect.
+        <span class="block font-medium text-white">Part programmer, part prompt whisperer, full-time builder.</span>
+        <span class="block mt-1 text-xs text-darkslate-300">Feel free to reach out if you have a project in mind, want to collaborate, or just want to say hello.</span>
       </p>
 
       <a href={`mailto:${LINKS.email}`} class="block">
@@ -104,14 +111,19 @@ const socials = [
   <div class="hidden md:flex w-full h-full relative z-10 pointer-events-none">
     <div data-bug-safe-below class="flex flex-col justify-between md:max-h-[300px] gap-3 md:gap-4 pointer-events-auto">
       <div class="flex flex-col h-full">
-        <h6 class="text-sm font-light m-0 text-darkslate-300">welcome</h6>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold bg-primary-500/15 border border-primary-500/30 text-primary-400 shadow-[0_0_12px_rgba(33,150,243,0.25)]">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse"></span>
+            Currently Building
+          </span>
+        </div>
+
+        <h2 class="text-base md:text-lg font-bold leading-snug text-white m-0 mb-2">
+          AI-powered products <span class="font-normal text-white/80">that help people learn faster, work smarter, and ship better.</span>
+        </h2>
 
         <p aria-hidden="true" class="m-0 font-light text-sm md:text-base">
-          <span>
-            Hi, I'm <b class="font-bold">{SITE.author.fullName}</b> (<span class="text-primary-400 font-semibold">{SITE.author.shortName}</span>), Software Engineer @ VNPT Group.
-          </span>
-          <br />
-          <span class="block mt-2 font-medium text-white/90">
+          <span class="block font-medium text-white/90">
             Part programmer, part prompt whisperer, full-time builder.
           </span>
           <span class="block mt-1 text-xs text-darkslate-300">
