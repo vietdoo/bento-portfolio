@@ -1,6 +1,6 @@
 export const SITE = {
   site: {
-    url: "https://vndo.vn",
+    url: "https://vietdoo.vndo.vn",
     title: "Do Quoc Viet (vietdoo) — Software Engineer @ VNPT | Founder @ VNDO",
     description:
       "Official portfolio of Do Quoc Viet (vietdoo), Software Engineer @ VNPT & Founder @ VNDO. Specializing in Big Data engineering, distributed systems, high-performance backend, cloud-native microservices, and AI agent architecture.",
@@ -111,7 +111,7 @@ export const SITE = {
     ],
   },
   location: {
-    locality: "Hanoi",
+    locality: "Ho Chi Minh City",
     countryName: "Vietnam",
     countryCode: "VN",
     timezone: "Asia/Ho_Chi_Minh",

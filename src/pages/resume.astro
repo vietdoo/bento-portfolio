@@ -1,0 +1,218 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LoaderAnimation from "../components/LoaderAnimation.astro";
+import { SITE } from "../site-config";
+
+const resumeData = {
+  header: {
+    name: SITE.author.fullNameVi,
+    nameEn: SITE.author.fullName,
+    title: SITE.author.jobTitleFull,
+    location: "Ho Chi Minh City, Vietnam (GMT+7)",
+    email: SITE.links.email,
+    github: SITE.links.github,
+    linkedin: SITE.links.linkedin,
+    website: SITE.site.url,
+  },
+  summary:
+    "Data & Software Engineer with 3+ YOE specializing in high-performance backend systems, Big Data pipelines, cloud-native microservices, and AI agent architectures. Currently engineering the National Public Service Portal at VNPT, serving millions of citizens nationwide.",
+  experience: [
+    {
+      period: "2024 — Present",
+      role: "Software Engineer",
+      company: "VNPT Group (Vietnam Posts and Telecommunications Group)",
+      location: "Vietnam",
+      highlights: [
+        "Architecting and optimizing high-throughput microservices for the Vietnam National Public Service Portal (Cổng Dịch vụ công Quốc gia).",
+        "Ensuring system resilience, ultra-low latency, and high availability for citizen service operations at national scale.",
+        "Designing scalable data pipelines and backend infrastructure for government-grade integrations.",
+      ],
+    },
+    {
+      period: "2024 — Present",
+      role: "Founder & Lead Architect",
+      company: "VNDO SaaS Platform",
+      location: "Ho Chi Minh City, Vietnam",
+      highlights: [
+        "Founded VNDO (vndo.vn), a modern website-building and web ecosystem platform for businesses and individuals in Vietnam.",
+        "Built global multi-region edge deployment pipeline with <50ms latency response claims and 99.99% uptime target.",
+        "Developed specialized sub-products including Public Service Lookups (hosodichvucong.online) and Document Management (vanban.hosodichvucong.online).",
+      ],
+    },
+    {
+      period: "2021 — 2024",
+      role: "Data & Software Engineer",
+      company: "Independent / Open Source & Engineering Contracts",
+      location: "Ho Chi Minh City, Vietnam",
+      highlights: [
+        "Built end-to-end Big Data ETL pipelines processing 200,000+ real estate records in HCMC using HDFS, Spark, Redshift, and Superset BI.",
+        "Engineered real-time Binance crypto volume streaming pipeline using Apache Kafka, Spark Streaming, and custom web dashboards.",
+        "Contributed actively to open-source developer tooling (31+ repositories, 190+ GitHub stars).",
+      ],
+    },
+  ],
+  education: [
+    {
+      period: "2020 — 2024",
+      institution: "VNU-HCM University of Science (ĐH Khoa Học Tự Nhiên - ĐHQG TP.HCM)",
+      degree: "Bachelor of Science in Data Science",
+      details: "Grounded in competitive programming (Codeforces Pupil), algorithm optimization, and distributed data systems.",
+    },
+  ],
+  skills: [
+    { category: "Languages", items: ["Python", "C++", "TypeScript", "SQL", "Shell"] },
+    { category: "Backend & Web", items: ["Spring Boot", "FastAPI", "Flask", "Next.js", "SolidJS", "Node.js"] },
+    { category: "Big Data & Streaming", items: ["Apache Spark", "Apache Kafka", "Hadoop HDFS", "Apache Superset", "Redshift"] },
+    { category: "Databases & Caching", items: ["PostgreSQL", "Redis", "MongoDB", "MySQL"] },
+    { category: "Cloud & DevOps", items: ["Docker", "Kubernetes", "Linux (Ubuntu/Debian)", "Microservices", "Vercel"] },
+    { category: "AI & Innovation", items: ["AI Agent Architecture", "Handover Architecture", "LLM Prompt Engineering", "ML Pipelines"] },
+  ],
+  projects: [
+    {
+      name: "Vietnam National Public Service Portal",
+      tech: "Spring Boot, Microservices, Redis, Kafka, Kubernetes",
+      desc: "National digital transformation project providing public administrative services to millions of citizens.",
+    },
+    {
+      name: "HCMC Houses Analysis Pipeline",
+      tech: "HDFS, Apache Spark, Redshift, Apache Superset",
+      desc: "Big Data analysis pipeline extracting and transforming 200k+ real estate listings for BI visualization.",
+    },
+    {
+      name: "Binance Real-Time Volume Streaming",
+      tech: "Apache Kafka, Spark Streaming, WebSockets",
+      desc: "Live stream ingestion and real-time volume metrics calculation for Binance cryptocurrency pairs.",
+    },
+    {
+      name: "AI Agent Handover Architecture",
+      tech: "Markdown, Agentic Workflows, Claude / Codex",
+      desc: "Standardized repo-level continuity pattern preventing context loss across multi-agent handovers.",
+    },
+  ],
+};
+---
+
+<LoaderAnimation />
+
+<Layout
+  title={`${SITE.author.fullNameVi} (${SITE.author.shortName}) — Resume / CV`}
+  description={`Official Resume and Curriculum Vitae of ${SITE.author.fullNameVi}, Software Engineer @ VNPT & Founder @ VNDO.`}
+  hideSoundToggle={true}
+>
+  <main class="w-full max-w-4xl mx-auto px-6 py-10 text-white print:text-black print:bg-white print:max-w-none print:px-0">
+    <!-- Header Controls (Hidden on Print) -->
+    <div class="flex items-center justify-between mb-8 print:hidden">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight">Curriculum Vitae</h1>
+        <p class="text-darkslate-300 text-sm mt-1">Official professional summary & career background</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button
+          onclick="window.print()"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-darkslate-950 font-medium text-sm rounded-xl transition-all shadow-lg hover:shadow-primary-500/20 active:scale-95 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          Print / Save PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- CV Document Card -->
+    <div class="bg-darkslate-800/80 border border-darkslate-600/40 backdrop-blur-md rounded-2xl p-8 sm:p-10 shadow-2xl print:bg-transparent print:border-none print:p-0 print:shadow-none">
+      
+      <!-- Candidate Header -->
+      <header class="border-b border-darkslate-600/40 pb-6 mb-8 print:border-gray-300">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-white print:text-black">{resumeData.header.name}</h1>
+            <p class="text-primary-400 font-medium text-sm sm:text-base mt-1 print:text-gray-800">{resumeData.header.title}</p>
+            <p class="text-darkslate-300 text-xs sm:text-sm mt-0.5 print:text-gray-600">📍 {resumeData.header.location}</p>
+          </div>
+          <div class="flex flex-col gap-1 text-xs text-darkslate-300 print:text-gray-700">
+            <a href={`mailto:${resumeData.header.email}`} class="hover:text-primary-400 transition-colors">✉️ {resumeData.header.email}</a>
+            <a href={resumeData.header.github} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">🐙 {resumeData.header.github}</a>
+            <a href={resumeData.header.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">💼 {resumeData.header.linkedin}</a>
+            <a href={resumeData.header.website} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">🌐 {resumeData.header.website}</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Executive Summary -->
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-3 print:text-black">Executive Summary</h2>
+        <p class="text-darkslate-200 text-sm leading-relaxed print:text-gray-800">{resumeData.summary}</p>
+      </section>
+
+      <!-- Work Experience -->
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4 print:text-black">Professional Experience</h2>
+        <div class="space-y-6">
+          {resumeData.experience.map((exp) => (
+            <div class="relative pl-4 border-l-2 border-primary-500/40 print:border-gray-400">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                <h3 class="text-base font-bold text-white print:text-black">{exp.role} <span class="text-darkslate-300 font-normal text-sm print:text-gray-700">@ {exp.company}</span></h3>
+                <span class="text-xs font-mono text-primary-400/90 print:text-gray-600">{exp.period}</span>
+              </div>
+              <ul class="mt-2 space-y-1.5 list-disc list-inside text-xs sm:text-sm text-darkslate-200 print:text-gray-800">
+                {exp.highlights.map((h) => (
+                  <li>{h}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Technical Stack Matrix -->
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4 print:text-black">Technical Stack & Capabilities</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {resumeData.skills.map((group) => (
+            <div class="bg-darkslate-900/60 border border-darkslate-700/40 rounded-xl p-3.5 print:bg-gray-50 print:border-gray-200">
+              <h3 class="text-xs font-bold text-primary-300 uppercase tracking-wider mb-2 print:text-gray-900">{group.category}</h3>
+              <div class="flex flex-wrap gap-1.5">
+                {group.items.map((item) => (
+                  <span class="px-2 py-0.5 bg-darkslate-700/50 text-darkslate-200 rounded text-xs print:bg-gray-200 print:text-black">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Featured Key Projects -->
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4 print:text-black">Key Engineering Projects</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {resumeData.projects.map((proj) => (
+            <div class="bg-darkslate-900/40 border border-darkslate-700/30 rounded-xl p-4 print:bg-transparent print:border-gray-200">
+              <h3 class="text-sm font-bold text-white print:text-black">{proj.name}</h3>
+              <p class="text-xs font-mono text-primary-400/80 mt-0.5 mb-2 print:text-gray-700">{proj.tech}</p>
+              <p class="text-xs text-darkslate-300 print:text-gray-800">{proj.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Education -->
+      <section>
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-3 print:text-black">Education & Credentials</h2>
+        {resumeData.education.map((edu) => (
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-darkslate-900/40 border border-darkslate-700/30 rounded-xl p-4 print:bg-transparent print:border-gray-200">
+            <div>
+              <h3 class="text-sm font-bold text-white print:text-black">{edu.degree}</h3>
+              <p class="text-xs text-darkslate-300 print:text-gray-700 mt-0.5">{edu.institution}</p>
+              <p class="text-xs text-darkslate-400 print:text-gray-600 mt-1 italic">{edu.details}</p>
+            </div>
+            <span class="text-xs font-mono text-primary-400/90 mt-2 sm:mt-0 print:text-gray-600">{edu.period}</span>
+          </div>
+        ))}
+      </section>
+
+    </div>
+  </main>
+</Layout>

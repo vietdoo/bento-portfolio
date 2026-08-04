@@ -36,6 +36,7 @@ const defaultLabelMap: Record<string, string> = {
   "/travel": "Travel",
   "/visit": "Visited Provinces",
   "/playground": "Playground",
+  "/resume": "Resume / CV",
 };
 
 const pathSegments = currentPath.split("/").filter(Boolean);
@@ -92,6 +93,17 @@ const personEntity = {
       addressLocality: SITE.location.locality || SITE.location.countryName,
       addressCountry: SITE.location.countryCode,
     },
+  },
+  alumniOf: {
+    "@type": "EducationalOrganization",
+    name: "VNU-HCM University of Science (Đại học Khoa học Tự nhiên - ĐHQG TP.HCM)",
+    alternateName: ["HCMUS", "VNU-HCMUS", "ĐH KHTN"],
+    url: "https://hcmus.edu.vn",
+  },
+  founder: {
+    "@type": "Organization",
+    name: "VNDO Platform",
+    url: "https://vndo.vn",
   },
   address: {
     "@type": "PostalAddress",
