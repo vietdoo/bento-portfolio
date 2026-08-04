@@ -1,5 +1,6 @@
 import { db, Guestbook as GuestbookTable, desc, count } from "astro:db";
 import type { APIRoute } from "astro";
+import { normalizeWebsiteUrl } from "../../lib/guestbook";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -7,9 +8,11 @@ export const GET: APIRoute = async ({ url }) => {
   try {
     const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
 
-    const [{ total }] = await db
+    const totalResult = await db
       .select({ total: count() })
       .from(GuestbookTable);
+    const total = totalResult[0]?.total ?? 0;
+
     const entries = await db
       .select()
       .from(GuestbookTable)
@@ -22,13 +25,13 @@ export const GET: APIRoute = async ({ url }) => {
         entries,
         total,
         page,
-        totalPages: Math.ceil(total / ITEMS_PER_PAGE),
+        totalPages: Math.max(1, Math.ceil(total / ITEMS_PER_PAGE)),
       }),
       {
         status: 200,
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+          "Cache-Control": "private, max-age=0, must-revalidate",
         },
       },
     );
@@ -49,7 +52,10 @@ export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
     const { name, message, website } = data;
 
-    if (!name || !message) {
+    const trimmedName = typeof name === "string" ? name.trim() : "";
+    const trimmedMessage = typeof message === "string" ? message.trim() : "";
+
+    if (!trimmedName || !trimmedMessage) {
       return new Response(
         JSON.stringify({ error: "Name and message are required" }),
         {
@@ -59,12 +65,15 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const cleanWebsite = normalizeWebsiteUrl(website);
+
     const result = await db
       .insert(GuestbookTable)
       .values({
-        name: name.trim().slice(0, 100),
-        message: message.trim().slice(0, 1000),
-        website: website ? website.trim().slice(0, 200) : undefined,
+        name: trimmedName.slice(0, 100),
+        message: trimmedMessage.slice(0, 1000),
+        website: cleanWebsite ? cleanWebsite.slice(0, 200) : undefined,
+        heartCount: 0,
         createdAt: new Date(),
       })
       .returning();
@@ -84,3 +93,4 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
+

@@ -18,9 +18,10 @@ Astro.response.headers.set(
   "private, max-age=0, must-revalidate",
 );
 
-const [{ total: totalEntries }] = await db
+const totalResult = await db
   .select({ total: count() })
   .from(GuestbookTable);
+const totalEntries = totalResult[0]?.total ?? 0;
 
 const entries: GuestbookEntry[] = await db
   .select()
@@ -30,6 +31,7 @@ const entries: GuestbookEntry[] = await db
   .offset((requestedPage - 1) * ENTRIES_PER_PAGE);
 
 const totalPages = Math.max(1, Math.ceil(totalEntries / ENTRIES_PER_PAGE));
+
 ---
 
 <Layout

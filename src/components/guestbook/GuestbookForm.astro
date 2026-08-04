@@ -87,6 +87,7 @@ const { class: className } = Astro.props;
   import {
     avatarColorForSeed,
     getInitials,
+    normalizeWebsiteUrl,
     rotationFromSeed,
     PIXEL_HEART_SVG,
   } from "../../lib/guestbook";
@@ -124,9 +125,11 @@ const { class: className } = Astro.props;
     const avatarColor = avatarColorForSeed(entry.id);
     const avatarInitials = getInitials(entry.name);
     const escapedName = escapeHtml(entry.name);
-    const nameMarkup = entry.website
-      ? `<a href="${escapeHtml(entry.website)}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:text-primary-400 transition-colors text-sm">${escapedName}</a>`
+    const cleanWebsite = entry.website ? normalizeWebsiteUrl(entry.website) : null;
+    const nameMarkup = cleanWebsite
+      ? `<a href="${escapeHtml(cleanWebsite)}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:text-primary-400 transition-colors text-sm">${escapedName}</a>`
       : `<span class="font-semibold text-white text-sm">${escapedName}</span>`;
+
 
     return `
       <article data-entry-id="${entry.id}" class="bg-darkslate-500 p-5 rounded-xl border border-darkslate-400 hover:border-primary-500/50 transition-[border-color,transform] duration-300 hover:rotate-0 flex flex-col gap-3" style="transform: rotate(${rotationDegrees}deg);">
