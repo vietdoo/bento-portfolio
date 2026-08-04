@@ -46,7 +46,7 @@ monthlyDataPerYear["All"] = Array.from({ length: 12 }, (_, i) => {
   return booksData.filter((b) => b.monthRead === i + 1).length;
 });
 
-const filterYears = Array.from(new Set([...years.slice(0, 4), "All"]));
+const filterYears = Array.from(new Set([...years.slice(0, 4)]));
 ---
 
 <LoaderAnimation />
@@ -173,7 +173,7 @@ const filterYears = Array.from(new Set([...years.slice(0, 4), "All"]));
       <!-- Card 2: MONTHLY ACTIVITY -->
       <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-56">
         <div class="flex items-center justify-between">
-          <h3 id="monthly-chart-title" class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY ({activeYear})</h3>
+          <h3 id="monthly-chart-title" class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY</h3>
           <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px] gap-0.5">
             {filterYears.map((yr) => (
               <button
@@ -312,7 +312,7 @@ const filterYears = Array.from(new Set([...years.slice(0, 4), "All"]));
 
         // Update chart title header
         if (chartTitle) {
-          chartTitle.textContent = yr === "All" ? "MONTHLY (ALL TIME)" : `MONTHLY (${yr})`;
+          chartTitle.textContent = "MONTHLY";
         }
 
         // Update button active states
