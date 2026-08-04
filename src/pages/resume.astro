@@ -18,14 +18,14 @@ const resumeData = {
     "Data & Software Engineer with 3+ YOE specializing in high-performance backend systems, Big Data pipelines, cloud-native microservices, and AI agent architectures. Currently engineering the National Public Service Portal at VNPT, serving millions of citizens nationwide.",
   experience: [
     {
-      period: "2024 — Present",
+      period: "Dec 2024 — Present",
       role: "Software Engineer",
       company: "VNPT Group (Vietnam Posts and Telecommunications Group)",
-      location: "Vietnam",
+      location: "Ho Chi Minh City, Vietnam",
       highlights: [
         "Architecting and optimizing high-throughput microservices for the Vietnam National Public Service Portal (Cổng Dịch vụ công Quốc gia).",
-        "Ensuring system resilience, ultra-low latency, and high availability for citizen service operations at national scale.",
-        "Designing scalable data pipelines and backend infrastructure for government-grade integrations.",
+        "Ensuring system resilience, ultra-low latency, and high availability for mission-critical e-Government public administrative procedures.",
+        "Engineering scalable REST microservices with Spring Boot, FastAPI, Redis, Apache Kafka, Docker, and Kubernetes.",
       ],
     },
     {
@@ -34,20 +34,31 @@ const resumeData = {
       company: "VNDO SaaS Platform",
       location: "Ho Chi Minh City, Vietnam",
       highlights: [
-        "Founded VNDO (vndo.vn), a modern website-building and web ecosystem platform for businesses and individuals in Vietnam.",
-        "Built global multi-region edge deployment pipeline with <50ms latency response claims and 99.99% uptime target.",
-        "Developed specialized sub-products including Public Service Lookups (hosodichvucong.online) and Document Management (vanban.hosodichvucong.online).",
+        "Founded VNDO (vndo.vn), a modern website-building and web ecosystem platform operating across 5 global points of presence (Hanoi, HCMC, Da Nang, Singapore, US).",
+        "Built global multi-region edge deployment pipeline with <50ms response latency and targeting 99.99% uptime.",
+        "Developed specialized sub-products including Public Service Lookups (hosodichvucong.online), Document Management (vanban.hosodichvucong.online), Kiosk CHCC (kiosk-hcc.hosodichvucong.online), and Social Trend Analytics (diemtrend.vietdoo.site).",
+      ],
+    },
+    {
+      period: "Mar 2023 — Feb 2024",
+      role: "Data Engineer",
+      company: "Embery Digital Agency",
+      location: "Melbourne, Australia / Remote",
+      highlights: [
+        "Engineered automated, high-volume ETL data workflows ingesting structured and unstructured data from hundreds of disparate client sources.",
+        "Incorporated machine learning models into data processing pipelines to automate image analysis and computer vision scoring.",
+        "Exposed custom trend-analysis APIs and analytics dashboards for digital intelligence platforms.",
       ],
     },
     {
       period: "2021 — 2024",
       role: "Data & Software Engineer",
-      company: "Independent / Open Source & Engineering Contracts",
+      company: "Open Source & Engineering Projects",
       location: "Ho Chi Minh City, Vietnam",
       highlights: [
         "Built end-to-end Big Data ETL pipelines processing 200,000+ real estate records in HCMC using HDFS, Spark, Redshift, and Superset BI.",
         "Engineered real-time Binance crypto volume streaming pipeline using Apache Kafka, Spark Streaming, and custom web dashboards.",
-        "Contributed actively to open-source developer tooling (31+ repositories, 190+ GitHub stars).",
+        "Contributed actively to open-source developer tooling (31+ public repositories, 190+ GitHub stars).",
       ],
     },
   ],
@@ -56,22 +67,45 @@ const resumeData = {
       period: "2020 — 2024",
       institution: "VNU-HCM University of Science (ĐH Khoa Học Tự Nhiên - ĐHQG TP.HCM)",
       degree: "Bachelor of Science in Data Science",
-      details: "Grounded in competitive programming, algorithm optimization, and distributed data systems.",
+      details: "Graduated with High Honors (GPA: 3.5/4.0). Grounded in competitive programming, mathematical modeling, algorithm optimization, and distributed data systems.",
     },
   ],
+  certifications: [
+    { title: "Claude Code in Action", issuer: "Anthropic", date: "May 2026", id: "uxun2k7buozd" },
+    { title: "Data Engineering, Big Data, & ML on GCP", issuer: "Google", date: "Sep 2022", id: "EZMZERSNG6UB" },
+    { title: "IBM Data Engineering Professional Certificate", issuer: "IBM", date: "Aug 2022", id: "948G3Z9KNZ7C" },
+    { title: "SQL (Advanced)", issuer: "HackerRank", date: "Mar 2022", id: "f586e92927c5" },
+    { title: "Problem Solving (Intermediate)", issuer: "HackerRank", date: "Nov 2021", id: "ad708e2017db" },
+    { title: "Neural Networks and Deep Learning", issuer: "DeepLearning.AI", date: "Sep 2021", id: "CR8RHMS5LT5P" },
+    { title: "Machine Learning with Python", issuer: "IBM", date: "Aug 2021", id: "6RGVKBUBRC9D" },
+    { title: "Google Cloud Certified", issuer: "Google", date: "Mar 2021", id: "Verified" },
+  ],
+  badges: [
+    "Pair Extraordinaire x3",
+    "Pull Shark x2",
+    "Galaxy Brain",
+    "Quickdraw",
+    "YOLO",
+    "GitHub Developer Program Member",
+  ],
   skills: [
-    { category: "Languages", items: ["Python", "C++", "TypeScript", "SQL", "Shell"] },
-    { category: "Backend & Web", items: ["Spring Boot", "FastAPI", "Flask", "Next.js", "SolidJS", "Node.js"] },
-    { category: "Big Data & Streaming", items: ["Apache Spark", "Apache Kafka", "Hadoop HDFS", "Apache Superset", "Redshift"] },
-    { category: "Databases & Caching", items: ["PostgreSQL", "Redis", "MongoDB", "MySQL"] },
-    { category: "Cloud & DevOps", items: ["Docker", "Kubernetes", "Linux (Ubuntu/Debian)", "Microservices", "Vercel"] },
-    { category: "AI & Innovation", items: ["AI Agent Architecture", "Handover Architecture", "LLM Prompt Engineering", "ML Pipelines"] },
+    { category: "Languages", items: ["Python", "C++", "TypeScript", "SQL", "Shell", "Ruby", "HTML/CSS"] },
+    { category: "Backend & Web", items: ["Spring Boot", "FastAPI", "Flask (Blueprints)", "Next.js", "SolidJS", "Astro", "Ruby on Rails"] },
+    { category: "Big Data & Streaming", items: ["Apache Spark", "Spark Streaming", "Apache Kafka", "Hadoop HDFS", "Apache Superset", "Redshift"] },
+    { category: "Databases & Caching", items: ["PostgreSQL", "Redis", "MongoDB", "SQLite3"] },
+    { category: "Cloud & DevOps", items: ["Docker", "Kubernetes", "Linux (Ubuntu/Debian)", "Microservices", "CI/CD", "Vercel"] },
+    { category: "AI & Innovation", items: ["AI Agent Architecture", "Handover Architecture", "LLM Fine-tuning", "OpenCV", "Z3 SMT Solver"] },
   ],
   projects: [
     {
       name: "Vietnam National Public Service Portal",
-      tech: "Spring Boot, Microservices, Redis, Kafka, Kubernetes",
+      tech: "Spring Boot, FastAPI, Microservices, Redis, Kafka, Kubernetes",
       desc: "National digital transformation project providing public administrative services to millions of citizens.",
+    },
+    {
+      name: "VNDO SaaS Platform & Ecosystem",
+      tech: "Next.js, Multi-region Edge CDN, SolidJS, PostgreSQL",
+      desc: "Website-building SaaS powering Hồ Sơ Dịch Vụ Công, Văn Bản HCC, Kiosk CHCC, and Điểm Trend.",
     },
     {
       name: "HCMC Houses Analysis Pipeline",
@@ -85,7 +119,7 @@ const resumeData = {
     },
     {
       name: "AI Agent Handover Architecture",
-      tech: "Markdown, Agentic Workflows, Claude / Codex",
+      tech: "Agentic Workflows, Handover Ledger, Claude / Codex",
       desc: "Standardized repo-level continuity pattern preventing context loss across multi-agent handovers.",
     },
   ],
@@ -184,6 +218,32 @@ const resumeData = {
         </div>
       </section>
 
+      <!-- Verified Certifications & Badges -->
+      <section class="mb-8">
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4 print:text-black">Verified Certifications & Credentials</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          {resumeData.certifications.map((cert) => (
+            <div class="bg-darkslate-900/40 border border-darkslate-700/30 rounded-xl p-3 flex flex-col justify-between print:bg-transparent print:border-gray-200">
+              <div>
+                <h3 class="text-xs font-bold text-white print:text-black">{cert.title}</h3>
+                <p class="text-[11px] text-darkslate-300 print:text-gray-700 mt-0.5">{cert.issuer} • <span class="font-mono text-primary-400/90 print:text-gray-600">{cert.date}</span></p>
+              </div>
+              <p class="text-[10px] font-mono text-darkslate-400 print:text-gray-500 mt-1.5 truncate">ID: {cert.id}</p>
+            </div>
+          ))}
+        </div>
+        <div class="bg-darkslate-900/60 border border-darkslate-700/40 rounded-xl p-3.5 print:bg-gray-50 print:border-gray-200">
+          <h3 class="text-xs font-bold text-primary-300 uppercase tracking-wider mb-2 print:text-gray-900">GitHub Platform Badges</h3>
+          <div class="flex flex-wrap gap-1.5">
+            {resumeData.badges.map((badge) => (
+              <span class="px-2 py-0.5 bg-primary-500/10 border border-primary-500/30 text-primary-300 rounded text-xs print:bg-gray-200 print:text-black">
+                {badge}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <!-- Featured Key Projects -->
       <section class="mb-8">
         <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-4 print:text-black">Key Engineering Projects</h2>
@@ -200,7 +260,7 @@ const resumeData = {
 
       <!-- Education -->
       <section>
-        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-3 print:text-black">Education & Credentials</h2>
+        <h2 class="text-xs font-semibold text-primary-400 uppercase tracking-widest mb-3 print:text-black">Education</h2>
         {resumeData.education.map((edu) => (
           <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-darkslate-900/40 border border-darkslate-700/30 rounded-xl p-4 print:bg-transparent print:border-gray-200">
             <div>
