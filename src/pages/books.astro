@@ -34,6 +34,19 @@ const monthlyCountsActiveYear = Array.from({ length: 12 }, (_, i) => {
   return (booksByYear[activeYear] || []).filter((b) => b.monthRead === i + 1).length;
 });
 const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
+
+// Interactive Monthly data per year
+const monthlyDataPerYear: Record<string, number[]> = {};
+years.forEach((yr) => {
+  monthlyDataPerYear[yr] = Array.from({ length: 12 }, (_, i) => {
+    return (booksByYear[yr] || []).filter((b) => b.monthRead === i + 1).length;
+  });
+});
+monthlyDataPerYear["All"] = Array.from({ length: 12 }, (_, i) => {
+  return booksData.filter((b) => b.monthRead === i + 1).length;
+});
+
+const filterYears = Array.from(new Set([...years.slice(0, 4), "All"]));
 ---
 
 <LoaderAnimation />
@@ -161,9 +174,20 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
       <div class="bg-darkslate-500/50 border border-darkslate-400/60 rounded-2xl p-5 flex flex-col justify-between h-56">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold tracking-widest text-darkslate-300 uppercase">MONTHLY</h3>
-          <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px]">
-            <span class="px-2 py-0.5 rounded bg-white text-black font-bold">{activeYear}</span>
-            <span class="px-2 py-0.5 rounded text-darkslate-300">All</span>
+          <div class="flex bg-darkslate-700/60 p-0.5 rounded-lg border border-darkslate-400/40 text-[10px] gap-0.5">
+            {filterYears.map((yr) => (
+              <button
+                type="button"
+                data-year={yr}
+                class={`year-toggle-btn px-2 py-0.5 rounded transition-all cursor-pointer select-none ${
+                  yr === activeYear
+                    ? "bg-white text-black font-bold shadow-sm"
+                    : "text-darkslate-300 hover:text-white"
+                }`}
+              >
+                {yr}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -175,12 +199,14 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
               <div class="flex flex-col items-center gap-1 flex-1 group">
                 <div class="h-24 w-full flex items-end justify-center">
                   <div 
+                    data-month-bar={idx}
                     class={`w-full max-w-[14px] rounded-t-xs transition-all duration-300 ${
                       count > 0 
                         ? "bg-gradient-to-t from-zinc-400 via-neutral-200 to-white shadow-[0_0_8px_rgba(255,255,255,0.3)]" 
                         : "bg-darkslate-400/20"
                     }`} 
                     style={`height: ${barHeightPx}px;`}
+                    title={`${m}: ${count} books`}
                   ></div>
                 </div>
                 <span class="text-[9px] text-darkslate-300 font-medium mt-1">{m}</span>
@@ -268,8 +294,46 @@ const maxMonthlyCount = Math.max(...monthlyCountsActiveYear, 1);
   </main>
 </Layout>
 
-<script is:inline define:vars={{ booksData }}>
+<script is:inline define:vars={{ booksData, monthlyDataPerYear }}>
   (function initBookshelf() {
+    const yearBtns = document.querySelectorAll('.year-toggle-btn');
+    const monthBars = document.querySelectorAll('[data-month-bar]');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    yearBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const yr = btn.dataset.year;
+        if (!yr || !monthlyDataPerYear[yr]) return;
+
+        // Update button active states
+        yearBtns.forEach((b) => {
+          b.classList.remove('bg-white', 'text-black', 'font-bold', 'shadow-sm');
+          b.classList.add('text-darkslate-300');
+        });
+        btn.classList.add('bg-white', 'text-black', 'font-bold', 'shadow-sm');
+        btn.classList.remove('text-darkslate-300');
+
+        // Update 12-month bar chart heights and counts
+        const counts = monthlyDataPerYear[yr] || [];
+        const maxCount = Math.max(...counts, 1);
+
+        monthBars.forEach((bar) => {
+          const idx = parseInt(bar.dataset.monthBar, 10);
+          const count = counts[idx] || 0;
+          const barHeightPx = count > 0 ? Math.max(20, Math.round((count / maxCount) * 85)) : 6;
+
+          bar.style.height = `${barHeightPx}px`;
+          bar.title = `${monthNames[idx]}: ${count} books`;
+
+          if (count > 0) {
+            bar.className = 'w-full max-w-[14px] rounded-t-xs transition-all duration-300 bg-gradient-to-t from-zinc-400 via-neutral-200 to-white shadow-[0_0_8px_rgba(255,255,255,0.3)]';
+          } else {
+            bar.className = 'w-full max-w-[14px] rounded-t-xs transition-all duration-300 bg-darkslate-400/20';
+          }
+        });
+      });
+    });
+
     const cards = document.querySelectorAll('.book-card');
     const modal = document.getElementById('book-modal');
     const modalContent = document.getElementById('modal-content');
