@@ -647,7 +647,7 @@ export default function VietnamMap() {
             </div>
           </div>
           
-          <div class="px-3 py-1.5 rounded-xl bg-primary-500/20 border border-primary-400 text-primary-300 font-extrabold text-base shadow-sm">
+          <div class="text-2xl font-extrabold text-primary-400 font-cabinet tracking-tight">
             {visitedPercent()}%
           </div>
         </div>
@@ -674,11 +674,6 @@ export default function VietnamMap() {
             <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Nam Bộ</span>
             <span class="text-base font-extrabold text-white">{regionCounts().nam} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
           </div>
-        </div>
-
-        {/* Card Footer / Attribution */}
-        <div class="mt-4 pt-3 border-t border-darkslate-600/60 text-[11px] text-slate-400">
-          © <a href="https://carto.com/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-slate-200">CARTO</a> • <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-slate-200">OpenStreetMap</a>
         </div>
       </div>
     </div>
