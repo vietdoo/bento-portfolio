@@ -4,8 +4,10 @@ import BackLink from "../components/BackLink.astro";
 import LoaderAnimation from "../components/LoaderAnimation.astro";
 import { SITE } from "../site-config";
 import { getLiveGoodreadsBooks, type GoodreadsBook } from "../lib/goodreads";
+import { booksData as staticBooks } from "../data/books";
 
-const booksData: GoodreadsBook[] = await getLiveGoodreadsBooks();
+const liveBooks = await getLiveGoodreadsBooks();
+const booksData: GoodreadsBook[] = liveBooks.length > 0 ? liveBooks : (staticBooks as GoodreadsBook[]);
 
 // Extract years present in Goodreads RSS dynamically
 const rawYears = Array.from(new Set(booksData.map((b) => b.yearRead || "2023"))).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));

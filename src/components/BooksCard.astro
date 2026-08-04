@@ -1,6 +1,10 @@
 ---
 import Card from "./Card/index.astro";
-import { booksData } from "../data/books";
+import { getLiveGoodreadsBooks } from "../lib/goodreads";
+import { booksData as fallbackBooks } from "../data/books";
+
+const liveBooks = await getLiveGoodreadsBooks();
+const booksData = liveBooks.length > 0 ? liveBooks : fallbackBooks;
 
 const currentlyReading = booksData.find((b) => b.status === "reading");
 

@@ -136,6 +136,9 @@ export function parseGoodreadsXMLToBooks(xmlText: string): GoodreadsBook[] {
       const fallbackImg = extractImageFromDescription(desc);
       if (fallbackImg) coverUrl = fallbackImg;
     }
+    if (coverUrl) {
+      coverUrl = coverUrl.replace(/\._S[XY]\d+_\./, '._SX318_.');
+    }
 
     const pagesRaw = extractTag(itemXml, 'num_pages') || extractTag(itemXml, 'book_num_pages');
     const pages = pagesRaw ? parseInt(pagesRaw, 10) : 0;
