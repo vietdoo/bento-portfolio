@@ -624,74 +624,61 @@ export default function VietnamMap() {
       {/* Map Container */}
       <div ref={containerRef} class="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Square Glassmorphism Data Statistics Card (Bottom-Right) */}
-      <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-72 sm:w-80 rounded-2xl bg-darkslate-800/85 backdrop-blur-xl border border-darkslate-500/70 shadow-2xl p-4 sm:p-5 text-white transition-all duration-300 hover:border-primary-500/40">
+      {/* Square Minimal Data Statistics Card (Bottom-Right) */}
+      <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-72 sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/80 shadow-2xl p-5 text-white">
         {/* Header */}
-        <div class="flex items-center justify-between pb-2.5 border-b border-darkslate-600/50 mb-3">
-          <div class="flex items-center gap-2">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
-            </span>
-            <span class="text-[11px] font-mono font-bold tracking-wider text-darkslate-200 uppercase">
-              BẢN ĐỒ VIỆT NAM
-            </span>
-          </div>
-          <div class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-primary-500/10 text-primary-400 border border-primary-500/25">
-            LIVE STATS
-          </div>
+        <div class="pb-3 border-b border-darkslate-600/60 mb-4">
+          <span class="text-xs font-mono font-bold tracking-widest text-slate-200 uppercase">
+            BẢN ĐỒ VIỆT NAM
+          </span>
         </div>
 
         {/* Main Stats Counter */}
-        <div class="flex items-baseline justify-between mb-2">
+        <div class="flex items-center justify-between mb-3">
           <div>
             <div class="flex items-baseline gap-1.5">
-              <span class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-cabinet">
+              <span class="text-4xl font-extrabold text-white tracking-tight font-cabinet">
                 {visitedCount()}
               </span>
-              <span class="text-base sm:text-lg text-darkslate-400 font-semibold">/ {totalProvinces}</span>
+              <span class="text-xl font-bold text-slate-300">/ {totalProvinces}</span>
             </div>
-            <div class="text-xs text-darkslate-300 font-medium mt-0.5">
+            <div class="text-xs text-slate-200 font-medium mt-1">
               Tỉnh thành đã khám phá
             </div>
           </div>
           
-          <div class="flex flex-col items-end">
-            <div class="px-2.5 py-1 rounded-xl bg-primary-500/15 border border-primary-500/30 text-primary-400 font-bold text-sm shadow-sm">
-              {visitedPercent()}%
-            </div>
-            <span class="text-[10px] text-darkslate-400 mt-1">Hoàn thành</span>
+          <div class="px-3 py-1.5 rounded-xl bg-primary-500/20 border border-primary-400 text-primary-300 font-extrabold text-base shadow-sm">
+            {visitedPercent()}%
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div class="w-full h-2 bg-darkslate-700/90 rounded-full overflow-hidden border border-darkslate-600/60 my-3">
+        <div class="w-full h-2 bg-darkslate-900/90 rounded-full overflow-hidden border border-darkslate-600/60 mb-4">
           <div
-            class="bg-gradient-to-r from-primary-500 to-primary-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(var(--primary-500-rgb),0.5)]"
+            class="bg-primary-500 h-full rounded-full transition-all duration-700 ease-out"
             style={{ width: `${visitedPercent()}%` }}
           />
         </div>
 
         {/* Region Breakdown Grid */}
-        <div class="grid grid-cols-3 gap-2 pt-1 text-center">
-          <div class="bg-darkslate-900/60 border border-darkslate-600/40 rounded-xl p-2 flex flex-col items-center">
-            <span class="text-[10px] font-semibold text-darkslate-400 uppercase tracking-wider">Bắc Bộ</span>
-            <span class="text-sm font-bold text-white mt-0.5">{regionCounts().bac} <span class="text-[10px] font-normal text-darkslate-400">tỉnh</span></span>
+        <div class="grid grid-cols-3 gap-2.5 text-center">
+          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
+            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Bắc Bộ</span>
+            <span class="text-base font-extrabold text-white">{regionCounts().bac} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
           </div>
-          <div class="bg-darkslate-900/60 border border-darkslate-600/40 rounded-xl p-2 flex flex-col items-center">
-            <span class="text-[10px] font-semibold text-darkslate-400 uppercase tracking-wider">Trung Bộ</span>
-            <span class="text-sm font-bold text-white mt-0.5">{regionCounts().trung} <span class="text-[10px] font-normal text-darkslate-400">tỉnh</span></span>
+          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
+            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Trung Bộ</span>
+            <span class="text-base font-extrabold text-white">{regionCounts().trung} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
           </div>
-          <div class="bg-darkslate-900/60 border border-darkslate-600/40 rounded-xl p-2 flex flex-col items-center">
-            <span class="text-[10px] font-semibold text-darkslate-400 uppercase tracking-wider">Nam Bộ</span>
-            <span class="text-sm font-bold text-white mt-0.5">{regionCounts().nam} <span class="text-[10px] font-normal text-darkslate-400">tỉnh</span></span>
+          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
+            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Nam Bộ</span>
+            <span class="text-base font-extrabold text-white">{regionCounts().nam} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
           </div>
         </div>
 
         {/* Card Footer / Attribution */}
-        <div class="mt-3 pt-2.5 border-t border-darkslate-600/40 flex items-center justify-between text-[10px] text-darkslate-400">
-          <span>© <a href="https://carto.com/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-darkslate-300">CARTO</a> • <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-darkslate-300">OpenStreetMap</a></span>
-          <span class="text-darkslate-400 font-mono">vietdoo</span>
+        <div class="mt-4 pt-3 border-t border-darkslate-600/60 text-[11px] text-slate-400">
+          © <a href="https://carto.com/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-slate-200">CARTO</a> • <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-slate-200">OpenStreetMap</a>
         </div>
       </div>
     </div>
