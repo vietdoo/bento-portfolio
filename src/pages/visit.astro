@@ -23,6 +23,8 @@ import { SITE } from "../site-config";
   description={`Bản đồ Việt Nam tương tác hiển thị các tỉnh thành đã ghé thăm bởi ${SITE.author.fullNameVi} (${SITE.author.shortName}), Software Engineer @ ${SITE.author.companyVi}.`}
   page="travel"
   title={`${SITE.author.fullNameVi} (${SITE.author.shortName}) — Các Tỉnh Thành Đã Ghé Thăm`}
+  noPadding={true}
+  soundTogglePosition="left"
 >
   <VietnamMap client:load />
 </BasicLayout>

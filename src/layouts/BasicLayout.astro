@@ -15,13 +15,27 @@ interface Props {
   slug?: string | undefined;
   pubDate?: string;
   hideSoundToggle?: boolean;
+  soundTogglePosition?: "left" | "right";
+  noPadding?: boolean;
   hideCal?: boolean;
   navLabel?: string;
   navCta?: SubpageNavCta;
   hideHeader?: boolean;
 }
 
-const { title, description, page, pubDate, hideSoundToggle, hideCal, navLabel, navCta, hideHeader } = Astro.props;
+const {
+  title,
+  description,
+  page,
+  pubDate,
+  hideSoundToggle,
+  soundTogglePosition = "right",
+  noPadding = false,
+  hideCal,
+  navLabel,
+  navCta,
+  hideHeader,
+} = Astro.props;
 const canonicalUrl = Astro.url.href.split("?")[0];
 const image = `${Astro.url.origin}/og.webp`;
 
@@ -298,12 +312,12 @@ const jsonLdGraph = {
         <SubpageNavigation client:load label={resolvedNavLabel} cta={navCta} />
       )
     }
-    <div class={!hideHeader && !isHome ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center"}>
+    <div class={!hideHeader && !isHome && !noPadding ? "w-full flex-1 flex flex-col items-center pt-20 lg:pt-24" : "w-full flex-1 flex flex-col items-center relative overflow-hidden"}>
       <slot />
     </div>
     {
       !hideSoundToggle && (
-        <div class="fixed bottom-4 right-4 md:bottom-6 z-50 flex flex-col items-center gap-2">
+        <div class={`fixed bottom-4 md:bottom-6 z-50 flex flex-col items-center gap-2 ${soundTogglePosition === "left" ? "left-4 md:left-6" : "right-4 md:right-6"}`}>
           <StylePanel />
           <button
             id="sound-toggle"
