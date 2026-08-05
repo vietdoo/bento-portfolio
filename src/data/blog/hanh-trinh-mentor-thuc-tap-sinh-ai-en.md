@@ -1,5 +1,5 @@
 ---
-title: "Where I Went Wrong When Mentoring My First RAG Pipeline"
+title: "Mentoring a RAG System: What Production Teaches That Tutorials Don't"
 description: "Architecture, production incidents, and key takeaways from guiding a senior intern to build a RAG chatbot + dashboard for VNPT — written for engineers, not to brag."
 pubDate: 2026-07-27
 category: "engineering"
