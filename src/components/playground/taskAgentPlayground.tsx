@@ -131,7 +131,7 @@ export default function TaskAgentPlayground() {
           id: `msg-${Date.now()}`,
           sender: "agent",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          text: "Hello! Type a task or pick a preset below to begin.",
+          text: "Hello! Assign a task or pick a preset below to get started.",
         },
       ],
     };
@@ -326,61 +326,61 @@ export default function TaskAgentPlayground() {
   };
 
   return (
-    <div class="w-full max-w-5xl mx-auto flex flex-col gap-5 text-darkslate-100 p-2 md:p-4 font-sans">
-      {/* Top Header */}
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-darkslate-500">
+    <div class="w-full max-w-5xl mx-auto flex flex-col gap-5 text-neutral-100 p-2 md:p-4 font-sans selection:bg-neutral-800">
+      {/* Vercel Header */}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-800/80">
         <div>
           <h1 class="text-2xl font-bold text-white tracking-tight">Task Agent</h1>
-          <p class="text-xs text-darkslate-200 mt-1">
-            AI chat assistant for task assignment, action approval, and feedback workflows.
+          <p class="text-xs text-neutral-400 mt-1">
+            Autonomous agent chat interface for task delegation, tool execution, and action review.
           </p>
         </div>
 
         <button
           onClick={handleNewTask}
           type="button"
-          class="px-3.5 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition self-start sm:self-auto"
+          class="px-3.5 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition-all shadow-sm self-start sm:self-auto"
         >
           + New Task
         </button>
       </div>
 
-      {/* Main Layout Grid */}
+      {/* Main Grid */}
       <div class="grid grid-cols-1 md:grid-cols-4 gap-5 items-start">
-        {/* Left Sidebar: Task List */}
-        <div class="md:col-span-1 bg-darkslate-800 border border-darkslate-500 rounded-xl p-3 flex flex-col gap-3">
+        {/* Left Sidebar */}
+        <div class="md:col-span-1 bg-neutral-900/60 border border-neutral-800/80 backdrop-blur rounded-xl p-3.5 flex flex-col gap-3">
           <div class="flex items-center justify-between px-1">
-            <span class="text-xs font-semibold text-darkslate-200 tracking-wider">ACTIVE TASKS</span>
-            <span class="text-xs text-darkslate-300 font-mono bg-darkslate-700 px-2 py-0.5 rounded">
+            <span class="text-[11px] font-semibold text-neutral-400 tracking-wider uppercase">Active Tasks</span>
+            <span class="text-[11px] text-neutral-400 font-mono bg-neutral-800/80 border border-neutral-700/60 px-1.5 py-0.5 rounded">
               {tasks().length}
             </span>
           </div>
 
-          <div class="flex flex-col gap-2 max-h-[160px] md:max-h-[440px] overflow-y-auto pr-1">
+          <div class="flex flex-col gap-1.5 max-h-[440px] overflow-y-auto pr-1">
             <For each={tasks()}>
               {(task) => (
                 <button
                   onClick={() => handleSelectTask(task.id)}
-                  class={`w-full text-left p-3 rounded-xl border transition flex flex-col gap-1.5 ${
+                  class={`w-full text-left p-3 rounded-lg border transition-all flex flex-col gap-1.5 ${
                     task.id === activeTaskId()
-                      ? "bg-darkslate-700/90 border-primary-500 text-white"
-                      : "bg-darkslate-800/60 border-darkslate-600/70 text-darkslate-200 hover:bg-darkslate-700/50"
+                      ? "bg-neutral-800/90 border-neutral-700 text-white shadow-sm"
+                      : "bg-neutral-900/40 border-neutral-800/50 text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200"
                   }`}
                 >
-                  <span class="text-xs font-medium text-white truncate">{task.title}</span>
-                  <div class="flex items-center justify-between text-[11px] text-darkslate-300">
+                  <span class="text-xs font-medium truncate leading-tight">{task.title}</span>
+                  <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono">
                     <span>{task.createdAt}</span>
                     <Show when={task.status === "needs_approval"}>
-                      <span class="text-amber-300 font-medium">Pending Action</span>
+                      <span class="text-amber-400 font-medium font-sans">Pending</span>
                     </Show>
                     <Show when={task.status === "in_progress"}>
-                      <span class="text-primary-300 font-medium">In Progress</span>
+                      <span class="text-blue-400 font-medium font-sans">Active</span>
                     </Show>
                     <Show when={task.status === "completed"}>
-                      <span class="text-emerald-300 font-medium">Completed</span>
+                      <span class="text-emerald-400 font-medium font-sans">Done</span>
                     </Show>
                     <Show when={task.status === "revised"}>
-                      <span class="text-sky-300 font-medium">Revised</span>
+                      <span class="text-sky-400 font-medium font-sans">Revised</span>
                     </Show>
                   </div>
                 </button>
@@ -389,32 +389,32 @@ export default function TaskAgentPlayground() {
           </div>
         </div>
 
-        {/* Right Main Chat Container */}
-        <div class="md:col-span-3 bg-darkslate-800 border border-darkslate-500 rounded-xl p-4 md:p-5 flex flex-col min-h-[560px] justify-between">
-          {/* Scrollable Messages Area */}
-          <div class="flex flex-col gap-4 overflow-y-auto max-h-[460px] pr-2 mb-4">
+        {/* Right Main Chat Section */}
+        <div class="md:col-span-3 bg-neutral-900/60 border border-neutral-800/80 backdrop-blur rounded-xl p-4 md:p-5 flex flex-col min-h-[580px] justify-between">
+          {/* Messages Feed */}
+          <div class="flex flex-col gap-4 overflow-y-auto max-h-[470px] pr-2 mb-4">
             <For each={activeTask()?.messages || []}>
               {(msg) => (
                 <div
                   class={`flex flex-col gap-2.5 p-4 rounded-xl border ${
                     msg.sender === "user"
-                      ? "bg-darkslate-700/70 border-darkslate-500 text-white self-end max-w-[85%]"
-                      : "bg-darkslate-900/80 border-darkslate-600/80 text-darkslate-100 self-start w-full"
+                      ? "bg-neutral-800/80 border-neutral-700/80 text-white self-end max-w-[85%] shadow-sm"
+                      : "bg-neutral-950/70 border-neutral-800 text-neutral-200 self-start w-full shadow-sm"
                   }`}
                 >
                   {/* Header */}
-                  <div class="flex items-center justify-between text-xs text-darkslate-300 border-b border-darkslate-700/60 pb-2">
-                    <span class="font-medium text-white">
+                  <div class="flex items-center justify-between text-xs text-neutral-400 border-b border-neutral-800/80 pb-2 font-mono">
+                    <span class="font-semibold text-neutral-300 font-sans">
                       {msg.sender === "user" ? "You" : "Task Agent"}
                     </span>
                     <span>{msg.timestamp}</span>
                   </div>
 
-                  {/* Thinking Block */}
+                  {/* Thought Process */}
                   <Show when={msg.thinking}>
-                    <div class="bg-darkslate-950/70 border border-darkslate-700 rounded-lg p-3 text-xs text-darkslate-200 font-mono leading-relaxed">
-                      <div class="text-[11px] text-primary-400 font-sans font-medium mb-1">
-                        Agent Thinking Process
+                    <div class="bg-black/50 border border-neutral-800/80 rounded-lg p-3 text-xs text-neutral-400 font-mono leading-relaxed">
+                      <div class="text-[10px] text-neutral-400 font-sans font-semibold uppercase tracking-wider mb-1">
+                        Thought Process
                       </div>
                       {msg.thinking}
                     </div>
@@ -425,16 +425,16 @@ export default function TaskAgentPlayground() {
                     <div class="flex flex-col gap-2">
                       <For each={msg.toolCalls}>
                         {(tool) => (
-                          <div class="bg-darkslate-950 border border-darkslate-700 rounded-lg p-3 text-xs font-mono">
-                            <div class="flex items-center justify-between text-xs text-darkslate-200">
-                              <span class="text-primary-400 font-semibold">tool::{tool.name}</span>
-                              <span class="text-[11px] text-emerald-400 font-sans">{tool.status}</span>
+                          <div class="bg-black/60 border border-neutral-800 rounded-lg p-3 text-xs font-mono">
+                            <div class="flex items-center justify-between text-xs text-neutral-300">
+                              <span class="text-neutral-200 font-medium">tool::{tool.name}</span>
+                              <span class="text-[10px] text-emerald-400 uppercase font-sans font-medium">{tool.status}</span>
                             </div>
-                            <div class="text-darkslate-300 text-[11px] mt-1 break-all">
+                            <div class="text-neutral-400 text-[11px] mt-1 break-all">
                               args: {JSON.stringify(tool.args)}
                             </div>
                             <Show when={tool.output}>
-                              <div class="text-darkslate-200 text-[11px] mt-1.5 pt-1.5 border-t border-darkslate-800">
+                              <div class="text-neutral-300 text-[11px] mt-1.5 pt-1.5 border-t border-neutral-800/80">
                                 output: {tool.output}
                               </div>
                             </Show>
@@ -444,21 +444,21 @@ export default function TaskAgentPlayground() {
                     </div>
                   </Show>
 
-                  {/* Message Content */}
-                  <div class="text-xs leading-relaxed text-white whitespace-pre-wrap">{msg.text}</div>
+                  {/* Main Text Content */}
+                  <div class="text-xs leading-relaxed text-neutral-200 whitespace-pre-wrap">{msg.text}</div>
 
                   {/* Action Approval Card */}
                   <Show when={msg.actionApproval}>
-                    <div class="bg-darkslate-950 border border-darkslate-600 rounded-xl p-4 flex flex-col gap-2.5 my-1">
+                    <div class="bg-black border border-neutral-800 rounded-xl p-4 flex flex-col gap-3 my-1">
                       <div class="flex items-center justify-between text-xs">
-                        <span class="font-semibold text-white">{msg.actionApproval!.title}</span>
+                        <span class="font-semibold text-white tracking-tight">{msg.actionApproval!.title}</span>
                         <span
-                          class={`text-[11px] px-2.5 py-0.5 rounded font-medium ${
+                          class={`text-[10px] px-2.5 py-0.5 rounded-full font-mono font-medium ${
                             msg.actionApproval!.status === "pending"
-                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                              ? "bg-amber-500/10 text-amber-300 border border-amber-500/20"
                               : msg.actionApproval!.status === "approved"
-                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                              : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                              ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                              : "bg-rose-500/10 text-rose-300 border border-rose-500/20"
                           }`}
                         >
                           {msg.actionApproval!.status === "pending"
@@ -469,23 +469,37 @@ export default function TaskAgentPlayground() {
                         </span>
                       </div>
 
-                      <p class="text-xs text-darkslate-200">{msg.actionApproval!.description}</p>
+                      <p class="text-xs text-neutral-400 leading-relaxed">{msg.actionApproval!.description}</p>
 
-                      <pre class="bg-darkslate-900 border border-darkslate-700 p-3 rounded-lg text-xs text-emerald-300 font-mono overflow-x-auto leading-relaxed">
-                        {msg.actionApproval!.details}
+                      <pre class="bg-neutral-950 border border-neutral-800 p-3 rounded-lg text-xs font-mono leading-relaxed overflow-x-auto">
+                        <For each={msg.actionApproval!.details.split("\n")}>
+                          {(line) => (
+                            <div
+                              class={
+                                line.startsWith("+")
+                                  ? "text-emerald-400"
+                                  : line.startsWith("-")
+                                  ? "text-rose-400"
+                                  : "text-neutral-400"
+                              }
+                            >
+                              {line}
+                            </div>
+                          )}
+                        </For>
                       </pre>
 
                       <Show when={msg.actionApproval!.status === "pending"}>
                         <div class="flex items-center gap-2 pt-1">
                           <button
                             onClick={() => handleActionDecision(msg.id, true)}
-                            class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition"
+                            class="px-3.5 py-1.5 rounded-md bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition-all shadow-sm"
                           >
                             Approve & Execute
                           </button>
                           <button
                             onClick={() => handleActionDecision(msg.id, false)}
-                            class="px-3.5 py-1.5 rounded-lg border border-darkslate-500 hover:bg-darkslate-800 text-darkslate-200 hover:text-rose-300 text-xs font-medium transition"
+                            class="px-3.5 py-1.5 rounded-md border border-neutral-800 bg-transparent hover:bg-neutral-800 text-neutral-300 text-xs font-medium transition-all"
                           >
                             Reject
                           </button>
@@ -494,28 +508,28 @@ export default function TaskAgentPlayground() {
                     </div>
                   </Show>
 
-                  {/* Clean Agent Feedback Actions */}
+                  {/* Clean Agent Feedback */}
                   <Show when={msg.sender === "agent"}>
-                    <div class="mt-1 pt-2 border-t border-darkslate-800 flex flex-col gap-2">
-                      <div class="flex items-center justify-between text-xs text-darkslate-300">
+                    <div class="mt-1 pt-2 border-t border-neutral-800/80 flex flex-col gap-2">
+                      <div class="flex items-center justify-between text-xs text-neutral-400">
                         <span class="text-[11px]">Was this response helpful?</span>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
                           <button
                             onClick={() => handleRating(msg.id, "up")}
-                            class={`px-2.5 py-1 rounded-md text-xs border transition ${
+                            class={`px-2.5 py-1 rounded-md text-[11px] border transition-all ${
                               msg.feedback?.rating === "up"
-                                ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-medium"
-                                : "border-darkslate-600 text-darkslate-300 hover:text-white hover:border-darkslate-400"
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 font-medium"
+                                : "border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700"
                             }`}
                           >
                             Yes
                           </button>
                           <button
                             onClick={() => handleRating(msg.id, "down")}
-                            class={`px-2.5 py-1 rounded-md text-xs border transition ${
+                            class={`px-2.5 py-1 rounded-md text-[11px] border transition-all ${
                               msg.feedback?.rating === "down"
-                                ? "bg-rose-500/20 border-rose-500 text-rose-300 font-medium"
-                                : "border-darkslate-600 text-darkslate-300 hover:text-white hover:border-darkslate-400"
+                                ? "bg-rose-500/10 border-rose-500/30 text-rose-300 font-medium"
+                                : "border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700"
                             }`}
                           >
                             No
@@ -524,7 +538,7 @@ export default function TaskAgentPlayground() {
                             onClick={() =>
                               setActiveFeedbackId(activeFeedbackId() === msg.id ? null : msg.id)
                             }
-                            class="px-2.5 py-1 rounded-md border border-darkslate-600 text-darkslate-300 hover:text-white hover:border-darkslate-400 transition"
+                            class="px-2.5 py-1 rounded-md text-[11px] border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all"
                           >
                             Feedback
                           </button>
@@ -539,11 +553,11 @@ export default function TaskAgentPlayground() {
                             onInput={(e) => setFeedbackText(e.currentTarget.value)}
                             onKeyDown={(e) => e.key === "Enter" && submitFeedbackComment(msg.id)}
                             placeholder="Type feedback or revision request..."
-                            class="flex-1 bg-darkslate-950 border border-darkslate-600 rounded-lg px-3 py-1.5 text-xs text-white placeholder-darkslate-400 focus:outline-none focus:border-primary-500"
+                            class="flex-1 bg-black border border-neutral-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600 transition font-sans"
                           />
                           <button
                             onClick={() => submitFeedbackComment(msg.id)}
-                            class="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium transition"
+                            class="px-3 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 text-xs font-semibold transition-all shadow-sm"
                           >
                             Send
                           </button>
@@ -551,7 +565,7 @@ export default function TaskAgentPlayground() {
                       </Show>
 
                       <Show when={msg.feedback?.comment}>
-                        <div class="text-xs text-primary-300 bg-primary-950/40 border border-primary-500/30 rounded-lg p-2">
+                        <div class="text-xs text-neutral-300 bg-black/60 border border-neutral-800 rounded-lg p-2 font-mono">
                           Feedback recorded: "{msg.feedback!.comment}"
                         </div>
                       </Show>
@@ -562,23 +576,25 @@ export default function TaskAgentPlayground() {
             </For>
 
             <Show when={isProcessing()}>
-              <div class="bg-darkslate-900/80 border border-darkslate-600 rounded-xl p-3.5 text-xs text-darkslate-200 font-mono animate-pulse self-start">
+              <div class="bg-neutral-950/80 border border-neutral-800 rounded-xl p-3.5 text-xs text-neutral-400 font-mono animate-pulse self-start">
                 Task Agent is processing request...
               </div>
             </Show>
           </div>
 
-          {/* Presets & Input Form */}
-          <div class="flex flex-col gap-3 pt-3 border-t border-darkslate-700">
+          {/* Presets & Input Bar */}
+          <div class="flex flex-col gap-3 pt-3 border-t border-neutral-800/80">
             {/* Presets */}
             <div class="flex items-center gap-2 overflow-x-auto pb-1">
-              <span class="text-xs text-darkslate-300 font-medium whitespace-nowrap">Presets:</span>
+              <span class="text-[11px] text-neutral-400 uppercase tracking-wider font-semibold whitespace-nowrap">
+                Presets:
+              </span>
               <For each={PRESET_TASKS}>
                 {(preset) => (
                   <button
                     onClick={() => submitTask(preset.prompt)}
                     disabled={isProcessing()}
-                    class="text-xs px-3 py-1 rounded-lg bg-darkslate-700/80 hover:bg-darkslate-600 border border-darkslate-500 text-darkslate-100 whitespace-nowrap transition disabled:opacity-50 font-medium"
+                    class="text-xs px-2.5 py-1 rounded-md bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white whitespace-nowrap transition-all font-medium disabled:opacity-50"
                   >
                     {preset.title}
                   </button>
@@ -594,12 +610,12 @@ export default function TaskAgentPlayground() {
                 onInput={(e) => setInputPrompt(e.currentTarget.value)}
                 onKeyDown={(e) => e.key === "Enter" && submitTask(inputPrompt())}
                 placeholder="Assign a task to AI agent (e.g. Audit auth middleware...)"
-                class="flex-1 bg-darkslate-900 border border-darkslate-500 rounded-xl px-4 py-2.5 text-xs text-white placeholder-darkslate-400 focus:outline-none focus:border-primary-500 transition"
+                class="flex-1 bg-black border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600 transition font-sans"
               />
               <button
                 onClick={() => submitTask(inputPrompt())}
                 disabled={!inputPrompt().trim() || isProcessing()}
-                class="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 disabled:opacity-40 text-white font-medium text-xs transition"
+                class="px-4 py-2.5 rounded-lg bg-white text-black hover:bg-neutral-200 disabled:opacity-40 font-semibold text-xs transition-all shadow-sm"
               >
                 Assign
               </button>
