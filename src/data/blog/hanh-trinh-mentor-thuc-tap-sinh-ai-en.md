@@ -1,5 +1,5 @@
 ---
-title: "Mentoring a RAG Pipeline from Zero to Production: An 8-Week Engineering Log"
+title: "Where I Went Wrong When Mentoring My First RAG Pipeline"
 description: "Architecture, production incidents, and key takeaways from guiding a senior intern to build a RAG chatbot + dashboard for VNPT — written for engineers, not to brag."
 pubDate: 2026-07-27
 category: "engineering"

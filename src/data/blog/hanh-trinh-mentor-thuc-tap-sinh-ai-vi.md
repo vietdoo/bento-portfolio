@@ -1,5 +1,5 @@
 ---
-title: "Mentor một RAG pipeline từ zero đến production: nhật ký kỹ thuật 8 tuần"
+title: "Tôi đã sai ở đâu khi lần đầu mentor một RAG pipeline"
 description: "Kiến trúc, sự cố production, và những gì tôi rút ra khi hướng dẫn một thực tập sinh xây chatbot RAG + dashboard cho VNPT — viết cho các kỹ sư khác đọc, không phải để kể lể."
 pubDate: 2026-07-27
 category: "engineering"
