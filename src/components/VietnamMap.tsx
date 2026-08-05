@@ -27,7 +27,7 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
     labelDy: 4,
     coverImage: "/travel/danang_1.jpg",
     highlights: ["Cầu Vàng", "Bà Nà Hills", "Cầu Rồng", "Biển Mỹ Khê"],
-    travelDate: "Đã ghé thăm • Mùa hè 2024"
+    travelDate: "Đã ghé thăm • Mùa hè 2024",
   },
   "Dak Lak": { vi: "Đắk Lắk", region: "Tây Nguyên" },
   "Dien Bien": { vi: "Điện Biên", region: "Tây Bắc Bộ" },
@@ -41,7 +41,7 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
     labelDy: -4,
     coverImage: "/travel/hanoi_1.jpg",
     highlights: ["Hồ Hoàn Kiếm", "Phố Cổ", "Văn Miếu", "Ẩm thực Hà Nội"],
-    travelDate: "Đã ghé thăm • Mùa thu 2024"
+    travelDate: "Đã ghé thăm • Mùa thu 2024",
   },
   "Ha Tinh": { vi: "Hà Tĩnh", region: "Bắc Trung Bộ" },
   "Hai Phong": { vi: "Hải Phòng", region: "Đồng bằng sông Hồng" },
@@ -52,7 +52,7 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
     labelDy: 4,
     coverImage: "/travel/saigon_1.jpg",
     highlights: ["Nhà thờ Đức Bà", "Landmark 81", "Bưu điện TP", "Phố Nguyễn Huệ"],
-    travelDate: "Đã ghé thăm • 2025"
+    travelDate: "Đã ghé thăm • 2025",
   },
   "Hue": { vi: "Thừa Thiên Huế", region: "Bắc Trung Bộ" },
   "Hung Yen": { vi: "Hưng Yên", region: "Đồng bằng sông Hồng" },
@@ -71,7 +71,7 @@ const PROVINCE_MAP: Record<string, ProvinceInfo> = {
     labelDx: 16,
     labelDy: -4,
     highlights: ["Vịnh Hạ Long", "Đảo Cô Tô", "Yên Tử", "Vân Đồn"],
-    travelDate: "Đã ghé thăm • Mùa thu 2024"
+    travelDate: "Đã ghé thăm • Mùa thu 2024",
   },
   "Quang Tri": { vi: "Quảng Trị", region: "Bắc Trung Bộ" },
   "Son La": { vi: "Sơn La", region: "Tây Bắc Bộ" },
@@ -119,9 +119,37 @@ const TOOLTIP_BORDER = "#334155";
 
 export default function VietnamMap() {
   let containerRef: HTMLDivElement | undefined;
+  let zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown> | null = null;
+  let svgSelection: d3.Selection<SVGSVGElement, unknown, null, undefined> | null = null;
+
   const visitedProvinces = (SITE as any).visitedProvinces || ["Ha Noi", "Ho Chi Minh", "Da Nang"];
-  
   const [visited] = createSignal<string[]>(visitedProvinces);
+
+  const [selectedProvince, setSelectedProvince] = createSignal<{
+    name: string;
+    info: ProvinceInfo;
+    isVisited: boolean;
+  } | null>(null);
+
+  const [isStatsCollapsed, setIsStatsCollapsed] = createSignal(false);
+
+  const handleZoomIn = () => {
+    if (svgSelection && zoomBehavior) {
+      svgSelection.transition().duration(300).call(zoomBehavior.scaleBy as any, 1.4);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (svgSelection && zoomBehavior) {
+      svgSelection.transition().duration(300).call(zoomBehavior.scaleBy as any, 0.7);
+    }
+  };
+
+  const handleResetZoom = () => {
+    if (svgSelection && zoomBehavior) {
+      svgSelection.transition().duration(500).call(zoomBehavior.transform as any, d3.zoomIdentity);
+    }
+  };
 
   onMount(() => {
     if (!containerRef) return;
@@ -134,8 +162,9 @@ export default function VietnamMap() {
 
       d3.select(containerRef).selectAll("*").remove();
 
-      const width = Math.max(containerRef.clientWidth || window.innerWidth, 400);
+      const width = Math.max(containerRef.clientWidth || window.innerWidth, 320);
       const height = Math.max(containerRef.clientHeight || window.innerHeight, 400);
+      const isMobile = width < 640;
 
       const svg = d3
         .select(containerRef)
@@ -145,6 +174,8 @@ export default function VietnamMap() {
         .attr("viewBox", `0 0 ${width} ${height}`)
         .attr("preserveAspectRatio", "xMidYMid meet")
         .style("background", OCEAN_FILL);
+
+      svgSelection = svg as any;
 
       // Defs pattern for sea stipple texture & glow filter
       const defs = svg.append("defs");
@@ -156,23 +187,9 @@ export default function VietnamMap() {
         .attr("height", 6)
         .attr("patternUnits", "userSpaceOnUse");
 
-      stipple
-        .append("rect")
-        .attr("width", 6)
-        .attr("height", 6)
-        .attr("fill", OCEAN_FILL);
-      stipple
-        .append("circle")
-        .attr("cx", 1.5)
-        .attr("cy", 1.5)
-        .attr("r", 0.5)
-        .attr("fill", OCEAN_STIPPLE);
-      stipple
-        .append("circle")
-        .attr("cx", 4.5)
-        .attr("cy", 4.5)
-        .attr("r", 0.5)
-        .attr("fill", OCEAN_STIPPLE);
+      stipple.append("rect").attr("width", 6).attr("height", 6).attr("fill", OCEAN_FILL);
+      stipple.append("circle").attr("cx", 1.5).attr("cy", 1.5).attr("r", 0.5).attr("fill", OCEAN_STIPPLE);
+      stipple.append("circle").attr("cx", 4.5).attr("cy", 4.5).attr("r", 0.5).attr("fill", OCEAN_STIPPLE);
 
       // Glow filter for visited provinces & beacons
       const filter = defs
@@ -182,10 +199,7 @@ export default function VietnamMap() {
         .attr("y", "-20%")
         .attr("width", "140%")
         .attr("height", "140%");
-      filter
-        .append("feGaussianBlur")
-        .attr("stdDeviation", "2")
-        .attr("result", "coloredBlur");
+      filter.append("feGaussianBlur").attr("stdDeviation", "2").attr("result", "coloredBlur");
       const feMerge = filter.append("feMerge");
       feMerge.append("feMergeNode").attr("in", "coloredBlur");
       feMerge.append("feMergeNode").attr("in", "SourceGraphic");
@@ -195,7 +209,10 @@ export default function VietnamMap() {
         .append("rect")
         .attr("width", "100%")
         .attr("height", "100%")
-        .attr("fill", "url(#vn-sea-stipple)");
+        .attr("fill", "url(#vn-sea-stipple)")
+        .on("click", () => {
+          setSelectedProvince(null);
+        });
 
       // CARTO Map Tiles layer group (rendered below vector map features)
       const tilesGroup = svg.append("g").attr("class", "carto-tiles-group");
@@ -211,20 +228,25 @@ export default function VietnamMap() {
       };
 
       const features = (vietnamData as any).features;
-      const padding = Math.min(width, height) > 600 ? 25 : 12;
+
+      // Fit map extent taking into account top navbar and bottom floating cards on mobile
+      const paddingBounds = isMobile
+        ? [
+            [16, 75],
+            [width - 16, height - 160],
+          ]
+        : [
+            [25, 25],
+            [width - 25, height - 25],
+          ];
+
       const projection = d3
         .geoMercator()
-        .fitExtent(
-          [
-            [padding, padding],
-            [width - padding, height - padding],
-          ],
-          targetExtent as any
-        );
+        .fitExtent(paddingBounds as [[number, number], [number, number]], targetExtent as any);
 
       const pathGenerator = d3.geoPath().projection(projection);
 
-      // Dynamic CARTO Dark Matter (nolabels) tile renderer
+      // Dynamic CARTO Dark Matter tile renderer
       const updateTiles = (transform = d3.zoomIdentity) => {
         const scale = projection.scale() * transform.k;
         const translate = projection.translate();
@@ -288,13 +310,11 @@ export default function VietnamMap() {
           .attr("preserveAspectRatio", "none");
       };
 
-      // Initial tiles update
       updateTiles(d3.zoomIdentity);
 
-      // Main map group for pan/zoom
       const mapGroup = svg.append("g").attr("class", "map-group");
 
-      // Graticule (Lat/Lon grid across Vietnam region)
+      // Graticule
       const graticule = d3.geoGraticule().step([2, 2])();
       mapGroup
         .append("path")
@@ -305,9 +325,9 @@ export default function VietnamMap() {
         .style("stroke-width", 0.8)
         .style("opacity", 0.8);
 
-      // Neighboring world countries layer (only immediate neighbors, faded)
-      const worldFeatures = (worldData as any).features.filter(
-        (f: any) => NEIGHBOR_NAMES.has(f.properties?.name)
+      // Neighboring world countries
+      const worldFeatures = (worldData as any).features.filter((f: any) =>
+        NEIGHBOR_NAMES.has(f.properties?.name)
       );
 
       const worldGroup = mapGroup.append("g").attr("class", "world-countries");
@@ -325,6 +345,7 @@ export default function VietnamMap() {
         .style("cursor", "pointer")
         .style("transition", "fill 0.2s ease, stroke 0.2s ease")
         .on("mouseover", function (event, d: any) {
+          if (isMobile) return;
           const rawName = d.properties?.name || "Láng giềng";
           const vnName = COUNTRY_NAME_VN[rawName] || rawName;
 
@@ -333,19 +354,23 @@ export default function VietnamMap() {
             .style("stroke", "#33557a")
             .style("stroke-width", 1.2);
 
-          tooltip.html(`
+          tooltip
+            .html(`
             <div style="padding: 8px 12px;">
               <div style="font-weight: 700; font-size: 13px; color: #e2e8f0; margin-bottom: 2px;">${vnName}</div>
-              ${rawName !== vnName ? `<div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">${rawName}</div>` : ''}
+              ${rawName !== vnName ? `<div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px;">${rawName}</div>` : ""}
               <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(51, 65, 85, 0.5); color: #94a3b8; font-weight: 500;">
                 Quốc gia láng giềng
               </div>
             </div>
-          `).style("opacity", 1);
+          `)
+            .style("opacity", 1);
 
           moveTooltip(event);
         })
-        .on("mousemove", (event) => moveTooltip(event))
+        .on("mousemove", (event) => {
+          if (!isMobile) moveTooltip(event);
+        })
         .on("mouseout", function () {
           d3.select(this)
             .style("fill", WORLD_COUNTRY_FILL)
@@ -355,13 +380,13 @@ export default function VietnamMap() {
           tooltip.style("opacity", 0);
         });
 
-      // Geographical annotations (East Sea / Islands / Gulfs)
+      // Ocean labels
       const oceanLabels = [
-        { text: "BIỂN ĐÔNG", lon: 113.0, lat: 14.5, size: "15px", weight: "700", spacing: "0.25em", fill: "#64748b" },
-        { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
-        { text: "Quần đảo Trường Sa", lon: 114.2, lat: 9.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
-        { text: "Vịnh Bắc Bộ", lon: 107.5, lat: 19.8, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
-        { text: "Vịnh Thái Lan", lon: 101.5, lat: 9.5, size: "11px", weight: "600", spacing: "0.08em", fill: "#475569" },
+        { text: "BIỂN ĐÔNG", lon: 113.0, lat: 14.5, size: isMobile ? "12px" : "15px", weight: "700", spacing: "0.2em", fill: "#64748b" },
+        { text: "Quần đảo Hoàng Sa", lon: 112.2, lat: 16.5, size: isMobile ? "9px" : "11px", weight: "600", spacing: "0.05em", fill: "#475569" },
+        { text: "Quần đảo Trường Sa", lon: 114.2, lat: 9.8, size: isMobile ? "9px" : "11px", weight: "600", spacing: "0.05em", fill: "#475569" },
+        { text: "Vịnh Bắc Bộ", lon: 107.5, lat: 19.8, size: isMobile ? "9px" : "11px", weight: "600", spacing: "0.05em", fill: "#475569" },
+        { text: "Vịnh Thái Lan", lon: 101.5, lat: 9.5, size: isMobile ? "9px" : "11px", weight: "600", spacing: "0.05em", fill: "#475569" },
       ];
 
       oceanLabels.forEach((label) => {
@@ -383,7 +408,7 @@ export default function VietnamMap() {
         }
       });
 
-      // Single Tooltip Element attached to body
+      // Hover Tooltip attached to body (primarily desktop)
       const tooltip = d3
         .select("body")
         .append("div")
@@ -419,7 +444,7 @@ export default function VietnamMap() {
         tooltip.style("left", `${left}px`).style("top", `${top}px`);
       };
 
-      // Render Province Paths
+      // Province Paths
       const provincePaths = mapGroup
         .append("g")
         .attr("class", "provinces")
@@ -433,24 +458,37 @@ export default function VietnamMap() {
         .style("stroke-width", 1.2)
         .style("transition", "fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease");
 
-      // Function to update province colors
       const updateMapColors = () => {
         const visitedArray = visited();
+        const activeSel = selectedProvince();
         provincePaths.each(function (d: any) {
           const name = d.properties.Name;
           const isVisited = visitedArray.includes(name);
+          const isSelected = activeSel && activeSel.name === name;
+
           d3.select(this)
-            .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-            .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.4 : 1.2)
-            .style("opacity", isVisited ? 0.98 : 0.9)
-            .style("filter", isVisited ? "url(#visited-glow)" : "none");
+            .style("fill", isSelected ? "var(--primary-400)" : isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
+            .style("stroke", isSelected ? "#ffffff" : isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+            .style("stroke-width", isSelected ? 2.5 : isVisited ? 1.4 : 1.2)
+            .style("opacity", isVisited || isSelected ? 0.98 : 0.9)
+            .style("filter", isVisited || isSelected ? "url(#visited-glow)" : "none");
         });
         updateBeacons();
       };
 
       provincePaths
+        .on("click", function (event, d: any) {
+          event.stopPropagation();
+          const name = d.properties.Name;
+          const info = PROVINCE_MAP[name] || { vi: name, region: "Việt Nam" };
+          const isVisited = visited().includes(name);
+
+          setSelectedProvince({ name, info, isVisited });
+          tooltip.style("opacity", 0);
+          updateMapColors();
+        })
         .on("mouseover", function (event, d: any) {
+          if (isMobile) return;
           const name = d.properties.Name;
           const info = PROVINCE_MAP[name] || { vi: name, region: "Việt Nam" };
           const isVisited = visited().includes(name);
@@ -462,10 +500,9 @@ export default function VietnamMap() {
             .style("opacity", 1);
 
           if (isVisited && info.coverImage) {
-            // Travel Collection Card for visited places
             tooltip.html(`
-              <div style="width: 270px; overflow: hidden; border-radius: 12px; background: #0c131d;">
-                <div style="position: relative; width: 100%; height: 140px; overflow: hidden;">
+              <div style="width: 260px; overflow: hidden; border-radius: 12px; background: #0c131d;">
+                <div style="position: relative; width: 100%; height: 130px; overflow: hidden;">
                   <img src="${info.coverImage}" alt="${info.vi}" style="width: 100%; height: 100%; object-fit: cover;" />
                   <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(12, 19, 29, 0.95) 0%, rgba(12, 19, 29, 0.3) 60%, transparent 100%);"></div>
                   <span style="position: absolute; top: 10px; right: 10px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 9999px; background: rgba(16, 185, 129, 0.9); color: #ffffff; backdrop-filter: blur(4px);">
@@ -473,7 +510,7 @@ export default function VietnamMap() {
                     Đã ghé thăm
                   </span>
                   <div style="position: absolute; bottom: 8px; left: 12px; right: 12px;">
-                    <div style="font-weight: 800; font-size: 16px; color: #ffffff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">${info.vi}</div>
+                    <div style="font-weight: 800; font-size: 15px; color: #ffffff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">${info.vi}</div>
                     <div style="font-size: 11px; color: #cbd5e1; font-weight: 500;">${info.region}</div>
                   </div>
                 </div>
@@ -496,7 +533,6 @@ export default function VietnamMap() {
               </div>
             `).style("opacity", 1);
           } else {
-            // Minimal Tooltip for unvisited provinces
             tooltip.html(`
               <div style="padding: 10px 14px;">
                 <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px; color: #ffffff;">${info.vi}</div>
@@ -511,22 +547,27 @@ export default function VietnamMap() {
 
           moveTooltip(event);
         })
-        .on("mousemove", (event) => moveTooltip(event))
+        .on("mousemove", (event) => {
+          if (!isMobile) moveTooltip(event);
+        })
         .on("mouseout", function (_event, d: any) {
+          if (isMobile) return;
           const name = d.properties.Name;
           const isVisited = visited().includes(name);
+          const activeSel = selectedProvince();
+          const isSelected = activeSel && activeSel.name === name;
 
           d3.select(this)
-            .style("fill", isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
-            .style("stroke", isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
-            .style("stroke-width", isVisited ? 1.4 : 1.2)
-            .style("opacity", isVisited ? 0.98 : 0.9)
-            .style("filter", isVisited ? "url(#visited-glow)" : "none");
+            .style("fill", isSelected ? "var(--primary-400)" : isVisited ? "var(--primary-500)" : PROVINCE_DEFAULT_FILL)
+            .style("stroke", isSelected ? "#ffffff" : isVisited ? "var(--primary-300)" : PROVINCE_STROKE)
+            .style("stroke-width", isSelected ? 2.5 : isVisited ? 1.4 : 1.2)
+            .style("opacity", isVisited || isSelected ? 0.98 : 0.9)
+            .style("filter", isVisited || isSelected ? "url(#visited-glow)" : "none");
 
           tooltip.style("opacity", 0);
         });
 
-      // Beacon markers group for visited cities
+      // Beacon markers group
       const beaconGroup = mapGroup.append("g").attr("class", "beacons");
 
       const updateBeacons = () => {
@@ -545,15 +586,13 @@ export default function VietnamMap() {
               .append("g")
               .attr("transform", `translate(${coords[0]}, ${coords[1]})`);
 
-            // Solid pin center point
             g.append("circle")
-              .attr("r", 4)
+              .attr("r", isMobile ? 3.5 : 4)
               .attr("fill", "#ffffff")
               .attr("stroke", "var(--primary-500)")
-              .attr("stroke-width", 2.5);
+              .attr("stroke-width", isMobile ? 2 : 2.5);
 
-            // City text label with crisp SVG stroke halo (fixes ugly font drop-shadow error)
-            const dx = info.labelDx ?? 18;
+            const dx = info.labelDx ?? (isMobile ? 12 : 18);
             const dy = info.labelDy ?? 4;
             g.append("text")
               .attr("x", dx)
@@ -563,7 +602,7 @@ export default function VietnamMap() {
               .style("stroke", "#0d1b2a")
               .style("stroke-width", "3.5px")
               .style("paint-order", "stroke fill")
-              .style("font-size", "11.5px")
+              .style("font-size", isMobile ? "10px" : "11.5px")
               .style("font-weight", "700")
               .style("font-family", "var(--font-satoshi), system-ui, -apple-system, sans-serif")
               .style("letter-spacing", "0.01em")
@@ -574,8 +613,8 @@ export default function VietnamMap() {
 
       updateMapColors();
 
-      // D3 Zoom & Pan configuration
-      const zoom = d3
+      // Zoom behavior
+      zoomBehavior = d3
         .zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.8, 12])
         .on("zoom", (event) => {
@@ -583,7 +622,7 @@ export default function VietnamMap() {
           updateTiles(event.transform);
         });
 
-      svg.call(zoom as any);
+      svg.call(zoomBehavior as any);
     };
 
     renderMap();
@@ -600,7 +639,7 @@ export default function VietnamMap() {
     });
   });
 
-  const totalProvinces = Object.keys(PROVINCE_MAP).length; // 34
+  const totalProvinces = Object.keys(PROVINCE_MAP).length;
   const visitedCount = () => visited().length;
   const visitedPercent = () => ((visitedCount() / totalProvinces) * 100).toFixed(1);
 
@@ -620,61 +659,223 @@ export default function VietnamMap() {
   };
 
   return (
-    <div class="relative w-full h-screen overflow-hidden text-white bg-[#0a131d] select-none">
+    <div class="relative w-full h-screen overflow-hidden text-white bg-[#0a131d] select-none touch-none">
       {/* Map Container */}
       <div ref={containerRef} class="w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Square Minimal Data Statistics Card (Bottom-Right) */}
-      <div class="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-40 w-auto sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/80 shadow-2xl p-3.5 sm:p-5 text-white">
+      {/* Zoom & Center Controls */}
+      <div class="absolute top-20 right-4 sm:top-24 sm:right-6 z-40 flex flex-col gap-1.5 bg-darkslate-800/90 backdrop-blur-md border border-darkslate-500/80 rounded-xl p-1 shadow-lg">
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-darkslate-600/80 active:scale-95 transition-all"
+          aria-label="Phóng to"
+          title="Phóng to"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </button>
+        <div class="h-px bg-darkslate-600/60 mx-1" />
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-darkslate-600/80 active:scale-95 transition-all"
+          aria-label="Thu nhỏ"
+          title="Thu nhỏ"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+          </svg>
+        </button>
+        <div class="h-px bg-darkslate-600/60 mx-1" />
+        <button
+          type="button"
+          onClick={handleResetZoom}
+          class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-darkslate-600/80 active:scale-95 transition-all"
+          aria-label="Đặt lại góc nhìn"
+          title="Đặt lại góc nhìn"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Selected Province Floating Drawer / Card */}
+      {selectedProvince() && (
+        <div class="absolute bottom-4 left-4 right-4 sm:left-6 sm:bottom-6 sm:right-auto z-50 w-auto sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/90 shadow-2xl overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+          <div class="relative">
+            {selectedProvince()!.info.coverImage ? (
+              <div class="relative w-full h-36 overflow-hidden">
+                <img
+                  src={selectedProvince()!.info.coverImage}
+                  alt={selectedProvince()!.info.vi}
+                  class="w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-darkslate-800 via-darkslate-800/40 to-transparent" />
+              </div>
+            ) : (
+              <div class="w-full h-10 bg-darkslate-700/40" />
+            )}
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setSelectedProvince(null)}
+              class="absolute top-2.5 right-2.5 w-7 h-7 flex items-center justify-center rounded-full bg-darkslate-900/80 hover:bg-darkslate-900 text-slate-300 hover:text-white border border-darkslate-600 transition-all z-10"
+              aria-label="Đóng"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Title & Status */}
+            <div class={`px-4 ${selectedProvince()!.info.coverImage ? "-mt-8 relative z-10" : "pt-1"}`}>
+              <div class="flex items-center gap-2 mb-1">
+                {selectedProvince()!.isVisited ? (
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/90 text-white shadow-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    Đã ghé thăm
+                  </span>
+                ) : (
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-darkslate-600/80 text-slate-300 border border-darkslate-500/60">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    Chưa ghé thăm
+                  </span>
+                )}
+              </div>
+              <h3 class="text-xl font-extrabold text-white tracking-tight font-cabinet">
+                {selectedProvince()!.info.vi}
+              </h3>
+              <p class="text-xs text-slate-300 font-medium">{selectedProvince()!.info.region}</p>
+            </div>
+          </div>
+
+          {/* Highlights & Details */}
+          <div class="p-4 pt-3">
+            {selectedProvince()!.info.highlights && (
+              <div class="mb-3">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-primary-400 mb-1.5">
+                  Bộ sưu tập hành trình
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  {selectedProvince()!.info.highlights!.map((item) => (
+                    <span class="text-xs bg-darkslate-900/90 border border-darkslate-600/80 text-slate-200 px-2.5 py-1 rounded-md font-medium">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedProvince()!.info.travelDate && (
+              <div class="text-xs text-slate-400 italic">
+                {selectedProvince()!.info.travelDate}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Minimal Data Statistics Card (Bottom-Right) */}
+      <div
+        class={`absolute bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-40 w-auto sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/80 shadow-2xl text-white transition-all duration-300 ${
+          selectedProvince() ? "hidden sm:block" : "block"
+        } ${isStatsCollapsed() ? "p-3" : "p-3.5 sm:p-5"}`}
+      >
         {/* Header */}
-        <div class="pb-3 border-b border-darkslate-600/60 mb-4">
+        <div class="flex items-center justify-between pb-2 sm:pb-3 border-b border-darkslate-600/60 mb-3 sm:mb-4">
           <span class="text-xs font-mono font-bold tracking-widest text-slate-200 uppercase">
             BẢN ĐỒ VIỆT NAM
           </span>
+          <button
+            type="button"
+            onClick={() => setIsStatsCollapsed(!isStatsCollapsed())}
+            class="sm:hidden p-1 rounded-lg bg-darkslate-700/80 text-slate-300 hover:text-white"
+            aria-label={isStatsCollapsed() ? "Mở rộng" : "Thu gọn"}
+          >
+            <svg
+              class={`w-4 h-4 transition-transform duration-200 ${isStatsCollapsed() ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
         </div>
 
-        {/* Main Stats Counter */}
-        <div class="flex items-center justify-between mb-3">
-          <div>
+        {/* Collapsed View on Mobile */}
+        {isStatsCollapsed() ? (
+          <div class="flex items-center justify-between text-xs">
             <div class="flex items-baseline gap-1.5">
-              <span class="text-4xl font-extrabold text-white tracking-tight font-cabinet">
-                {visitedCount()}
-              </span>
-              <span class="text-xl font-bold text-slate-300">/ {totalProvinces}</span>
+              <span class="text-lg font-extrabold text-white font-cabinet">{visitedCount()}</span>
+              <span class="text-xs text-slate-300">/ {totalProvinces} tỉnh thành</span>
             </div>
-            <div class="text-xs text-slate-200 font-medium mt-1">
-              Tỉnh thành đã khám phá
+            <span class="text-sm font-extrabold text-primary-400 font-cabinet">{visitedPercent()}%</span>
+          </div>
+        ) : (
+          /* Full View */
+          <>
+            {/* Main Stats Counter */}
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-4xl font-extrabold text-white tracking-tight font-cabinet">
+                    {visitedCount()}
+                  </span>
+                  <span class="text-xl font-bold text-slate-300">/ {totalProvinces}</span>
+                </div>
+                <div class="text-xs text-slate-200 font-medium mt-1">
+                  Tỉnh thành đã khám phá
+                </div>
+              </div>
+
+              <div class="text-2xl font-extrabold text-primary-400 font-cabinet tracking-tight">
+                {visitedPercent()}%
+              </div>
             </div>
-          </div>
-          
-          <div class="text-2xl font-extrabold text-primary-400 font-cabinet tracking-tight">
-            {visitedPercent()}%
-          </div>
-        </div>
 
-        {/* Progress Bar */}
-        <div class="w-full h-2 bg-darkslate-900/90 rounded-full overflow-hidden border border-darkslate-600/60 mb-4">
-          <div
-            class="bg-primary-500 h-full rounded-full transition-all duration-700 ease-out"
-            style={{ width: `${visitedPercent()}%` }}
-          />
-        </div>
+            {/* Progress Bar */}
+            <div class="w-full h-2 bg-darkslate-900/90 rounded-full overflow-hidden border border-darkslate-600/60 mb-4">
+              <div
+                class="bg-primary-500 h-full rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${visitedPercent()}%` }}
+              />
+            </div>
 
-        {/* Region Breakdown Grid */}
-        <div class="grid grid-cols-3 gap-2.5 text-center">
-          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
-            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Bắc Bộ</span>
-            <span class="text-base font-extrabold text-white">{regionCounts().bac} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
-          </div>
-          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
-            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Trung Bộ</span>
-            <span class="text-base font-extrabold text-white">{regionCounts().trung} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
-          </div>
-          <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2.5 flex flex-col items-center">
-            <span class="text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-1">Nam Bộ</span>
-            <span class="text-base font-extrabold text-white">{regionCounts().nam} <span class="text-xs font-semibold text-slate-300">tỉnh</span></span>
-          </div>
-        </div>
+            {/* Region Breakdown Grid */}
+            <div class="grid grid-cols-3 gap-2.5 text-center">
+              <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2 sm:p-2.5 flex flex-col items-center">
+                <span class="text-[10px] sm:text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-0.5 sm:mb-1">
+                  Bắc Bộ
+                </span>
+                <span class="text-sm sm:text-base font-extrabold text-white">
+                  {regionCounts().bac} <span class="text-xs font-semibold text-slate-300">tỉnh</span>
+                </span>
+              </div>
+              <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2 sm:p-2.5 flex flex-col items-center">
+                <span class="text-[10px] sm:text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-0.5 sm:mb-1">
+                  Trung Bộ
+                </span>
+                <span class="text-sm sm:text-base font-extrabold text-white">
+                  {regionCounts().trung} <span class="text-xs font-semibold text-slate-300">tỉnh</span>
+                </span>
+              </div>
+              <div class="bg-darkslate-900/80 border border-darkslate-600/60 rounded-xl p-2 sm:p-2.5 flex flex-col items-center">
+                <span class="text-[10px] sm:text-[11px] font-bold text-slate-200 uppercase tracking-wider mb-0.5 sm:mb-1">
+                  Nam Bộ
+                </span>
+                <span class="text-sm sm:text-base font-extrabold text-white">
+                  {regionCounts().nam} <span class="text-xs font-semibold text-slate-300">tỉnh</span>
+                </span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
