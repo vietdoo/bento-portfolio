@@ -39,6 +39,9 @@ export function getLocalizedPost<T extends TranslatableBlogPost>(
     posts.find(
       (post) =>
         getCanonicalBlogId(post) === canonicalId && post.data.lang === "en",
+    ) ??
+    posts.find(
+      (post) => getCanonicalBlogId(post) === canonicalId,
     )
   );
 }
