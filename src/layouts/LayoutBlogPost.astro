@@ -124,19 +124,93 @@ const hasTranslation = Boolean(enHref && viHref);
   </main>
 </BasicLayout>
 
-<script>
-  function applyBlogLanguage() {
-    const lang = new URLSearchParams(window.location.search).get("lang") === "vi"
-      ? "vi"
-      : "en";
-    const availableLanguages = new Set(
-      Array.from(document.querySelectorAll<HTMLElement>("[data-blog-language]")).map(
-        (element) => element.dataset.blogLanguage,
-      ),
-    );
-    const selectedLang = availableLanguages.has(lang) ? lang : "en";
+<script is:inline>
+  (function () {
+    try {
+      var param = new URLSearchParams(window.location.search).get("lang");
+      var stored = localStorage.getItem("portfolio:blog-lang");
+      var selectedLang = param
+        ? param === "vi"
+          ? "vi"
+          : "en"
+        : stored === "vi"
+          ? "vi"
+          : "en";
+      if (param) {
+        localStorage.setItem("portfolio:blog-lang", selectedLang);
+      }
+      var elements = document.querySelectorAll("[data-blog-language]");
+      var available = [];
+      elements.forEach(function (el) {
+        available.push(el.getAttribute("data-blog-language"));
+      });
+      if (available.length > 0 && available.indexOf(selectedLang) === -1) {
+        selectedLang = available[0] || "en";
+      }
+      elements.forEach(function (el) {
+        if (el.getAttribute("data-blog-language") === selectedLang) {
+          el.removeAttribute("hidden");
+        } else {
+          el.setAttribute("hidden", "");
+        }
+      });
+      var options = document.querySelectorAll(
+        "[data-lang-toggle] [data-lang-option]"
+      );
+      options.forEach(function (option) {
+        var isCurrent = option.getAttribute("data-lang-option") === selectedLang;
+        option.setAttribute("data-active", isCurrent ? "true" : "false");
+        option.setAttribute("aria-pressed", String(isCurrent));
+        if (isCurrent) {
+          option.setAttribute("aria-current", "page");
+        } else {
+          option.removeAttribute("aria-current");
+        }
+      });
+      var titleEl = document.querySelector(
+        '[data-blog-language="' + selectedLang + '"] [data-blog-title]'
+      );
+      if (titleEl && titleEl.getAttribute("data-document-title")) {
+        document.title = titleEl.getAttribute("data-document-title");
+      }
+      document.documentElement.lang = selectedLang;
+    } catch (e) {}
+  })();
+</script>
 
-    document.querySelectorAll<HTMLElement>("[data-blog-language]").forEach((element) => {
+<script>
+  import { BLOG_LANG_KEY } from "../lib/blog-lang";
+
+  function applyBlogLanguage() {
+    const param = new URLSearchParams(window.location.search).get("lang");
+    const stored = localStorage.getItem(BLOG_LANG_KEY);
+    let selectedLang = param
+      ? param === "vi"
+        ? "vi"
+        : "en"
+      : stored === "vi"
+        ? "vi"
+        : "en";
+
+    if (param) {
+      localStorage.setItem(BLOG_LANG_KEY, selectedLang);
+    }
+
+    const availableElements = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-blog-language]")
+    );
+    const availableLanguages = new Set(
+      availableElements.map((el) => el.dataset.blogLanguage)
+    );
+
+    if (
+      availableElements.length > 0 &&
+      !availableLanguages.has(selectedLang)
+    ) {
+      selectedLang = availableElements[0]?.dataset.blogLanguage || "en";
+    }
+
+    availableElements.forEach((element) => {
       element.hidden = element.dataset.blogLanguage !== selectedLang;
     });
 
@@ -154,7 +228,7 @@ const hasTranslation = Boolean(enHref && viHref);
       });
 
     const title = document.querySelector<HTMLElement>(
-      `[data-blog-language="${selectedLang}"] [data-blog-title]`,
+      `[data-blog-language="${selectedLang}"] [data-blog-title]`
     )?.dataset.documentTitle;
     if (title) document.title = title;
     document.documentElement.lang = selectedLang;
