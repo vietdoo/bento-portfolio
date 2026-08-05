@@ -21,57 +21,66 @@ if (!id) {
 }
 
 const posts = await getCollection("blog");
-const englishEntry = getLocalizedPost(posts, id, "en");
+const englishEntry = posts.find(
+  (post) => getCanonicalBlogId(post) === id && post.data.lang === "en"
+);
+const vietnameseEntry = posts.find(
+  (post) => getCanonicalBlogId(post) === id && post.data.lang === "vi"
+);
 
-if (!englishEntry) {
+const primaryEntry = englishEntry ?? vietnameseEntry;
+
+if (!primaryEntry) {
   return Astro.redirect("/404");
 }
 
-const vietnameseVersion = getLocalizedPost(posts, id, "vi");
-const hasVietnameseTranslation = vietnameseVersion?.data.lang === "vi";
+const hasEnglishTranslation = Boolean(englishEntry);
+const hasVietnameseTranslation = Boolean(vietnameseEntry);
 
-const { Content: EnglishContent, remarkPluginFrontmatter: englishFrontmatter } =
-  await render(englishEntry);
-const {
-  Content: VietnameseContent,
-  remarkPluginFrontmatter: vietnameseFrontmatter,
-} = hasVietnameseTranslation
-  ? await render(vietnameseVersion)
-  : { Content: undefined, remarkPluginFrontmatter: undefined };
+const englishRender = englishEntry ? await render(englishEntry) : undefined;
+const vietnameseRender = vietnameseEntry ? await render(vietnameseEntry) : undefined;
+
+const translations = [
+  ...(englishEntry && englishRender
+    ? [
+        {
+          lang: "en" as const,
+          minutesRead: englishRender.remarkPluginFrontmatter.minutesRead,
+          pubDate: englishEntry.data.pubDate!,
+          title: englishEntry.data.title!,
+        },
+      ]
+    : []),
+  ...(vietnameseEntry && vietnameseRender
+    ? [
+        {
+          lang: "vi" as const,
+          minutesRead: vietnameseRender.remarkPluginFrontmatter.minutesRead,
+          pubDate: vietnameseEntry.data.pubDate!,
+          title: vietnameseEntry.data.title!,
+        },
+      ]
+    : []),
+];
 ---
 
 <LayoutBlogPost
-  description={englishEntry.data.description!}
-  enHref={hasVietnameseTranslation ? getBlogPostHref(englishEntry, "en") : undefined}
-  translations={[
-    {
-      lang: "en",
-      minutesRead: englishFrontmatter.minutesRead,
-      pubDate: englishEntry.data.pubDate!,
-      title: englishEntry.data.title!,
-    },
-    ...(hasVietnameseTranslation && vietnameseFrontmatter
-      ? [
-          {
-            lang: "vi" as const,
-            minutesRead: vietnameseFrontmatter.minutesRead,
-            pubDate: vietnameseVersion.data.pubDate!,
-            title: vietnameseVersion.data.title!,
-          },
-        ]
-      : []),
-  ]}
-  url={`blog/${getCanonicalBlogId(englishEntry)}`}
+  description={primaryEntry.data.description!}
+  enHref={
+    hasEnglishTranslation && hasVietnameseTranslation && englishEntry
+      ? getBlogPostHref(englishEntry, "en")
+      : undefined
+  }
+  translations={translations}
+  url={`blog/${getCanonicalBlogId(primaryEntry)}`}
   viHref={
-    hasVietnameseTranslation ? getBlogPostHref(vietnameseVersion, "vi") : undefined
+    hasEnglishTranslation && hasVietnameseTranslation && vietnameseEntry
+      ? getBlogPostHref(vietnameseEntry, "vi")
+      : undefined
   }
 >
-  <EnglishContent slot="en" />
-  {
-    VietnameseContent && (
-      <VietnameseContent slot="vi" />
-    )
-  }
+  {englishRender && <englishRender.Content slot="en" />}
+  {vietnameseRender && <vietnameseRender.Content slot="vi" />}
 </LayoutBlogPost>
 
 <style is:global>
