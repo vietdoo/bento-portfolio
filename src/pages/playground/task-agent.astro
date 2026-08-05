@@ -1,0 +1,13 @@
+---
+import PlaygroundShell from "../../components/PlaygroundShell.astro";
+import TaskAgentPlayground from "../../components/playground/taskAgentPlayground";
+import { SITE } from "../../site-config";
+---
+
+<PlaygroundShell
+  title={`${SITE.author.fullName} - Playground - Task Agent`}
+  description="AI chat assistant for task assignment, action approval, and feedback flows."
+  scrollable={true}
+>
+  <TaskAgentPlayground client:load />
+</PlaygroundShell>
