@@ -32,6 +32,8 @@ Founder Mindset   : Problem ──▶ Core Feature (MVP) ──▶ Production Re
 
 A working application with 10 lines of unpolished code deployed in production delivers infinitely more value than an unreleased, over-engineered microservices cluster.
 
+![Over-Engineering vs MVP Mindset](/blog/side-project-founder-mindset/over-engineering-vs-mvp.jpg)
+
 ---
 
 ## 2. Choosing a Lean Tech Stack
@@ -49,6 +51,8 @@ To optimize development speed and keep operating costs near $0, an ideal stack n
 ### 🐳 Infrastructure & Deployment
 * **Frontend**: Vercel / Cloudflare Pages (Free tier, global Edge CDN).
 * **Backend API**: Cloudflare Workers (Serverless) or a low-cost VPS ($3 - $5/month on Hetzner/DigitalOcean) running Docker Compose with Nginx/Traefik reverse proxy.
+
+![The Lean Tech Stack Architecture](/blog/side-project-founder-mindset/lean-tech-stack.jpg)
 
 ---
 
@@ -81,6 +85,8 @@ Avoid jumping straight into microservices or Kubernetes for early-stage side pro
 2. **Stateless Backend**: Design stateless API servers so deployments and restarts cause zero data loss.
 3. **Environment Isolation**: Maintain strict `.env` configurations for Local and Production environments.
 
+![Pragmatic Infrastructure Architecture](/blog/side-project-founder-mindset/pragmatic-architecture.jpg)
+
 ---
 
 ## 4. Time Management & AI Assistance for Full-Time Engineers
@@ -96,6 +102,8 @@ Break tasks into micro-deliverables achievable in 30–45 minutes:
 ### 🤖 3x Speedup with AI Assistants
 * **AI Pair Programming**: Utilize specialized AI coding assistants for boilerplate generation, test creation, and API documentation.
 * **Automated CI/CD**: Configure GitHub Actions to run linting and deploy to Production on every push to `main`.
+
+![AI Pair Programming Workspace](/blog/side-project-founder-mindset/ai-pair-programming.jpg)
 
 ---
 

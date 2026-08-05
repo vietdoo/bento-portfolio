@@ -32,6 +32,8 @@ Tư duy Founder Product : Problem ──▶ Core Feature (MVP) ──▶ Product
 
 Một sản phẩm chạy thực tế với 10 dòng code rác vẫn có giá trị hơn một hệ thống microservices chưa từng được deploy.
 
+![Over-Engineering vs MVP Mindset](/blog/side-project-founder-mindset/over-engineering-vs-mvp.jpg)
+
 ---
 
 ## 2. Chọn Tech Stack Tinh Gọn (The Lean Stack)
@@ -49,6 +51,8 @@ Một sản phẩm chạy thực tế với 10 dòng code rác vẫn có giá tr
 ### 🐳 Infrastructure & Deployment
 * **Frontend**: Vercel / Cloudflare Pages (Free, Unlimited Traffic, Edge CDN).
 * **Backend API**: Cloudflare Workers (Serverless) hoặc VPS giá rẻ ($3 - $5/tháng trên Hetzner/DigitalOcean) dùng Docker Compose + Traefik/Nginx reverse proxy.
+
+![The Lean Tech Stack Architecture](/blog/side-project-founder-mindset/lean-tech-stack.jpg)
 
 ---
 
@@ -81,6 +85,8 @@ Một sản phẩm chạy thực tế với 10 dòng code rác vẫn có giá tr
 2. **Stateless Backend**: Giữ API Server không lưu trạng thái (Stateless) để dễ dàng restart, deploy lại mà không mất dữ liệu.
 3. **Environment Isolation**: Sử dụng `.env` chuẩn chỉnh cho Local và Production.
 
+![Pragmatic Infrastructure Architecture](/blog/side-project-founder-mindset/pragmatic-architecture.jpg)
+
 ---
 
 ## 4. Quản Lý Thời Gian & Tận Dụng AI Cho Full-time Engineer
@@ -96,6 +102,8 @@ Chia nhỏ công việc thành các Micro-tasks có thể hoàn thành trong 30�
 ### 🤖 Tăng tốc gấp 3 lần với AI Assistants
 * **AI Pair Programming**: Sử dụng các AI Agent/Assistant chuyên dụng để sinh boilerplate code, tạo unit test, và viết tài liệu API tự động.
 * **Git Auto-Commit & CI/CD**: Thiết lập GitHub Actions tự động check lints và deploy lên Server mỗi khi push code lên nhánh `main`.
+
+![AI Pair Programming Workspace](/blog/side-project-founder-mindset/ai-pair-programming.jpg)
 
 ---
 
