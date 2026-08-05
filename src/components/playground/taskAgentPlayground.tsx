@@ -356,7 +356,7 @@ export default function TaskAgentPlayground() {
             </span>
           </div>
 
-          <div class="flex flex-col gap-2 max-h-[440px] overflow-y-auto pr-1">
+          <div class="flex flex-col gap-2 max-h-[160px] md:max-h-[440px] overflow-y-auto pr-1">
             <For each={tasks()}>
               {(task) => (
                 <button

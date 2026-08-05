@@ -133,17 +133,17 @@ const resumeData = {
   description={`Official Resume and Curriculum Vitae of ${SITE.author.fullNameVi}, Software Engineer @ VNPT & Founder @ VNDO.`}
   hideSoundToggle={true}
 >
-  <main class="w-full max-w-4xl mx-auto px-6 py-10 text-white print:text-black print:bg-white print:max-w-none print:px-0">
+  <main class="w-full max-w-4xl mx-auto px-3.5 sm:px-6 py-6 sm:py-10 text-white print:text-black print:bg-white print:max-w-none print:px-0">
     <!-- Header Controls (Hidden on Print) -->
-    <div class="flex items-center justify-between mb-8 print:hidden">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 print:hidden">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight">Curriculum Vitae</h1>
-        <p class="text-darkslate-300 text-sm mt-1">Official professional summary & career background</p>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Curriculum Vitae</h1>
+        <p class="text-darkslate-300 text-xs sm:text-sm mt-1">Official professional summary & career background</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 self-start sm:self-auto">
         <button
           onclick="window.print()"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-darkslate-950 font-medium text-sm rounded-xl transition-all shadow-lg hover:shadow-primary-500/20 active:scale-95 cursor-pointer"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-darkslate-950 font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg hover:shadow-primary-500/20 active:scale-95 cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -154,21 +154,21 @@ const resumeData = {
     </div>
 
     <!-- CV Document Card -->
-    <div class="bg-darkslate-800/80 border border-darkslate-600/40 backdrop-blur-md rounded-2xl p-8 sm:p-10 shadow-2xl print:bg-transparent print:border-none print:p-0 print:shadow-none">
+    <div class="bg-darkslate-800/80 border border-darkslate-600/40 backdrop-blur-md rounded-2xl p-4 sm:p-8 md:p-10 shadow-2xl print:bg-transparent print:border-none print:p-0 print:shadow-none">
       
       <!-- Candidate Header -->
       <header class="border-b border-darkslate-600/40 pb-6 mb-8 print:border-gray-300">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-white print:text-black">{resumeData.header.name}</h1>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white print:text-black">{resumeData.header.name}</h1>
             <p class="text-primary-400 font-medium text-sm sm:text-base mt-1 print:text-gray-800">{resumeData.header.title}</p>
             <p class="text-darkslate-300 text-xs sm:text-sm mt-0.5 print:text-gray-600">📍 {resumeData.header.location}</p>
           </div>
-          <div class="flex flex-col gap-1 text-xs text-darkslate-300 print:text-gray-700">
-            <a href={`mailto:${resumeData.header.email}`} class="hover:text-primary-400 transition-colors">✉️ {resumeData.header.email}</a>
-            <a href={resumeData.header.github} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">🐙 {resumeData.header.github}</a>
-            <a href={resumeData.header.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">💼 {resumeData.header.linkedin}</a>
-            <a href={resumeData.header.website} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors">🌐 {resumeData.header.website}</a>
+          <div class="flex flex-col gap-1 text-xs text-darkslate-300 print:text-gray-700 max-w-full overflow-hidden">
+            <a href={`mailto:${resumeData.header.email}`} class="hover:text-primary-400 transition-colors truncate">✉️ {resumeData.header.email}</a>
+            <a href={resumeData.header.github} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors truncate">🐙 {resumeData.header.github}</a>
+            <a href={resumeData.header.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors truncate">💼 {resumeData.header.linkedin}</a>
+            <a href={resumeData.header.website} target="_blank" rel="noopener noreferrer" class="hover:text-primary-400 transition-colors truncate">🌐 {resumeData.header.website}</a>
           </div>
         </div>
       </header>

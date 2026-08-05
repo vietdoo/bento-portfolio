@@ -231,10 +231,14 @@ export default function InputTesterPlayground() {
       </div>
 
       {/* Virtual Keyboard */}
-      <div class="bg-darkslate-800/80 border border-darkslate-500 rounded-2xl p-3 md:p-5 flex flex-col gap-2 overflow-x-auto">
-        <For each={KEYBOARD_ROWS}>
-          {(row) => (
-            <div class="flex gap-1.5 min-w-[640px]">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center justify-between text-xs text-darkslate-300 md:hidden px-1">
+          <span class="text-[11px] text-darkslate-400 italic">↔ Scroll horizontally to view full keyboard layout</span>
+        </div>
+        <div class="bg-darkslate-800/80 border border-darkslate-500 rounded-2xl p-3 md:p-5 flex flex-col gap-2 overflow-x-auto">
+          <For each={KEYBOARD_ROWS}>
+            {(row) => (
+              <div class="flex gap-1.5 min-w-[640px]">
               <For each={row}>
                 {(k) => {
                   const isActive = () => activeKeys().has(k.code);
@@ -261,6 +265,7 @@ export default function InputTesterPlayground() {
           )}
         </For>
       </div>
+    </div>
 
       {/* Mouse Click & Scroll Tester */}
       <div class="grid grid-cols-1 md:grid-cols-12 gap-5">

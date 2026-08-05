@@ -65,38 +65,38 @@ export default function WordCounterPlayground() {
       </div>
 
       {/* Metrics Row */}
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-3.5 flex flex-col">
-          <span class="text-[11px] font-medium text-darkslate-300">Words</span>
-          <span class="text-2xl font-bold text-primary-400 mt-0.5 tabular-nums">
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
+        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-2.5 sm:p-3.5 flex flex-col">
+          <span class="text-[10px] sm:text-[11px] font-medium text-darkslate-300">Words</span>
+          <span class="text-xl sm:text-2xl font-bold text-primary-400 mt-0.5 tabular-nums">
             {stats().words.toLocaleString()}
           </span>
         </div>
 
-        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-3.5 flex flex-col">
-          <span class="text-[11px] font-medium text-darkslate-300">Characters</span>
-          <span class="text-2xl font-bold text-white mt-0.5 tabular-nums">
+        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-2.5 sm:p-3.5 flex flex-col">
+          <span class="text-[10px] sm:text-[11px] font-medium text-darkslate-300">Characters</span>
+          <span class="text-xl sm:text-2xl font-bold text-white mt-0.5 tabular-nums">
             {stats().chars.toLocaleString()}
           </span>
         </div>
 
-        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-3.5 flex flex-col">
-          <span class="text-[11px] font-medium text-darkslate-300">No Spaces</span>
-          <span class="text-2xl font-bold text-darkslate-200 mt-0.5 tabular-nums">
+        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-2.5 sm:p-3.5 flex flex-col">
+          <span class="text-[10px] sm:text-[11px] font-medium text-darkslate-300">No Spaces</span>
+          <span class="text-xl sm:text-2xl font-bold text-darkslate-200 mt-0.5 tabular-nums">
             {stats().charsNoSpace.toLocaleString()}
           </span>
         </div>
 
-        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-3.5 flex flex-col">
-          <span class="text-[11px] font-medium text-darkslate-300">Sentences</span>
-          <span class="text-2xl font-bold text-white mt-0.5 tabular-nums">
+        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-2.5 sm:p-3.5 flex flex-col">
+          <span class="text-[10px] sm:text-[11px] font-medium text-darkslate-300">Sentences</span>
+          <span class="text-xl sm:text-2xl font-bold text-white mt-0.5 tabular-nums">
             {stats().sentences.toLocaleString()}
           </span>
         </div>
 
-        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-3.5 flex flex-col col-span-2 sm:col-span-1">
-          <span class="text-[11px] font-medium text-darkslate-300">Reading Time</span>
-          <span class="text-2xl font-bold text-primary-300 mt-0.5">
+        <div class="bg-darkslate-600/30 border border-darkslate-500 rounded-xl p-2.5 sm:p-3.5 flex flex-col col-span-2 sm:col-span-1">
+          <span class="text-[10px] sm:text-[11px] font-medium text-darkslate-300">Reading Time</span>
+          <span class="text-xl sm:text-2xl font-bold text-primary-300 mt-0.5">
             {stats().readingTime}
           </span>
         </div>

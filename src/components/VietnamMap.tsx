@@ -625,7 +625,7 @@ export default function VietnamMap() {
       <div ref={containerRef} class="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Square Minimal Data Statistics Card (Bottom-Right) */}
-      <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-72 sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/80 shadow-2xl p-5 text-white">
+      <div class="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-40 w-auto sm:w-80 rounded-2xl bg-darkslate-800/95 backdrop-blur-2xl border border-darkslate-500/80 shadow-2xl p-3.5 sm:p-5 text-white">
         {/* Header */}
         <div class="pb-3 border-b border-darkslate-600/60 mb-4">
           <span class="text-xs font-mono font-bold tracking-widest text-slate-200 uppercase">

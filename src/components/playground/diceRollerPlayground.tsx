@@ -395,8 +395,8 @@ export default function DiceRollerPlayground() {
       {/* Title & Actions */}
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Dice roller</h1>
-          <p class="text-sm text-darkslate-300 mt-1">
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">Dice roller</h1>
+          <p class="text-xs sm:text-sm text-darkslate-300 mt-1">
             Real 3D dice simulation with Three.js WebGL & Cannon.es physics engine.
           </p>
         </div>
@@ -405,26 +405,26 @@ export default function DiceRollerPlayground() {
           onClick={rollDice}
           disabled={isRolling()}
           type="button"
-          class="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm transition shadow-lg disabled:opacity-50 self-start sm:self-auto cursor-pointer touch-manipulation"
+          class="px-5 py-2.5 sm:px-6 sm:py-3.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold text-xs sm:text-sm transition shadow-lg disabled:opacity-50 self-start sm:self-auto cursor-pointer touch-manipulation"
         >
           {isRolling() ? "Rolling..." : "Roll dice"}
         </button>
       </div>
 
       {/* 3D WebGL Canvas Arena */}
-      <div class="relative bg-darkslate-800/90 border border-darkslate-500 rounded-3xl overflow-hidden shadow-2xl">
+      <div class="relative bg-darkslate-800/90 border border-darkslate-500 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
         <div
           ref={containerRef}
           onClick={rollDice}
-          class="w-full h-[420px] sm:h-[480px] md:h-[600px] cursor-pointer touch-manipulation"
+          class="w-full h-[340px] sm:h-[440px] md:h-[560px] cursor-pointer touch-manipulation"
         />
 
         {/* Total Score Overlay Badge */}
-        <div class="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-darkslate-900/80 border border-darkslate-500/80 rounded-2xl px-6 py-3 md:px-8 md:py-4 shadow-xl backdrop-blur-md">
-          <span class="text-xs md:text-sm text-darkslate-300 font-medium uppercase tracking-wider">
+        <div class="absolute bottom-3 sm:bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 sm:gap-3 bg-darkslate-900/80 border border-darkslate-500/80 rounded-xl sm:rounded-2xl px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 shadow-xl backdrop-blur-md">
+          <span class="text-[11px] sm:text-xs md:text-sm text-darkslate-300 font-medium uppercase tracking-wider">
             Total Sum
           </span>
-          <span class="text-4xl md:text-5xl font-extrabold text-primary-400 font-mono tabular-nums">
+          <span class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary-400 font-mono tabular-nums">
             {totalSum()}
           </span>
         </div>

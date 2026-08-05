@@ -102,24 +102,26 @@ const GlobeComponent = ({ isStatic, enableHover }: Props) => {
     if (!mapContainer) return;
 
     // --- sizing & projection -----------------------------------------
-    // The interactive globe gets an ornamental ring → enforce minimum
-    // canvas size so the rings + ticks aren't clipped.
-    const ringOuter = PROJECTION_SCALE + RING_OFFSET;
+    const containerW = mapContainer.clientWidth || window.innerWidth;
+    const containerH = mapContainer.clientHeight || FALLBACK_HEIGHT;
+
+    const availableDim = Math.min(containerW, containerH);
+    const scale = enableHover
+      ? Math.max(120, Math.min(PROJECTION_SCALE, Math.floor((availableDim - 84) / 2)))
+      : Math.max(100, Math.min(PROJECTION_SCALE, Math.floor((availableDim - 32) / 2)));
+
+    const ringOuter = scale + RING_OFFSET;
     const ringOutermost = ringOuter + RING_TICK_LENGTH;
     const numeralRadius = ringOutermost + NUMERAL_OFFSET;
     const cardinalRadius = numeralRadius + CARDINAL_OFFSET;
-    const minDim = enableHover ? (cardinalRadius + 8) * 2 + 8 : 0;
-    const width = Math.max(mapContainer.clientWidth, minDim);
-    const height = Math.max(
-      mapContainer.clientHeight || FALLBACK_HEIGHT,
-      minDim,
-    );
+    const width = containerW;
+    const height = containerH;
     const cx = width / 2;
     const cy = height / 2;
 
     const projection = d3
       .geoOrthographic()
-      .scale(PROJECTION_SCALE)
+      .scale(scale)
       .center([0, 0])
       .rotate([0, -30])
       .translate([cx, cy]);
@@ -267,7 +269,7 @@ const GlobeComponent = ({ isStatic, enableHover }: Props) => {
       .attr("stroke-width", 0.3)
       .attr("cx", cx)
       .attr("cy", cy)
-      .attr("r", PROJECTION_SCALE);
+      .attr("r", scale);
 
     const map = svg.append("g");
 
